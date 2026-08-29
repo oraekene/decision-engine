@@ -1,7 +1,15 @@
-// workers/src/lib/llmGateway.ts — OpenAI-compatible cloud gateway (ADR 0002, spec §18.1)
-// No node-llama-cpp. All LLM via fetch(env.AI_GATEWAY_URL). Swappable baseUrl/apiKey/model. Cloud only.
+// workers/src/lib/llmGateway.ts — OpenAI-compatible cloud gateway + Cloudflare Workers AI primary (ADR 0002, spec §18.1)
+// No node-llama-cpp. Primary: env.AI (Workers AI free tier) when AI_PROVIDER=cloudflare; fallback: fetch(AI_GATEWAY_URL). Swappable via one var.
+
+export type AiProvider = "cloudflare" | "gateway";
 
 export interface LlmGatewayOpts {
+  provider: AiProvider; // one-click switch
+  // Cloudflare Workers AI (free tier)
+  aiBinding?: unknown; // env.AI — Ai type from @cloudflare/workers-types
+  cloudflareChatModel?: string; // e.g. @cf/meta/llama-3.1-8b-instruct
+  cloudflareEmbedModel?: string; // e.g. @cf/baai/bge-base-en-v1.5
+  // Gateway fallback (OpenAI-compatible)
   url: string; // e.g. https://api.openai.com or https://api.groq.com/openai
   apiKey?: string;
   model: string;
@@ -28,7 +36,28 @@ export class LlmGateway {
     return this.opts.url.replace(/\/+$/, "");
   }
 
+  private useCloudflare(): boolean {
+    return this.opts.provider === "cloudflare" && !!this.opts.aiBinding;
+  }
+
   async chat(req: ChatOpts): Promise<string> {
+    // Primary: Cloudflare Workers AI (free) — no key, edge-local, OpenAI-compatible via gateway fallback contract
+    if (this.useCloudflare()) {
+      try {
+        const ai = this.opts.aiBinding as { run: (model: string, input: Record<string, unknown>) => Promise<unknown> };
+        const model = req.model ?? this.opts.cloudflareChatModel ?? "@cf/meta/llama-3.1-8b-instruct";
+        // Workers AI chat contract: { messages } → { response }
+        const res = (await ai.run(model, {
+          messages: req.messages,
+          max_tokens: req.max_tokens,
+        })) as { response?: string };
+        if (res?.response) return res.response;
+        // Some models return { response } else fallback
+      } catch (e) {
+        console.warn("Cloudflare AI chat failed, falling back to gateway:", e);
+        // fall through to gateway
+      }
+    }
     const url = `${this.baseUrl()}/v1/chat/completions`;
     const body: Record<string, unknown> = {
       model: req.model ?? this.opts.model,
@@ -56,6 +85,23 @@ export class LlmGateway {
   }
 
   async embed(input: string[]): Promise<number[][]> {
+    if (this.useCloudflare()) {
+      try {
+        const ai = this.opts.aiBinding as { run: (model: string, input: Record<string, unknown>) => Promise<unknown> };
+        const model = this.opts.cloudflareEmbedModel ?? "@cf/baai/bge-base-en-v1.5";
+        // BGE expects { text: string[] } → { data: number[][] } or { shape, data }
+        const results: number[][] = [];
+        for (const txt of input) {
+          const res = (await ai.run(model, { text: [txt] })) as { data?: number[][]; embedding?: number[] };
+          if (res?.data?.[0]) results.push(res.data[0]);
+          else if ((res as { embedding?: number[] })?.embedding) results.push((res as { embedding: number[] }).embedding!);
+          else throw new Error("Unexpected Cloudflare embed response");
+        }
+        if (results.length === input.length) return results;
+      } catch (e) {
+        console.warn("Cloudflare AI embed failed, falling back to gateway:", e);
+      }
+    }
     const url = `${this.baseUrl()}/v1/embeddings`;
     const body = {
       model: this.opts.embedModel ?? "text-embedding-3-small",
@@ -95,10 +141,20 @@ export class LlmGateway {
   }
 
   static fromEnv(env: Record<string, unknown>): LlmGateway {
+    const provider = ((env.AI_PROVIDER as string) || "cloudflare") as AiProvider;
+    const aiBinding = env.AI as unknown | undefined;
+    const cloudflareChatModel = (env.AI_CLOUDFLARE_CHAT_MODEL as string) || "@cf/meta/llama-3.1-8b-instruct";
+    const cloudflareEmbedModel = (env.AI_CLOUDFLARE_EMBED_MODEL as string) || "@cf/baai/bge-base-en-v1.5";
     const url = (env.AI_GATEWAY_URL as string) || "https://api.openai.com";
     const apiKey = env.AI_GATEWAY_KEY as string | undefined;
     const model = (env.AI_GATEWAY_MODEL as string) || "gpt-4o-mini";
     const embedModel = (env.AI_GATEWAY_EMBED_MODEL as string) || "text-embedding-3-small";
-    return new LlmGateway({ url, apiKey, model, embedModel });
+    return new LlmGateway({ provider, aiBinding, cloudflareChatModel, cloudflareEmbedModel, url, apiKey, model, embedModel });
   }
+
+  /** One-click switch helper: call before chat/embed to override provider at runtime (e.g., from admin UI) */
+  withProvider(provider: AiProvider): LlmGateway {
+    return new LlmGateway({ ...this.opts, provider });
+  }
+}
 }

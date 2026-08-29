@@ -1,6 +1,13 @@
 # Copy to .dev.vars — never commit real secrets
-# wrangler secret put AI_GATEWAY_KEY (prod)
+# One-click provider switch: cloudflare (Workers AI free) OR gateway (any OpenAI-compatible)
+AI_PROVIDER=cloudflare
+# Cloudflare Workers AI models (free tier)
+AI_CLOUDFLARE_CHAT_MODEL=@cf/meta/llama-3.1-8b-instruct
+AI_CLOUDFLARE_EMBED_MODEL=@cf/baai/bge-base-en-v1.5
+# Gateway fallback (used when AI_PROVIDER=gateway or Cloudflare inadequate)
+# wrangler secret put AI_GATEWAY_KEY (prod) — never commit
 AI_GATEWAY_KEY=sk-your-openai-compatible-key
 AI_GATEWAY_URL=https://api.openai.com
 AI_GATEWAY_MODEL=gpt-4o-mini
+AI_GATEWAY_EMBED_MODEL=text-embedding-3-small
 # D1 local: auto-bound when using --local --persist
