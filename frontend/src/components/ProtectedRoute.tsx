@@ -4,24 +4,29 @@ import { useSession } from "../store/session";
 
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useSession((s) => s.token);
+  const clear = useSession((s) => s.clear);
+  const initFromStorage = useSession((s) => s.initFromStorage);
   const [checked, setChecked] = useState(false);
   const [authed, setAuthed] = useState(false);
 
   useEffect(() => {
-    const t = token ?? localStorage.getItem("session");
-    if (!t) { setChecked(true); setAuthed(false); return; }
-    fetch(`/api/users/me`, { headers: { Authorization: `Bearer ${t}` }, credentials: "include" })
+    initFromStorage();
+  }, [initFromStorage]);
+
+  useEffect(() => {
+    const headers: Record<string, string> = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
+    // Always try httpOnly cookie via credentials:include even when token is null in memory
+    fetch(`/api/users/me`, { headers, credentials: "include" })
       .then((r) => {
         setAuthed(r.ok);
         setChecked(true);
         if (!r.ok) {
-          // clear stale token
-          localStorage.removeItem("session");
-          localStorage.removeItem("session_user");
+          clear();
         }
       })
       .catch(() => { setChecked(true); setAuthed(false); });
-  }, [token]);
+  }, [token, clear]);
 
   if (!checked) return <div className="p-6 text-sm text-zinc-500">Checking session…</div>;
   if (!authed) return <Navigate to="/login" replace />;

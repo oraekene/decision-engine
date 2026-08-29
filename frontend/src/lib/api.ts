@@ -1,18 +1,18 @@
-// frontend/src/lib/api.ts — typed client for Workers Hono (V-01: Bearer + cookie, 401 handling)
+// frontend/src/lib/api.ts — typed client for Workers Hono (V-01: Bearer + httpOnly cookie, 401 handling)
+import { useSession } from "../store/session";
+
 const API = import.meta.env.VITE_API_URL ?? "";
 
 export async function apiFetch(path: string, opts: RequestInit = {}) {
-  const token = typeof localStorage !== "undefined" ? localStorage.getItem("session") : null;
+  // Token is in-memory (Zustand) + httpOnly cookie (credentials:include). No localStorage token to avoid XSS per review.
+  // External tools can still pass Authorization explicitly via opts.headers.
+  const token = (opts.headers as Record<string, string> | undefined)?.["Authorization"] ? undefined : useSession.getState().token;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...((opts.headers as Record<string, string>) ?? {}),
   };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (token && !headers["Authorization"]) headers["Authorization"] = `Bearer ${token}`;
   const res = await fetch(`${API}${path}`, { ...opts, headers: headers as HeadersInit, credentials: "include" as RequestCredentials });
-  if (res.status === 401) {
-    // let ProtectedRoute handle redirect; also clear optimistic session
-    // Do not auto-redirect here to avoid loop on login page
-  }
   if (!res.ok) {
     const txt = await res.text();
     let body: unknown;

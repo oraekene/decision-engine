@@ -5,13 +5,17 @@ import app from "../index.js";
 type UserRow = { id: string; email: string; password_hash: string; created_at: string };
 type SessionRow = { id: string; user_id: string; token_hash: string; expires_at: string; created_at: string };
 
+type DecisionRow = { id: string; user_id: string; description: string; created_at: string };
+
 function createMockDB() {
   const users = new Map<string, UserRow>();
   const sessions = new Map<string, SessionRow>();
+  const decisions = new Map<string, DecisionRow>();
   // also index by email/token_hash for lookups
   return {
     _users: users,
     _sessions: sessions,
+    _decisions: decisions,
     prepare(sql: string) {
       const lower = sql.toLowerCase().replace(/\s+/g, " ").trim();
       return {
@@ -45,6 +49,14 @@ function createMockDB() {
                 const res = [...sessions.values()].filter((s) => s.user_id === uid) as unknown as T[];
                 return { results: res };
               }
+              if (lower.includes("from decisions where user_id")) {
+                const uid = params[0] as string;
+                const res = [...decisions.values()].filter((d) => d.user_id === uid) as unknown as T[];
+                return { results: res };
+              }
+              if (lower.includes("from decisions")) {
+                return { results: [...decisions.values()] as unknown as T[] };
+              }
               return { results: [] };
             },
             run: async (): Promise<{ success: boolean }> => {
@@ -59,6 +71,15 @@ function createMockDB() {
               if (lower.startsWith("insert into sessions")) {
                 const [id, user_id, token_hash, expires_at] = params as string[];
                 sessions.set(id, { id, user_id, token_hash, expires_at, created_at: new Date().toISOString() });
+                return { success: true };
+              }
+              if (lower.startsWith("insert into decisions")) {
+                const [id, user_id, description] = params as string[];
+                decisions.set(id, { id, user_id, description, created_at: new Date().toISOString() });
+                return { success: true };
+              }
+              if (lower.startsWith("insert into profiles")) {
+                // profiles insert is no-op for mock
                 return { success: true };
               }
               if (lower.startsWith("delete from sessions where token_hash")) {
@@ -321,9 +342,74 @@ describe("V-01 Auth vertical — Hono HTTP seam", () => {
     res = await app.request("/api/users/me", { headers: { Authorization: `Bearer ${tokenB}` } }, env as never);
     expect((await res.json() as { email: string }).email).toBe("b@example.com");
     // B trying to use A's token to get A — still returns A, not B (token is identity, not privilege escalation)
-    // Ensure isolation holds at decisions level: B's decisions empty vs A's
-    // (decisions endpoint is protected and scoped — will be empty for both but not leaking)
     void tokenA;
     void tokenB;
+  });
+
+  it("decisions are scoped to user_id (Spec gap fix)", async () => {
+    // user A creates decision
+    await app.request("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "decA@example.com", password: "password123" }),
+    }, env as never);
+    let res = await app.request("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "decA@example.com", password: "password123" }),
+    }, env as never);
+    const tokenA = (await res.json() as { token: string }).token;
+    res = await app.request("/api/decisions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${tokenA}` },
+      body: JSON.stringify({ description: "A's decision" }),
+    }, env as never);
+    expect(res.status).toBe(201);
+    // user B creates decision
+    await app.request("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "decB@example.com", password: "password123" }),
+    }, env as never);
+    res = await app.request("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "decB@example.com", password: "password123" }),
+    }, env as never);
+    const tokenB = (await res.json() as { token: string }).token;
+    res = await app.request("/api/decisions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${tokenB}` },
+      body: JSON.stringify({ description: "B's decision" }),
+    }, env as never);
+    expect(res.status).toBe(201);
+    // A lists decisions → only A's
+    res = await app.request("/api/decisions", { headers: { Authorization: `Bearer ${tokenA}` } }, env as never);
+    const aList = await res.json() as { decisions: { description: string }[] };
+    expect(aList.decisions.length).toBe(1);
+    expect(aList.decisions[0].description).toBe("A's decision");
+    // B lists → only B's
+    res = await app.request("/api/decisions", { headers: { Authorization: `Bearer ${tokenB}` } }, env as never);
+    const bList = await res.json() as { decisions: { description: string }[] };
+    expect(bList.decisions.length).toBe(1);
+    expect(bList.decisions[0].description).toBe("B's decision");
+  });
+
+  it("Set-Cookie is Secure on https (Spec fix)", async () => {
+    await app.request("/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "secure@example.com", password: "password123" }),
+    }, env as never);
+    const res = await app.request("https://example.com/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: "secure@example.com", password: "password123" }),
+    }, env as never);
+    expect(res.status).toBe(200);
+    const setCookie = res.headers.get("Set-Cookie") ?? res.headers.get("set-cookie") ?? "";
+    expect(setCookie).toMatch(/Secure/);
+    expect(setCookie).toMatch(/HttpOnly/);
+    expect(setCookie).toMatch(/SameSite=Lax/);
   });
 });

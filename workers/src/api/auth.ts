@@ -2,37 +2,57 @@
 import type { Context, Next } from "hono";
 import * as bcrypt from "bcryptjs";
 
-export async function authMiddleware(c: Context, next: Next) {
+export function getBearerOrCookie(c: Context): string | undefined {
   const auth = c.req.header("Authorization") || c.req.header("authorization");
-  let token: string | undefined;
-  if (auth?.startsWith("Bearer ")) token = auth.slice(7);
-  else {
-    // also check cookie
-    const cookie = c.req.header("cookie") ?? "";
-    const m = cookie.match(/session=([^;]+)/);
-    if (m) token = m[1];
-  }
+  if (auth?.startsWith("Bearer ")) return auth.slice(7);
+  const cookie = c.req.header("cookie") ?? "";
+  const m = cookie.match(/session=([^;]+)/);
+  if (m) return m[1];
+  return undefined;
+}
+
+export async function authMiddleware(c: Context, next: Next) {
+  const token = getBearerOrCookie(c);
   if (!token) {
     return c.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, 401);
   }
-  // Lookup in D1 + KV (KV cache)
+  // Lookup in D1 + KV (KV cache) — KV now stores JSON with expiry to avoid stale auth
   const env = c.env as Record<string, unknown> & { DB: D1Database; SESSIONS?: KVNamespace };
   const tokenHash = await sha256(token);
-  // KV fast-path
+  // KV fast-path with expiry check
   if (env.SESSIONS) {
     const cached = await (env.SESSIONS as KVNamespace).get(`session:${tokenHash}`);
     if (cached) {
-      c.set("user_id", cached);
-      await next();
-      return;
+      try {
+        const parsed = JSON.parse(cached) as { user_id: string; expires_at: string };
+        if (parsed?.user_id && parsed?.expires_at) {
+          if (new Date(parsed.expires_at) < new Date()) {
+            await (env.SESSIONS as KVNamespace).delete(`session:${tokenHash}`);
+          } else {
+            c.set("user_id", parsed.user_id);
+            await next();
+            return;
+          }
+        } else if (typeof cached === "string" && cached.length > 0) {
+          // Backwards compat for old KV entries storing raw user_id (migrating)
+          // Fall through to D1 to validate expiry
+        }
+      } catch {
+        // Corrupt cache — fall through to D1
+      }
     }
   }
-  // D1 fallback
+  // D1 fallback (authoritative)
   const row = await (env.DB as D1Database).prepare("SELECT user_id, expires_at FROM sessions WHERE token_hash=?").bind(tokenHash).first<{ user_id: string; expires_at: string }>();
   if (!row || new Date(row.expires_at) < new Date()) {
+    if (env.SESSIONS) await (env.SESSIONS as KVNamespace).delete(`session:${tokenHash}`);
     return c.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, 401);
   }
-  if (env.SESSIONS) await (env.SESSIONS as KVNamespace).put(`session:${tokenHash}`, row.user_id, { expirationTtl: 3600 });
+  if (env.SESSIONS) {
+    const payload = JSON.stringify({ user_id: row.user_id, expires_at: row.expires_at });
+    const ttl = Math.max(1, Math.floor((new Date(row.expires_at).getTime() - Date.now()) / 1000));
+    await (env.SESSIONS as KVNamespace).put(`session:${tokenHash}`, payload, { expirationTtl: Math.min(ttl, 3600) });
+  }
   c.set("user_id", row.user_id);
   await next();
 }

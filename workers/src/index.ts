@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { z } from "zod";
 import { loadConfig, type Env } from "./config.js";
-import { authMiddleware, hashPassword, verifyPassword, sha256, isValidEmail } from "./api/auth.js";
+import { authMiddleware, getBearerOrCookie, hashPassword, verifyPassword, sha256 } from "./api/auth.js";
 
 type Bindings = Env;
 
@@ -38,7 +38,6 @@ app.post("/api/auth/register", async (c) => {
   const parsed = registerSchema.safeParse(body);
   if (!parsed.success) return c.json({ error: "Validation failed", code: "BAD_REQUEST", details: parsed.error.flatten() }, 400);
   const { email, password } = parsed.data;
-  if (!isValidEmail(email)) return c.json({ error: "Invalid email", code: "BAD_REQUEST" }, 400);
   const normalizedEmail = email.toLowerCase().trim();
   const id = crypto.randomUUID();
   const password_hash = await hashPassword(password);
@@ -70,27 +69,26 @@ app.post("/api/auth/login", async (c) => {
   const sessionId = crypto.randomUUID();
   const expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
   await (env.DB as D1Database).prepare("INSERT INTO sessions (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)").bind(sessionId, user.id, token_hash, expires_at).run();
-  if (env.SESSIONS) await (env.SESSIONS as KVNamespace).put(`session:${token_hash}`, user.id, { expirationTtl: 60 * 60 * 24 * 30 });
-  c.header("Set-Cookie", `session=${token}; HttpOnly; Path=/; Max-Age=${30*24*60*60}; SameSite=Lax`);
+  if (env.SESSIONS) {
+    const payload = JSON.stringify({ user_id: user.id, expires_at });
+    const ttl = 60 * 60 * 24 * 30;
+    await (env.SESSIONS as KVNamespace).put(`session:${token_hash}`, payload, { expirationTtl: ttl });
+  }
+  const isSecure = new URL(c.req.url).protocol === "https:";
+  c.header("Set-Cookie", `session=${token}; HttpOnly; Path=/; Max-Age=${30*24*60*60}; SameSite=Lax${isSecure ? "; Secure" : ""}`);
   return c.json({ token, user: { id: user.id, email: user.email } }, 200);
 });
 
 app.post("/api/auth/logout", authMiddleware, async (c) => {
   const env = c.env as Env & { DB: D1Database; SESSIONS?: KVNamespace };
-  const auth = c.req.header("Authorization") || c.req.header("authorization");
-  let token: string | undefined;
-  if (auth?.startsWith("Bearer ")) token = auth.slice(7);
-  else {
-    const cookie = c.req.header("cookie") ?? "";
-    const m = cookie.match(/session=([^;]+)/);
-    if (m) token = m[1];
-  }
+  const token = getBearerOrCookie(c);
   if (token) {
     const token_hash = await sha256(token);
     await (env.DB as D1Database).prepare("DELETE FROM sessions WHERE token_hash = ?").bind(token_hash).run();
     if (env.SESSIONS) await (env.SESSIONS as KVNamespace).delete(`session:${token_hash}`);
   }
-  c.header("Set-Cookie", `session=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`);
+  const isSecure = new URL(c.req.url).protocol === "https:";
+  c.header("Set-Cookie", `session=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax${isSecure ? "; Secure" : ""}`);
   return c.json({ ok: true }, 200);
 });
 
@@ -102,11 +100,26 @@ app.get("/api/users/me", authMiddleware, async (c) => {
   return c.json({ id: user.id, email: user.email, created_at: user.created_at }, 200);
 });
 
-// API routes — auth required except /api/auth/* and /api/health
-app.get("/api/decisions", authMiddleware, (c) => c.json({ decisions: [] }));
+// API routes — auth required except /api/auth/* and /api/health (scoped to user_id per ADR 0004)
+app.get("/api/decisions", authMiddleware, async (c) => {
+  const env = c.env as Env & { DB: D1Database };
+  const user_id = c.get("user_id" as never) as string;
+  try {
+    const { results } = await (env.DB as D1Database).prepare("SELECT id, description, created_at FROM decisions WHERE user_id = ? ORDER BY created_at DESC").bind(user_id).all<{ id: string; description: string; created_at: string }>();
+    return c.json({ decisions: results ?? [] });
+  } catch {
+    return c.json({ decisions: [] });
+  }
+});
 app.post("/api/decisions", authMiddleware, async (c) => {
-  const body = await c.req.json().catch(() => ({}));
-  return c.json({ id: crypto.randomUUID(), ...body }, 201);
+  const env = c.env as Env & { DB: D1Database };
+  const user_id = c.get("user_id" as never) as string;
+  const body = await c.req.json().catch(() => ({})) as { description?: string };
+  const id = crypto.randomUUID();
+  try {
+    await (env.DB as D1Database).prepare("INSERT INTO decisions (id, user_id, description) VALUES (?, ?, ?)").bind(id, user_id, body.description ?? "").run();
+  } catch {}
+  return c.json({ id, user_id, ...body }, 201);
 });
 
 // Translation smoke — ticket [5-05]

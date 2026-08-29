@@ -1,33 +1,35 @@
 import { create } from "zustand";
 
+export const SESSION_TOKEN_KEY = "session";
+export const SESSION_USER_KEY = "session_user";
+export type SessionUser = { id: string; email: string };
+
 type SessionState = {
-  token: string | null;
-  user: { id: string; email: string } | null;
-  setSession: (token: string, user: { id: string; email: string }) => void;
+  token: string | null; // in-memory only; httpOnly cookie is authoritative (XSS-safe). Not persisted to localStorage per V-01 review.
+  user: SessionUser | null;
+  setSession: (token: string, user: SessionUser) => void;
   clear: () => void;
   initFromStorage: () => void;
 };
 
 export const useSession = create<SessionState>((set) => ({
-  token: typeof localStorage !== "undefined" ? localStorage.getItem("session") : null,
-  user: (() => {
-    try { const raw = localStorage.getItem("session_user"); return raw ? JSON.parse(raw) : null; } catch { return null; }
-  })(),
+  token: null,
+  user: null,
   setSession: (token, user) => {
-    localStorage.setItem("session", token);
-    localStorage.setItem("session_user", JSON.stringify(user));
+    // Token kept in memory + httpOnly cookie (Set-Cookie from /api/auth/login); not written to localStorage to avoid XSS theft.
+    // User kept for UI persistence.
+    localStorage.setItem(SESSION_USER_KEY, JSON.stringify(user));
     set({ token, user });
   },
   clear: () => {
-    localStorage.removeItem("session");
-    localStorage.removeItem("session_user");
+    localStorage.removeItem(SESSION_USER_KEY);
     set({ token: null, user: null });
   },
   initFromStorage: () => {
-    const token = localStorage.getItem("session");
-    const raw = localStorage.getItem("session_user");
-    let user: { id: string; email: string } | null = null;
+    // Only user is persisted; token is httpOnly cookie (credentials:include)
+    const raw = localStorage.getItem(SESSION_USER_KEY);
+    let user: SessionUser | null = null;
     try { user = raw ? JSON.parse(raw) : null; } catch { user = null; }
-    set({ token, user });
+    set({ token: null, user });
   },
 }));
