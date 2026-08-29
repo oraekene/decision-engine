@@ -1,6 +1,5 @@
 import { create } from "zustand";
 
-export const SESSION_TOKEN_KEY = "session";
 export const SESSION_USER_KEY = "session_user";
 export type SessionUser = { id: string; email: string };
 
@@ -27,6 +26,8 @@ export const useSession = create<SessionState>((set) => ({
   },
   initFromStorage: () => {
     // Only user is persisted; token is httpOnly cookie (credentials:include)
+    // Clean orphaned legacy token from pre-fix (stored as "session")
+    localStorage.removeItem("session");
     const raw = localStorage.getItem(SESSION_USER_KEY);
     let user: SessionUser | null = null;
     try { user = raw ? JSON.parse(raw) : null; } catch { user = null; }

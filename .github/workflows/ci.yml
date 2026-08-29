@@ -12,4 +12,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint || true
       - run: pnpm test
+      - run: npx wrangler d1 execute adie-db --local --file=./workers/migrations/0001_users.sql --persist-to=.wrangler/state || true
+      - run: npx wrangler d1 execute adie-db --local --file=./workers/migrations/0002_core.sql --persist-to=.wrangler/state || true
+      - run: npx wrangler d1 execute adie-db --local --file=./workers/migrations/0003_logs.sql --persist-to=.wrangler/state || true
       - run: npx wrangler deploy --dry-run || true

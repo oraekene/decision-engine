@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useSession } from "../store/session";
 
+const API = import.meta.env.VITE_API_URL ?? "";
+
 export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const token = useSession((s) => s.token);
   const clear = useSession((s) => s.clear);
@@ -16,8 +18,8 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
   useEffect(() => {
     const headers: Record<string, string> = {};
     if (token) headers.Authorization = `Bearer ${token}`;
-    // Always try httpOnly cookie via credentials:include even when token is null in memory
-    fetch(`/api/users/me`, { headers, credentials: "include" })
+    // Use same API prefix as api.ts; always try httpOnly cookie via credentials:include even when token is null
+    fetch(`${API}/api/users/me`, { headers, credentials: "include" })
       .then((r) => {
         setAuthed(r.ok);
         setChecked(true);

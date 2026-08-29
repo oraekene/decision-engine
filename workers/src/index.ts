@@ -71,8 +71,8 @@ app.post("/api/auth/login", async (c) => {
   await (env.DB as D1Database).prepare("INSERT INTO sessions (id, user_id, token_hash, expires_at) VALUES (?, ?, ?, ?)").bind(sessionId, user.id, token_hash, expires_at).run();
   if (env.SESSIONS) {
     const payload = JSON.stringify({ user_id: user.id, expires_at });
-    const ttl = 60 * 60 * 24 * 30;
-    await (env.SESSIONS as KVNamespace).put(`session:${token_hash}`, payload, { expirationTtl: ttl });
+    const ttl = Math.max(1, Math.floor((new Date(expires_at).getTime() - Date.now()) / 1000));
+    await (env.SESSIONS as KVNamespace).put(`session:${token_hash}`, payload, { expirationTtl: Math.min(ttl, 60) });
   }
   const isSecure = new URL(c.req.url).protocol === "https:";
   c.header("Set-Cookie", `session=${token}; HttpOnly; Path=/; Max-Age=${30*24*60*60}; SameSite=Lax${isSecure ? "; Secure" : ""}`);

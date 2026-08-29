@@ -1,4 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
+// @ts-ignore — node:fs for migration file check (vitest node env)
+import { readFileSync } from "node:fs";
+// @ts-ignore — node:path for migration file check
+import { resolve } from "node:path";
 import app from "../index.js";
 
 // --- Mock D1 (in-memory) for users/sessions/profiles ---
@@ -411,5 +415,15 @@ describe("V-01 Auth vertical — Hono HTTP seam", () => {
     expect(setCookie).toMatch(/Secure/);
     expect(setCookie).toMatch(/HttpOnly/);
     expect(setCookie).toMatch(/SameSite=Lax/);
+  });
+
+  it("migration 0001 SQL file exists and contains D1 schema (CI wrangler execute)", async () => {
+    const sql = readFileSync(resolve("workers/migrations/0001_users.sql"), "utf8");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS users");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS sessions");
+    expect(sql).toContain("CREATE TABLE IF NOT EXISTS profiles");
+    const sql2 = readFileSync(resolve("workers/migrations/0002_core.sql"), "utf8");
+    expect(sql2).toContain("CREATE TABLE IF NOT EXISTS decisions");
+    expect(sql2).toContain("CREATE VIRTUAL TABLE IF NOT EXISTS decisions_fts");
   });
 });
