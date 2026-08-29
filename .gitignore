@@ -1,0 +1,33 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build
+dist/
+.wrangler/
+.dev.vars
+
+# Cloudflare
+.cloudflare/
+
+# D1 local
+*.sqlite
+*.sqlite3
+.mf/
+
+# Env
+.env
+.dev.vars
+wrangler.toml.local
+
+# qmd
+.qmd/
+.cache/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Scratch (local tickets if used)
+.scratch/
