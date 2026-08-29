@@ -157,4 +157,3 @@ export class LlmGateway {
     return new LlmGateway({ ...this.opts, provider });
   }
 }
-}

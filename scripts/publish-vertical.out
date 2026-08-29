@@ -1,0 +1,45 @@
+Creating 1/14: [V-01] Auth vertical ΓÇö register/login/session + protected Decision Input
+Γ£ô #102 id 5285916870
+Creating 2/14: [V-02] Profile + Tier1 translation vertical ΓÇö save $4,500 ΓåÆ profile stored + FTS indexed
+Γ£ô #103 id 5285917178
+Creating 3/14: [V-03] Tiers 2-4 + confirmation vertical ΓÇö 3 vs 4 discrepancy ΓåÆ user confirm 0.95
+Γ£ô #104 id 5285917593
+Creating 4/14: [V-04] Bias + assumption gate vertical ΓÇö challenge + halt before calc
+Γ£ô #105 id 5285917968
+Creating 5/14: [V-05] Framework + claim gate vertical ΓÇö 58 entries, 6 tiers, calc gate 0.50
+Γ£ô #106 id 5285918426
+Creating 6/14: [V-06] Discovery + EV + BaseRate vertical ΓÇö analogical ΓåÆ EV ΓåÆ base rate honesty
+Γ£ô #107 id 5285918709
+Creating 7/14: [V-07] SystemBias + closing vertical ΓÇö hallucination flagged, 3-level close re-opens
+Γ£ô #108 id 5285919070
+Creating 8/14: [V-08] DesignTree + frontier vertical ΓÇö 10 NodeTypes + get_frontier + visualization
+Γ£ô #109 id 5285919686
+Creating 9/14: [V-09] Phase1 ΓåÆ leverage mapping vertical ΓÇö 6 domains ΓåÆ LeverageMap with hidden
+Γ£ô #110 id 5285920224
+Creating 10/14: [V-10] Hidden 6 + emergent 5 + hybrid validation vertical ΓÇö validated only
+Γ£ô #111 id 5285920675
+Creating 11/14: [V-11] Pareto + Phase3 tree + leverage-modified solver vertical ΓÇö recommendation + audit clean
+Γ£ô #112 id 5285921101
+Creating 12/14: [V-12] Orchestrator V33 6-gate vertical ΓÇö run_decision + Queues + KV session
+Γ£ô #113 id 5285921430
+Creating 13/14: [V-13] Rejection 8 + BATNA 0-7 vertical ΓÇö execution layer warning grammar
+Γ£ô #114 id 5285921962
+Creating 14/14: [V-14] Voice 3-pass vertical ΓÇö humanized interview/recommendation, invariants untouched
+Γ£ô #115 id 5285922312
+Created vertical tickets: #102, #103, #104, #105, #106, #107, #108, #109, #110, #111, #112, #113, #114, #115
+Wiring native blocking dependencies...
+  #103 blocked by #102 Γ£ô
+  #104 blocked by #103 Γ£ô
+  #105 blocked by #103 Γ£ô
+  #106 blocked by #102 Γ£ô
+  #107 blocked by #106 Γ£ô
+  #108 blocked by #106 Γ£ô
+  #109 blocked by #102 Γ£ô
+  #110 blocked by #109 Γ£ô
+  #110 blocked by #105 Γ£ô
+  #111 blocked by #110 Γ£ô
+  #112 blocked by #110 Γ£ô
+  #113 blocked by #112 Γ£ô
+  #114 blocked by #112 Γ£ô
+  #115 blocked by #112 Γ£ô
+Done vertical slices with native blocking (where available).

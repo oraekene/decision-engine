@@ -4,10 +4,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import "./index.css";
 import DecisionInput from "./pages/DecisionInput";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const router = createBrowserRouter([
-  { path: "/", element: <DecisionInput /> },
+  { path: "/", element: <ProtectedRoute><DecisionInput /></ProtectedRoute> },
   { path: "/login", element: <Login /> },
+  { path: "/register", element: <Register /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
