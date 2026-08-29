@@ -1,0 +1,6 @@
+# Copy to .dev.vars — never commit real secrets
+# wrangler secret put AI_GATEWAY_KEY (prod)
+AI_GATEWAY_KEY=sk-your-openai-compatible-key
+AI_GATEWAY_URL=https://api.openai.com
+AI_GATEWAY_MODEL=gpt-4o-mini
+# D1 local: auto-bound when using --local --persist

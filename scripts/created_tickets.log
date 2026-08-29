@@ -1,0 +1,21 @@
+81: [25-03] CounterProtocol integration: decision tree new branch, leverage map read, claim classification per counter, base rate not used, EV before deploy
+82: [25-04] RejectionCounter frontend: live classification + per-type counter suggestion (voice humanized §35.4 #10)
+83: [26-01] BATNA Revelation Ladder 0-7 (silence→general→categorical→specific→verifiable→activation_signal(warning boundary)→final_clarification→activation) + gates (strength≥3.0/4.0 + reservation gap + verified)
+84: [26-02] Warning-vs-Threat grammar (Schelling) + linguistic frames: external clock + preference preserved vs threat contingent on YOUR choice; system defaults to WARNING
+85: [26-03] BATNAResponseHandler 5 responses (probe→deflection, match→intangibles, outwait→deadline, disparage→non-defensive, bluff→level check real vs bluff retreat + ledger)
+86: [26-04] BATNA DomainCalibration (career full ladder, relationship caps 0-3 safety override for boundaries) + CredibilityLedger (user_id+relationship_id, bluff destroyed, activated gains)
+87: [27-01] Vocabulary Wall: 15 banned terms hard-fail mechanical_pass + echo rule (reuse user's words)
+88: [27-02] Numbers & confidence humanization §35.2: echo $4,500/five months, worst-case -0.05→roughly where you are... -0.60→this hurts..., -0.05 gap 0.58→not close, 0.08→tight, HIGH flat MEDIUM hedged LOW honest, contingent→could be
+89: [27-03] Structural Bans §35.3 + Extended §35.6: no rule-of-three, not just X but Y, setup/payoff, summary beats, landing sentences, em dashes, emoji, bold-label lists, announcing, agreeable openers, closers, etc + Always vary length, is/has
+90: [27-04] Three-pass pipeline §35.6+35.10: A mechanical→B structural LLM report-only→C targeted rewrite flagged spans→D fact-preservation (numbers/entities) → A+B re-check; leak = bug
+91: [27-05] 10 output-type voice rules §35.4 (interview, halts→clarification, bias challenges without naming bias, source validation, closing, leverage summary, recommendation opens with answer, close choice, BATNA deployment, rejection counters)
+92: [28-01] InterviewRound.tsx: batch numbered questions UI, batch answer box n:..., Frontier progress, halt modals stacked
+93: [28-02] LeverageMapDisplay → Voice natural renderer (§35.4 #6) + trajectory warning countdown
+94: [28-03] RecommendationDisplay → Voice natural renderer (§35.4 #7) + leverage strategy timeline + confidence natural + audit expand
+95: [28-04] TranslationConfirmation / SourceValidation / ClosingQuestions UI (§20.1-20.3, §35.4) voice humanized
+96: [28-05] Decision dashboard + past decisions searchable (hybrid search) + design-tree visualization (to_visualization graph) + CONTEXT/ADR viewers
+97: [29-01] Unit tests: translation 90% (3+4+5 triggers + fuzzy + extreme) + bias 85% (9 detectors + severity + max5) + assumption 100% (9 cases) + validation 100% (§23.2 fixtures)
+98: [29-02] Integration tests: phase transitions with all systems + hidden leverage 85% + Pareto/e2e Sarah walkthrough v3.2->v3.3->v3.5
+99: [29-03] E2E fixtures: job toxic→startup full walkthrough (leverage-aware transcript) + client negotiation $50k→62k + relationship boundaries cap test
+100: [29-04] Voice layer tests: test_voice_layer.py port (vocab wall hard-fail, 5 invariants, fact-preservation numbers, structural bans)
+101: [29-05] Deployment & ops: wrangler deploy, D1 migrations, Vectorize/R2/KV provisioning script, docs/env.md, smoke seed of 58 frameworks+3 base rates

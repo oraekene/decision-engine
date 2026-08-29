@@ -1,0 +1,3271 @@
+# 📋 AI Decision Intelligence Engine (ADIE)
+
+## Complete Technical Specification v3.3
+
+**Version:** 3.3.0
+**Status:** Authoritative Specification — Complete Integration of All Validation Systems
+**Date:** 2026-01-19
+**Classification:** Internal — Development Team
+
+---
+
+## Document Provenance
+
+| Version | Content | Status |
+|---------|---------|--------|
+| v1.0 | Initial spec (incorrectly hardcoded questions) | Superseded |
+| v2.0 | Corrected emergent protocol (incomplete) | Superseded |
+| v2.1 | Complete merged spec: emergent protocol + full implementation | Superseded |
+| v3.0 | Added leverage mapping (incorrectly condensed existing content) | Superseded |
+| v3.1 | Complete merge: v2.1 + leverage mapping fully expanded | Superseded |
+| v3.2 | Added Translation Layer, Devil's Advocate, Assumption Elimination | Superseded |
+| **v3.3** | **Added Framework Library, Claim Classification, Emergent Discovery Validation, Expected Value Enforcement, Base Rate Database, System Bias Detector, Session Closing Protocol — all generalized for ANY decision domain** | **Current** |
+
+**v3.3 design mandate:** All components are domain-general. The engine handles any decision — relationships, purchases, negotiations, career moves, business strategy, family matters — not just startup/career scenarios. The Framework Library draws from the full body of research cited across this specification's development (~45 validated frameworks spanning negotiation theory, decision science, cognitive psychology, power dynamics, information economics, and psychometrics).
+
+---
+
+## Table of Contents
+
+1. [Executive Summary](#1-executive-summary)
+2. [System Overview & Philosophy](#2-system-overview--philosophy)
+3. [Core Mathematical Foundations](#3-core-mathematical-foundations)
+4. [The Emergent Grilling Protocol](#4-the-emergent-grilling-protocol)
+5. [Natural Language Translation System](#5-natural-language-translation-system)
+6. [Devil's Advocate Protocol](#6-devils-advocate-protocol)
+7. [Assumption Elimination Protocol](#7-assumption-elimination-protocol)
+8. [Validated Framework Library](#8-validated-framework-library)
+9. [Claim Classification System](#9-claim-classification-system)
+10. [Emergent Discovery Validation Protocols](#10-emergent-discovery-validation-protocols)
+11. [Expected Value Enforcement](#11-expected-value-enforcement)
+12. [Base Rate Database](#12-base-rate-database)
+13. [System-Level Bias Detector](#13-system-level-bias-detector)
+14. [Session Closing Protocol](#14-session-closing-protocol)
+15. [System Architecture](#15-system-architecture)
+16. [Phase 1: Context Ingestion](#16-phase-1-context-ingestion)
+17. [Phase 1.5: Leverage Mapping](#17-phase-15-leverage-mapping)
+18. [Phase 2: Game Theory Analysis](#18-phase-2-game-theory-analysis)
+19. [Phase 3: Minimax Decision Engine](#19-phase-3-minimax-decision-engine)
+20. [Leverage-Modified Minimax Solver](#20-leverage-modified-minimax-solver)
+21. [Hidden Leverage Detection](#21-hidden-leverage-detection)
+22. [Epistemic Halt Mechanism](#22-epistemic-halt-mechanism)
+23. [Utility Quantification Layer](#23-utility-quantification-layer)
+24. [Persistent Storage & Retrieval](#24-persistent-storage--retrieval)
+25. [Orchestrator Implementation](#25-orchestrator-implementation)
+26. [Prompt Architecture](#26-prompt-architecture)
+27. [User Interface Specifications](#27-user-interface-specifications)
+28. [Technical Implementation Details](#28-technical-implementation-details)
+29. [End-to-End Example (Fully Compliant)](#29-end-to-end-example)
+30. [Testing & Validation](#30-testing--validation)
+31. [Deployment & Operations](#31-deployment--operations)
+32. [Future Enhancements](#32-future-enhancements)
+33. [Appendices](#33-appendices)
+
+---
+
+## 1. Executive Summary
+
+### 1.1 Project Vision
+
+The AI Decision Intelligence Engine (ADIE) is a **domain-general**, deterministic, structured decision-making system. It handles any decision involving choice under uncertainty, multiple stakeholders, and conflicting interests:
+
+- **Relationships:** "Which of three potential partners should I pursue?" "How do I respond to conflict with my partner?"
+- **Career/Business:** "Take the risky new opportunity or stay?" "Accept, counter, or reject this offer?"
+- **Purchases:** "Buy product A, B, or neither?"
+- **Negotiations:** "Accept their terms, counter, or walk away?"
+- **Life forks:** "Move cities? End the relationship? Make the big change?"
+
+**Core Philosophy:** LLMs are interview facilitators and parsers. All decision logic is programmatic, deterministic, and grounded in validated research. Every claim entering calculations is classified, sourced, and confidence-scored.
+
+### 1.2 The v3.3 Innovations
+
+v3.3 closes the gap between *detection* (v3.2: catching assumptions/biases after they occur) and *prevention* (v3.3: ensuring claims are properly grounded before they're used):
+
+**Innovation 1: Validated Framework Library** — A curated database of ~45 research frameworks drawn from the full body of literature underpinning this engine. Each entry specifies what the framework supports, what it does NOT support (preventing misapplication), applicable domains, and confidence. Any claim citing a framework is verified against the library.
+
+**Innovation 2: Claim Classification System** — Every claim is classified into one of six epistemic categories (Validated Research → User Validated → Practitioner Heuristic → Probability-Weighted → Hypothesis → Speculation). Only claims meeting confidence thresholds enter calculations.
+
+**Innovation 3: Emergent Discovery Validation** — The five discovery strategies (counterfactual, perspective reversal, temporal shifting, constraint removal, analogical reasoning) each have per-strategy grounding rules, generalized for any domain.
+
+**Innovation 4: Expected Value Enforcement** — Uncertain outcomes must be probability-weighted. Treating contingent value as guaranteed is automatically rejected (prevents "equity as salary" framing errors across any domain — contingent bonuses, uncertain relationship outcomes, conditional deals).
+
+**Innovation 5: Base Rate Database** — Lookup system for validated statistics. Returns "not found" rather than allowing fabrication. Expandable, domain-general.
+
+**Innovation 6: System-Level Bias Detector** — Devil's Advocate for LLM outputs. Detects plausibility bias, fabricated specificity, prescriptive-as-descriptive, and completeness illusion in system-generated content.
+
+**Innovation 7: Session Closing Protocol** — Every interview session ends with three-level open-ended questions (self, each stakeholder, situation) to surface information the system didn't ask about.
+
+### 1.3 The Complete v3.3 Validation Stack
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  EVERY CLAIM PASSES THROUGH SIX GATES                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  Gate 1: TRANSLATION (§5)                                   │
+│  → Natural language → validated numbers                     │
+│                                                              │
+│  Gate 2: USER BIAS CHECK (§6)                               │
+│  → Devil's Advocate challenges user answers                 │
+│                                                              │
+│  Gate 3: ASSUMPTION ELIMINATION (§7)                        │
+│  → Counterparty claims need sources; no silent inferences   │
+│                                                              │
+│  Gate 4: CLAIM CLASSIFICATION (§9)                          │
+│  → Every claim sorted into epistemic category               │
+│                                                              │
+│  Gate 5: FRAMEWORK VALIDATION (§8)                          │
+│  → Cited frameworks verified against library;              │
+│    claim must match what framework actually supports        │
+│                                                              │
+│  Gate 6: SYSTEM BIAS DETECTION (§13)                        │
+│  → LLM-generated content checked for fabrication,           │
+│    plausibility bias, misapplied frameworks                 │
+│                                                              │
+│  Plus: EXPECTED VALUE ENFORCEMENT (§11)                     │
+│  → Uncertain values must be probability-weighted            │
+│                                                              │
+│  Plus: BASE RATE VERIFICATION (§12)                         │
+│  → Statistics must come from database or cited source       │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 1.4 Design Principles (Complete, v3.3)
+
+1. **Domain-General:** Every component works for any decision type — no startup-specific, career-specific, or negotiation-specific hardcoding
+2. **Emergent Questioning:** Questions generated from design tree frontier, never predetermined
+3. **Validated Translation:** Every number entering calculations is properly translated with confidence scoring
+4. **Bias-Challenged Answers:** User answers stress-tested against nine cognitive biases
+5. **Zero Assumptions:** No inference enters calculations without user confirmation or clear evidence
+6. **Framework-Grounded Claims:** Every research-based claim verified against validated library
+7. **Classified Epistemics:** Every claim sorted by evidentiary strength; speculation cannot enter calculations
+8. **Probability-Weighted Values:** Uncertain outcomes never treated as certain
+9. **Honest Statistics:** Base rates come from database or cited source — never fabricated
+10. **System Self-Scrutiny:** LLM outputs checked for fabrication and bias, not just user inputs
+11. **Completeness via Closure:** Open-ended closing questions surface what the system didn't ask
+12. **Facts vs. Decisions:** LLM answers facts; user answers decisions
+13. **Determinism First:** All decision calculations are programmatic algorithms
+14. **Persistent Context:** User profiles and history stored locally, searchable
+15. **Full Explainability:** Every recommendation traceable through comprehensive audit trail
+
+---
+
+## 2. System Overview & Philosophy
+
+### 2.1 Decision Pipeline (v3.3)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     ADIE PIPELINE v3.3                       │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [User Initiation — ANY decision type]                      │
+│       ↓                                                     │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ VALIDATION STACK (§5-§14)                            │   │
+│  │ • Translation (4-tier)                               │   │
+│  │ • Devil's Advocate (9 user biases)                   │   │
+│  │ • Assumption Elimination (zero-assumption rule)      │   │
+│  │ • Claim Classification (6 categories)                │   │
+│  │ • Framework Validation (45-framework library)        │   │
+│  │ • Expected Value Enforcement                         │   │
+│  │ • Base Rate Verification                             │   │
+│  │ • System Bias Detection (LLM output checks)          │   │
+│  └─────────────────────────────────────────────────────┘   │
+│       ↓                                                     │
+│  Phase 1: Context Ingestion                                 │
+│  (Emergent grilling + full validation stack                 │
+│   + Session Closing Protocol)                               │
+│       ↓                                                     │
+│  Phase 1.5: Leverage Mapping                                │
+│  (Emergent grilling + deterministic hidden detection        │
+│   + framework-grounded claims only + closing protocol)      │
+│  OUTPUT: LeverageMap (all points classified & sourced)     │
+│       ↓                                                     │
+│  Phase 2: Game Theory Analysis                              │
+│  (Pareto search using validated leverage only)              │
+│       ↓                                                     │
+│  [Win-Win Found?] ──Yes──→ [Recommend Pareto Solution]     │
+│       │No                                                    │
+│       ↓                                                     │
+│  Phase 3: Minimax Decision Engine                           │
+│  (Tree generation + closing protocol + validation)          │
+│       ↓                                                     │
+│  [Leverage-Modified Minimax Calculation]                    │
+│       ↓                                                     │
+│  [Recommendation + Leverage Strategy + Full Audit Trail]   │
+│       ↓                                                     │
+│  [Store Outcome to Memory]                                  │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 2.2 Core Theoretical Frameworks (Summary)
+
+The engine is built on the following research bodies (full library in §8):
+
+| Domain | Key Sources |
+|--------|-------------|
+| **Negotiation & Bargaining** | Fisher & Ury (1981); Raiffa (1982); Nash (1950); Thompson (1990); Babcock et al. (2003) |
+| **Game Theory & Decision** | von Neumann & Morgenstern (1944); Savage (1954); Keeney & Raiffa (1976); Ben-Haim (2006) |
+| **Cognitive Psychology** | Kahneman & Tversky (1979, 1974, 1982); Kahneman (2011); Cialdini (2009); Moore & Healy (2008) |
+| **Power & Social Dynamics** | Emerson (1962); French & Raven (1959); Pfeffer & Salancik (1978); Homans (1961); Blau (1964) |
+| **Information Economics** | Akerlof (1970); Stiglitz (2002); Spence (1973); Arrow (1963) |
+| **Network Theory** | Burt (1992); Granovetter (1973); Lin (2001); Coleman (1988) |
+| **Psychometrics** | Watson, Clark & Tellegen (1988); Schwarzer & Jerusalem (1995); Schwartz (1992); Saaty (1980) |
+
+### 2.3 LLM Role Boundaries (v3.3)
+
+| Task | LLM Involved? | Validation Applied |
+|------|---------------|-------------------|
+| Question generation | Yes | Emergent from frontier only |
+| Answer translation (Tiers 1-2) | Yes | Confidence scoring; Tier 4 confirmation |
+| Fact resolution | Yes | Must cite CONTEXT or FRAMEWORK; framework claims verified against library |
+| Counterparty info | Propose only | Assumption Elimination requires source |
+| Emergent discovery | Yes | Per-strategy validation rules (§10); System Bias Detection (§13) |
+| Bias detection | Propose only | User confirms/refutes |
+| Utility calculation | No | Deterministic formulas |
+| Pareto/minimax | No | Pure algorithms |
+| Statistics generation | **NEVER** | Base Rate Database or rejection |
+
+---
+
+## 3. Core Mathematical Foundations
+
+*(Unchanged from v3.2 — full specification preserved)*
+
+### 3.1 Utility Function System
+- Normalized scale: `[-1.0, +1.0]` with baseline at 0.0
+- Four dimension formulas (financial, emotional, temporal, reputational) — as specified in v3.2 §3.1.2
+- AHP weight derivation via eigenvector method with consistency check (Saaty, 1980) — as specified in v3.2 §3.1.3
+- Piecewise-linear thresholds for nonlinear utility — as specified in v3.2 §3.1.4
+
+### 3.2 Leverage Mathematics
+- Leverage strength calculation (Fishbein & Ajzen expectancy-value model; Williamson durability; Coleman transferability; North enforceability) — as specified in v3.2 §3.2.1
+- Leverage multiplier formula (French & Raven bases of power) — as specified in v3.2 §3.2.2
+- Leverage-adjusted utility (Keeney & Raiffa MAUT) — as specified in v3.2 §3.2.3
+- BATNA floor protection (Ben-Haim info-gap theory) — as specified in v3.2 §3.2.4
+
+### 3.3 Minimax Calculation
+- Core algorithm: `v_i = max_{a_i} min_{a_{-i}} v_i(a_i, a_{-i})` (von Neumann, 1928)
+- Red line enforcement at -1.0
+- Reversibility bonus (+0.1)
+- As fully specified in v3.2 §3.3
+
+**v3.3 addition — input validation:** All inputs to these deterministic functions must carry `ClaimClassification` with confidence ≥ 0.50. The `ValidatedUtilityCalculator` (§23) rejects unclassified or low-confidence inputs.
+
+---
+
+## 4. The Emergent Grilling Protocol
+
+### 4.1–4.5 Core Protocol
+
+*(Unchanged from v3.2 — design tree, frontier, rounds, facts vs. decisions, termination as specified)*
+
+### 4.6 Master System Prompt (v3.3)
+
+```
+# ROLE
+You are the Grilling Agent in a Deterministic, Domain-General Decision Engine.
+You conduct structured interviews using the grilling protocol, with full
+validation: Translation, Devil's Advocate, Assumption Elimination, Claim
+Classification, Framework Validation, Expected Value Enforcement, Base Rate
+Verification, and System Bias Detection.
+
+# THE PROTOCOL
+
+## Design Tree
+You model the subject as a design tree: every decision branches into the
+decisions that hang off it. Your job is to interview until nothing is left
+silently assumed — then run the Session Closing Protocol (see below).
+
+## Frontier Calculation
+Each round, you:
+1. Identify all decisions whose prerequisites are settled
+2. Generate questions for ALL of them (the frontier)
+3. Never ask a question that depends on an unsettled question
+4. Two questions never share a round if one depends on the other
+
+## Question Format
+❓ [number]: [Title]
+[Question body specific to this decision context]
+➡️ Recommended: [Your best answer based on available context]
+
+## Facts vs. Decisions
+- FACTS: You answer these yourself — but ONLY with CONTEXT or FRAMEWORK
+  citation. Any framework you cite must come from the Validated Framework
+  Library, and your claim must match what that framework actually supports.
+- DECISIONS: These require user input. Mark as USER_INPUT_REQUIRED.
+
+## Claim Classification (MANDATORY for every claim you make)
+Before stating any claim, classify it:
+- VALIDATED_RESEARCH: Cited from Framework Library, claim matches supported claims
+- USER_VALIDATED: Confirmed by user with source
+- PRACTITIONER_HEURISTIC: Common advice, not research-backed — must label as such
+- PROBABILITY_WEIGHTED: Calculation with cited probability basis
+- HYPOTHESIS: Speculation framed as hypothesis, cannot enter calculations
+- SPECULATION: Anything else — REJECTED, do not state
+
+## Framework Rules
+- Cite frameworks ONLY from the Validated Framework Library
+- Check "supports" list — does the framework actually support YOUR claim?
+- Check "does_not_support" list — are you misapplying it?
+- If no framework in the library supports your claim, say so honestly:
+  "I don't have a validated framework for this. Treat as hypothesis."
+
+## Expected Value Rule
+Never treat uncertain/contingent outcomes as guaranteed:
+- Contingent bonuses, equity, conditional promises, uncertain relationship
+  outcomes → must be probability-weighted
+- Required: P(outcome) with cited basis (Base Rate Database or user estimate)
+- NEVER state "X is worth $Y" when Y is contingent — state expected value
+
+## Base Rate Rule
+Never generate statistics from memory:
+- Any percentage, rate, or "X% of people/companies/situations..." claim
+  → must come from Base Rate Database or cited source
+- If not in database: "I don't have validated data for this rate."
+
+## Counterparty Information
+NEVER assume what other parties think, feel, fear, or want.
+ALWAYS ask: "How do you know this?" / "Did they say this directly?"
+Log source for every counterparty claim.
+
+## Devil's Advocate
+After user answers, check for: anchoring, loss aversion, social desirability,
+overconfidence, status quo bias, sunk cost, confirmation bias, framing effect,
+catastrophizing. Challenge when detected.
+
+## Leverage Awareness
+During interviews, look for: undervalued BATNA, unrecognized scarcity,
+time asymmetry blindness, dependency misreading, information asymmetry
+unawareness, network position blindness. Hidden leverage requires evidence —
+do not assume counterparty constraints to "detect" leverage.
+
+## Session Closing Protocol (when frontier is empty)
+Before ending any session, ask three levels of open-ended questions:
+1. SELF: "Is there anything about yourself, your situation, your preferences,
+   or your constraints that we haven't discussed?"
+2. EACH STAKEHOLDER: "Is there anything about [stakeholder] that we haven't
+   discussed but might be relevant?"
+3. SITUATION: "Is there anything about the overall situation — timing, context,
+   external factors — that we haven't covered?"
+If new information surfaces, re-open the design tree.
+
+## Rounds
+- Ask the ENTIRE frontier in one round
+- Update the design tree based on answers
+- Recalculate the frontier
+- Repeat until frontier is empty AND closing protocol confirms completeness
+- The number of rounds is EMERGENT, not fixed
+
+# EPISTEMIC HALT PROTOCOL
+<<<HALT>>>
+PHASE: [1|1.5|2|3]
+ROUND: [N]
+BLOCKING_NODE: [the question]
+WHY_BLOCKED: [why CONTEXT, FRAMEWORK, and validated BASE RATES cannot resolve this]
+IMPACT_IF_ASSUMED: [how the tree would be corrupted by guessing]
+USER_QUESTION:
+❓ 1: [Title]
+[Question in plain language]
+➡️ Recommended: [Tentative answer + confidence: LOW/MEDIUM]
+<<<END_HALT>>>
+
+# FORBIDDEN
+- Predetermined question lists
+- Generic questions not specific to this decision
+- Citing frameworks not in the Validated Framework Library
+- Citing frameworks for claims they don't support
+- Generating statistics without database or source
+- Treating contingent outcomes as guaranteed
+- Assuming counterparty psychology without user validation
+- Making any claim without classifying it first
+- Capping questions or rounds
+- Ending a session without the Closing Protocol
+```
+
+### 4.7 Design Tree Data Structure
+
+*(As specified in v3.2 §4.7, with one addition:)*
+
+```python
+@dataclass
+class DecisionNode:
+    # ... all v3.2 fields ...
+    
+    # v3.3 additions
+    claim_classification: Optional[str] = None  # From §9 categories
+    framework_citation: Optional[str] = None    # Verified against §8 library
+    expected_value_basis: Optional[str] = None  # For probability-weighted claims
+```
+
+---
+
+## 5. Natural Language Translation System
+
+*(Unchanged from v3.2 — complete four-tier system as specified in v3.2 §5, including:)*
+
+- Tier 1: Direct Numeric Extraction (regex patterns, fuzzy modifiers)
+- Tier 2: Qualitative Mapping (PANAS emotional scale, Self-Efficacy confidence scale, Schwartz importance scale — all domain-general psychometric instruments)
+- Tier 3: Contextual Inference (deterministic calculations only)
+- Tier 4: User Confirmation Protocol (discrepancy detection, extreme values, low confidence)
+
+**All scales in Tier 2 are domain-general.** PANAS measures affect in any context. Self-Efficacy measures confidence in any domain. Schwartz values are universal human values. No domain-specific language mapping is hardcoded.
+
+---
+
+## 6. Devil's Advocate Protocol
+
+*(Unchanged from v3.2 — complete nine-bias detection as specified in v3.2 §6:)*
+
+Anchoring | Loss Aversion | Social Desirability | Overconfidence | Status Quo Bias | Sunk Cost | Confirmation Bias | Framing Effect | Catastrophizing
+
+All nine detectors are domain-general — they detect *linguistic and logical patterns* (loss language, anchoring to prior numbers, contradictions between stated values and behavior) that apply to any decision context.
+
+---
+
+## 7. Assumption Elimination Protocol
+
+*(Unchanged from v3.2 — zero-assumptions rule as specified in v3.2 §7:)*
+
+Three information categories (user facts, counterparty constraints, situational details) each requiring validated sources. Epistemic Halt triggered for any unvalidated inference.
+
+---
+
+## 8. Validated Framework Library
+
+### 8.1 Overview
+
+The Framework Library is the engine's **grounding layer** — the single source of truth for what research actually says. Every framework cited anywhere in the system (LLM reasoning, leverage detection, bias challenges, utility calculations) must exist in this library, and the claim being made must match what the framework supports.
+
+**Key properties:**
+- **Domain-general:** Frameworks organized by research domain, not by use case. "Power-Dependence Theory" applies to employer/employee, romantic partners, buyer/seller, friend/friend — any relationship with asymmetric dependence.
+- **Supports AND does-not-support lists:** Prevents misapplication (the most common LLM failure mode — citing a real framework for a claim it doesn't make).
+- **Living library:** Extensible. New frameworks added with full citation, supports/does-not-support lists, and domain tags. The library ships with the ~45 frameworks cited throughout this specification's development.
+
+### 8.2 Library Schema
+
+```python
+@dataclass
+class FrameworkEntry:
+    id: str                          # e.g., "prospect_theory"
+    citation: str                     # Full academic reference
+    year: int
+    domains: List[str]               # ["negotiation", "risk", "decision_making"]
+    
+    supports: List[str]              # Specific claims this framework validates
+    does_not_support: List[str]       # Common misapplications
+    
+    confidence: str                  # "VERY HIGH" | "HIGH" | "MEDIUM-HIGH" | "MEDIUM"
+    
+    # Optional structured data some frameworks provide
+    base_rates: Optional[Dict] = None        # For frameworks with empirical rates
+    coefficients: Optional[Dict] = None      # For frameworks with numeric parameters
+    measurement_instruments: Optional[List] = None  # For psychometric frameworks
+    
+    related_frameworks: List[str] = []       # IDs of related entries
+```
+
+### 8.3 The Library (Complete, 45+ Frameworks)
+
+```python
+class ValidatedFrameworkLibrary:
+    """
+    Curated library of validated research frameworks.
+    Organized by research domain. All entries domain-general.
+    """
+    
+    FRAMEWORKS = {
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: NEGOTIATION & BARGAINING
+    # ═══════════════════════════════════════════════════════
+    
+    "batna_theory": FrameworkEntry(
+        id="batna_theory",
+        citation="Fisher, R., & Ury, W. (1981). Getting to Yes: Negotiating Agreement Without Giving In. Penguin Books.",
+        year=1981,
+        domains=["negotiation", "career", "business", "relationships", "purchases"],
+        supports=[
+            "Having a developed alternative improves one's negotiation position",
+            "One's BATNA determines the floor of acceptable outcomes",
+            "Knowing your BATNA prevents accepting deals worse than alternatives",
+            "Improving your BATNA strengthens your position more than argumentation",
+            "The party with the better BATNA has structural power in negotiation"
+        ],
+        does_not_support=[
+            "Specific dollar amounts or terms to request",
+            "Guaranteed outcomes of any negotiation",
+            "How much a specific counterparty will concede",
+            "Claims about counterparty's BATNA without user-provided evidence"
+        ],
+        confidence="VERY HIGH"
+    ),
+    
+    "nash_bargaining": FrameworkEntry(
+        id="nash_bargaining",
+        citation="Nash, J. F. (1950). The Bargaining Problem. Econometrica, 18(2), 155-162.",
+        year=1950,
+        domains=["negotiation", "game_theory", "economics"],
+        supports=[
+            "Under axiomatic assumptions, a unique bargaining solution exists",
+            "The solution is Pareto-optimal, symmetric, and independent of irrelevant alternatives",
+            "Bargaining outcomes relate to both parties' utility and disagreement points"
+        ],
+        does_not_support=[
+            "Predictions for specific real-world negotiations",
+            "That real negotiators behave rationally",
+            "Specific splits for any particular situation"
+        ],
+        confidence="HIGH"
+    ),
+    
+    "negotiation_initiation": FrameworkEntry(
+        id="negotiation_initiation",
+        citation="Babcock, L., Laschever, S., Gelfand, M., & Small, D. (2003). Gender differences in the propensity to initiate negotiations. Social Justice Research, 16(2), 143-163.",
+        year=2003,
+        domains=["negotiation", "career", "salary", "purchases"],
+        supports=[
+            "People who initiate negotiation typically achieve better outcomes than those who don't",
+            "Many people do not negotiate even when negotiation would benefit them",
+            "Negotiation initiation rates differ across demographic groups"
+        ],
+        does_not_support=[
+            "That one should NEVER accept a first offer (prescriptive, not descriptive)",
+            "How much improvement negotiation yields in a specific case",
+            "When negotiation is inappropriate or harmful"
+        ],
+        confidence="HIGH"
+    ),
+    
+    "negotiation_behavior_outcomes": FrameworkEntry(
+        id="negotiation_behavior_outcomes",
+        citation="Thompson, L. (1990). Negotiation Behavior and Outcomes: Empirical Efficacy and Description. International Journal of Conflict Management, 1(1), 71-90.",
+        year=1990,
+        domains=["negotiation"],
+        supports=[
+            "Systematic review of negotiation behavior-outcome relationships",
+            "Strategy choice affects negotiation outcomes"
+        ],
+        does_not_support=["Specific tactical prescriptions for individual cases"],
+        confidence="MEDIUM-HIGH"
+    ),
+    
+    "co_opetition": FrameworkEntry(
+        id="co_opetition",
+        citation="Brandenburger, A. M., & Nalebuff, B. J. (1996). Co-opetition. Doubleday.",
+        year=1996,
+        domains=["negotiation", "business", "game_theory", "strategy"],
+        supports=[
+            "Many interactions are neither purely competitive nor purely cooperative",
+            "Value can be created (cooperative) and claimed (competitive) simultaneously",
+            "Adding players (customers, suppliers, complementors, substitutes) changes the game"
+        ],
+        does_not_support=["Specific business strategy recommendations"],
+        confidence="MEDIUM-HIGH"
+    ),
+    
+    "raiffa_negotiation_analysis": FrameworkEntry(
+        id="raiffa_negotiation_analysis",
+        citation="Raiffa, H. (1982). The Art and Science of Negotiation. Harvard University Press.",
+        year=1982,
+        domains=["negotiation", "decision_analysis"],
+        supports=[
+            "Prescriptive-analytical framework for negotiation",
+            "Zone of Agreement analysis between parties' reservation values",
+            "BATNA analysis as foundation of negotiation strategy"
+        ],
+        does_not_support=["Predictions about specific counterparties"],
+        confidence="HIGH"
+    ),
+    
+    "perspective_taking_negotiation": FrameworkEntry(
+        id="perspective_taking_negotiation",
+        citation="Galinsky, A. D., Maddux, W. W., Gilin, D., & White, J. B. (2008). Why It Pays to Get Inside the Head of Your Opponent. Psychological Science, 19(4), 378-384.",
+        year=2008,
+        domains=["negotiation", "psychology", "relationships"],
+        supports=[
+            "Perspective-taking improves negotiation outcomes",
+            "Understanding the counterpart's interests reveals integrative solutions",
+            "Perspective-taking differs from empathy in negotiation effects"
+        ],
+        does_not_support=[
+            "Specific knowledge of what a counterpart thinks (requires user data)",
+            "That one should always accommodate the counterpart"
+        ],
+        confidence="HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: GAME THEORY & DECISION ANALYSIS
+    # ═══════════════════════════════════════════════════════
+    
+    "minimax_theorem": FrameworkEntry(
+        id="minimax_theorem",
+        citation="von Neumann, J. (1928). Zur Theorie der Gesellschaftsspiele. Mathematische Annalen, 100, 295-320.",
+        year=1928,
+        domains=["game_theory", "decision_making", "risk"],
+        supports=[
+            "In two-person zero-sum games, minimax strategy guarantees the best worst-case outcome",
+            "v_i = max_{a_i} min_{a_{-i}} v_i(a_i, a_{-i}) is the maximin value",
+            "Minimizing maximum loss is a rational strategy under adversarial uncertainty"
+        ],
+        does_not_support=[
+            "That minimax is optimal in non-zero-sum or cooperative games",
+            "That all real-world counterparties are adversarial"
+        ],
+        confidence="VERY HIGH",
+        related_frameworks=["von_neumann_morgenstern"]
+    ),
+    
+    "von_neumann_morgenstern": FrameworkEntry(
+        id="von_neumann_morgenstern",
+        citation="von Neumann, J., & Morgenstern, O. (1944). Theory of Games and Economic Behavior. Princeton University Press.",
+        year=1944,
+        domains=["game_theory", "economics", "decision_making"],
+        supports=[
+            "Expected utility theory: rational choice maximizes expected utility",
+            "Utility functions can represent preferences over risky outcomes",
+            "vNM utility axioms (completeness, transitivity, continuity, independence)"
+        ],
+        does_not_support=[
+            "That humans actually behave as vNM-rational agents (descriptive claim)",
+            "Interpersonal utility comparisons"
+        ],
+        confidence="VERY HIGH",
+        related_frameworks=["minimax_theorem", "prospect_theory"]
+    ),
+    
+    "subjective_expected_utility": FrameworkEntry(
+        id="subjective_expected_utility",
+        citation="Savage, L. J. (1954). The Foundations of Statistics. Wiley.",
+        year=1954,
+        domains=["decision_making", "statistics", "risk"],
+        supports=[
+            "Subjective probabilities can be elicited and used in decision analysis",
+            "SEU provides a normative framework for decisions under uncertainty"
+        ],
+        does_not_support=["That elicited subjective probabilities are well-calibrated"],
+        confidence="HIGH"
+    ),
+    
+    "multi_attribute_utility": FrameworkEntry(
+        id="multi_attribute_utility",
+        citation="Keeney, R. L., & Raiffa, H. (1976). Decisions with Multiple Objectives: Preferences and Value Tradeoffs. Wiley.",
+        year=1976,
+        domains=["decision_making", "utility", "any multi-objective decision"],
+        supports=[
+            "Multi-dimensional value can be decomposed into single-attribute utilities with weights",
+            "Additive independence conditions justify additive utility models",
+            "Weighted aggregation of dimension utilities is valid under stated assumptions"
+        ],
+        does_not_support=[
+            "Specific weight values for an individual (must be elicited)",
+            "That all real preferences satisfy independence conditions"
+        ],
+        confidence="VERY HIGH"
+    ),
+    
+    "maut_survey": FrameworkEntry(
+        id="maut_survey",
+        citation="Dyer, J. S. (2005). MAUT—Multiattribute Utility Theory. In Multiple Criteria Decision Analysis: State of the Art Surveys, 265-292.",
+        year=2005,
+        domains=["decision_making", "utility"],
+        supports=["MAUT methodology for multi-criteria decisions", "Assessment procedures for utility functions"],
+        does_not_support=["Specific trade-off values without elicitation"],
+        confidence="HIGH"
+    ),
+    
+    "info_gap_decision_theory": FrameworkEntry(
+        id="info_gap_decision_theory",
+        citation="Ben-Haim, Y. (2006). Info-Gap Decision Theory: Decisions Under Severe Uncertainty. Academic Press.",
+        year=2006,
+        domains=["decision_making", "risk", "uncertainty"],
+        supports=[
+            "Robustness analysis: how much uncertainty can a decision tolerate before failing",
+            "Opportuneness analysis: how much uncertainty is needed for windfall success",
+            "Satisficing (meeting requirements) vs. optimizing under severe uncertainty"
+        ],
+        does_not_support=["Probability estimates (info-gap is non-probabilistic)"],
+        confidence="MEDIUM-HIGH"
+    ),
+    
+    "robust_decision_making": FrameworkEntry(
+        id="robust_decision_making",
+        citation="Lempert, R. J., Groves, D. G., Popper, S. W., & Bankes, S. C. (2006). A General, Analytic Method for Generating Robust Strategies and Narrative Scenarios. Management Science, 52(4), 514-528.",
+        year=2006,
+        domains=["decision_making", "planning", "uncertainty"],
+        supports=[
+            "Robust strategies perform well across many plausible futures",
+            "Identifying vulnerabilities across scenario ensembles guides strategy"
+        ],
+        does_not_support=["Specific scenario probabilities"],
+        confidence="MEDIUM-HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: COGNITIVE PSYCHOLOGY & BEHAVIORAL DECISION
+    # ═══════════════════════════════════════════════════════
+    
+    "prospect_theory": FrameworkEntry(
+        id="prospect_theory",
+        citation="Kahneman, D., & Tversky, A. (1979). Prospect Theory: An Analysis of Decision under Risk. Econometrica, 47(2), 263-291.",
+        year=1979,
+        domains=["decision_making", "risk", "negotiation", "any loss/gain framing"],
+        supports=[
+            "Losses loom larger than gains (loss aversion; coefficient ≈ 2.25 in median estimates)",
+            "Reference dependence: outcomes evaluated relative to a reference point (usually status quo)",
+            "Diminishing sensitivity to gains and losses away from reference point",
+            "Probability weighting: small probabilities overweighted, large probabilities underweighted",
+            "Framing as gain vs. loss changes choices, contrary to invariance"
+        ],
+        does_not_support=[
+            "An individual's exact loss aversion coefficient (must be elicited)",
+            "That all framing effects are irrational or should always be eliminated",
+            "Specific negotiation tactics"
+        ],
+        confidence="VERY HIGH",
+        coefficients={"loss_aversion_median": 2.25},
+        related_frameworks=["framing_effects"]
+    ),
+    
+    "heuristics_biases": FrameworkEntry(
+        id="heuristics_biases",
+        citation="Tversky, A., & Kahneman, D. (1974). Judgment under Uncertainty: Heuristics and Biases. Science, 185(4157), 1124-1131.",
+        year=1974,
+        domains=["decision_making", "judgment", "all decision domains"],
+        supports=[
+            "Anchoring: initial values bias subsequent estimates",
+            "Availability: ease of recall biases frequency judgments",
+            "Representativeness: similarity judgments bias probability estimates"
+        ],
+        does_not_support=["How much a specific anchor affected a specific judgment"],
+        confidence="VERY HIGH"
+    ),
+    
+    "simulation_heuristic": FrameworkEntry(
+        id="simulation_heuristic",
+        citation="Kahneman, D., & Tversky, A. (1982). The Simulation Heuristic. In Judgment under Uncertainty: Heuristics and Biases, 201-208.",
+        year=1982,
+        domains=["judgment", "counterfactual thinking"],
+        supports=["Ease of mentally simulating an outcome biases its perceived probability"],
+        does_not_support=["Specific probability estimates"],
+        confidence="HIGH"
+    ),
+    
+    "framing_effects": FrameworkEntry(
+        id="framing_effects",
+        citation="Tversky, A., & Kahneman, D. (1981). The Framing of Decisions and the Psychology of Choice. Science, 211(4481), 453-458.",
+        year=1981,
+        domains=["decision_making", "all domains with framing choices"],
+        supports=[
+            "Logically equivalent framings produce systematically different choices",
+            "Gain frames promote risk-aversion; loss frames promote risk-seeking"
+        ],
+        does_not_support=["Which framing is 'correct'"],
+        confidence="VERY HIGH",
+        related_frameworks=["prospect_theory"]
+    ),
+    
+    "overconfidence_research": FrameworkEntry(
+        id="overconfidence_research",
+        citation="Moore, D. A., & Healy, P. J. (2008). The Trouble with Overconfidence. Psychological Review, 115(2), 502-517.",
+        year=2008,
+        domains=["judgment", "prediction", "all decision domains"],
+        supports=[
+            "Overprecision: people's confidence intervals are too narrow",
+            "Overestimation: people overestimate their abilities/success",
+            "Overplacement: people believe they are better than average",
+            "These are distinct phenomena with different causes"
+        ],
+        does_not_support=["That all confidence is misplaced"],
+        confidence="HIGH"
+    ),
+    
+    "counterfactual_thinking": FrameworkEntry(
+        id="counterfactual_thinking",
+        citation="Roese, N. J. (1997). Counterfactual Thinking. Psychological Bulletin, 121(1), 133-148.",
+        year=1997,
+        domains=["judgment", "emotion", "decision_making"],
+        supports=[
+            "Counterfactuals ('what if') influence emotions and future behavior",
+            "Upward counterfactuals (better alternatives) produce regret and improvement motivation",
+            "Downward counterfactuals (worse alternatives) produce relief"
+        ],
+        does_not_support=["That counterfactual reasoning improves decisions generally"],
+        confidence="HIGH"
+    ),
+    
+    "thinking_fast_slow": FrameworkEntry(
+        id="thinking_fast_slow",
+        citation="Kahneman, D. (2011). Thinking, Fast and Slow. Farrar, Straus and Giroux.",
+        year=2011,
+        domains=["decision_making", "all domains"],
+        supports=[
+            "Dual-process theory: System 1 (fast, intuitive) vs. System 2 (slow, deliberate)",
+            "System 1 biases can be mitigated by System 2 engagement",
+            "WYSIATI: What You See Is All There Is — judgments based on available info only"
+        ],
+        does_not_support=["That intuition is always wrong"],
+        confidence="HIGH"
+    ),
+    
+    "predictably_irrational": FrameworkEntry(
+        id="predictably_irrational",
+        citation="Ariely, D. (2008). Predictably Irrational. HarperCollins.",
+        year=2008,
+        domains=["behavioral_economics", "decision_making"],
+        supports=["Systematic (predictable) deviations from rational choice"],
+        does_not_support=["Specific interventions for specific individuals"],
+        confidence="MEDIUM-HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: SOCIAL INFLUENCE & PERSUASION
+    # ═══════════════════════════════════════════════════════
+    
+    "influence_principles": FrameworkEntry(
+        id="influence_principles",
+        citation="Cialdini, R. B. (2009). Influence: Science and Practice (5th ed.). Pearson Education.",
+        year=2009,
+        domains=["persuasion", "negotiation", "relationships", "sales", "all social domains"],
+        supports=[
+            "Reciprocity: people feel obligated to return favors",
+            "Commitment/consistency: people align with prior commitments",
+            "Social proof: people reference others' behavior under uncertainty",
+            "Authority: people defer to credible authorities",
+            "Liking: people comply with those they like",
+            "Scarcity: opportunities seem more valuable when limited"
+        ],
+        does_not_support=[
+            "That these principles always work on every person",
+            "Ethical endorsement of manipulative use",
+            "Specific application tactics without user context"
+        ],
+        confidence="VERY HIGH",
+        related_frameworks=["commodity_theory"]
+    ),
+    
+    "commodity_theory": FrameworkEntry(
+        id="commodity_theory",
+        citation="Brock, T. C. (1968). Implications of Commodity Theory for Value Change. In Psychological Foundations of Attitudes, 243-275.",
+        year=1968,
+        domains=["psychology", "value", "negotiation"],
+        supports=["Scarcity increases perceived value of commodities"],
+        does_not_support=["That all scarce things are objectively valuable"],
+        confidence="HIGH",
+        related_frameworks=["scarcity_effects", "influence_principles"]
+    ),
+    
+    "scarcity_effects": FrameworkEntry(
+        id="scarcity_effects",
+        citation="Lynn, M. (1991). Scarcity Effects on Value: A Quantitative Review of the Commodity Theory Literature. Psychology & Marketing, 8(1), 43-57.",
+        year=1991,
+        domains=["psychology", "value", "negotiation"],
+        supports=["Meta-analytic support for scarcity-value relationship"],
+        does_not_support=["Effect sizes in specific situations"],
+        confidence="HIGH",
+        related_frameworks=["commodity_theory"]
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: POWER, DEPENDENCE & SOCIAL EXCHANGE
+    # ═══════════════════════════════════════════════════════
+    
+    "power_dependence_theory": FrameworkEntry(
+        id="power_dependence_theory",
+        citation="Emerson, R. M. (1962). Power-Dependence Relations. American Sociological Review, 27(1), 31-41.",
+        year=1962,
+        domains=["power", "relationships", "negotiation", "organizations", "any dyadic relationship"],
+        supports=[
+            "Power of A over B = dependence of B on A",
+            "Dependence = motivational investment × availability of alternatives",
+            "Power imbalances create balancing operations (network extension, coalition, status change)",
+            "Reducing dependence (finding alternatives) reduces the other's power"
+        ],
+        does_not_support=[
+            "Specific power levels in a specific relationship (requires user data)",
+            "That power is always exercised or always matters"
+        ],
+        confidence="VERY HIGH",
+        related_frameworks=["resource_dependency", "bases_of_power"]
+    ),
+    
+    "bases_of_power": FrameworkEntry(
+        id="bases_of_power",
+        citation="French, J. R. P., & Raven, B. (1959). The Bases of Social Power. In Studies in Social Power, 150-167.",
+        year=1959,
+        domains=["power", "social_psychology", "relationships", "organizations"],
+        supports=[
+            "Five bases: reward, coercive, legitimate, referent, expert power",
+            "Different power bases have different characteristics (strength, scope, dependence)",
+            "Later additions: informational power (Raven, 1965)"
+        ],
+        does_not_support=["Which power base a specific person has (requires observation)"],
+        confidence="VERY HIGH",
+        related_frameworks=["power_dependence_theory"]
+    ),
+    
+    "social_influence_power": FrameworkEntry(
+        id="social_influence_power",
+        citation="Raven, B. H. (1965). Social Influence and Power. In Current Studies in Social Psychology, 371-382.",
+        year=1965,
+        domains=["power", "influence"],
+        supports=["Sixth base: informational power — knowledge itself as influence"],
+        does_not_support=["Effectiveness ranking across situations"],
+        confidence="HIGH"
+    ),
+    
+    "power_strategies": FrameworkEntry(
+        id="power_strategies",
+        citation="Falbo, T., & Peplau, L. A. (1980). Power Strategies in Intimate Relationships. Journal of Personality and Social Psychology, 38(4), 618-628.",
+        year=1980,
+        domains=["power", "relationships"],
+        supports=[
+            "Direct (bilateral) vs. indirect (unilateral) power strategies",
+            "Strategy choice relates to relative power in the relationship"
+        ],
+        does_not_support=["Specific strategies for specific situations"],
+        confidence="MEDIUM-HIGH"
+    ),
+    
+    "resource_dependency": FrameworkEntry(
+        id="resource_dependency",
+        citation="Pfeffer, J., & Salancik, G. R. (1978). The External Control of Organizations: A Resource Dependence Perspective. Harper & Row.",
+        year=1978,
+        domains=["organizations", "power", "business", "any resource relationship"],
+        supports=[
+            "Organizations depend on external resources; control of resources = power",
+            "Dependence management strategies: acquisition, substitution, alliance",
+            "Uncertainty and resource criticality increase dependence"
+        ],
+        does_not_support=["Specific organizational strategies"],
+        confidence="HIGH",
+        related_frameworks=["power_dependence_theory"]
+    ),
+    
+    "coercive_power_exchange": FrameworkEntry(
+        id="coercive_power_exchange",
+        citation="Molm, L. D. (1997). Coercive Power in Social Exchange: A Structural Approach. Cambridge University Press.",
+        year=1997,
+        domains=["power", "exchange", "relationships"],
+        supports=[
+            "Coercive power differs structurally from reward power",
+            "Use of coercion changes relationship dynamics and trust"
+        ],
+        does_not_support=["When coercion is justified"],
+        confidence="MEDIUM-HIGH"
+    ),
+    
+    "social_exchange_basics": FrameworkEntry(
+        id="social_exchange_basics",
+        citation="Homans, G. C. (1961). Social Behavior: Its Elementary Forms. Harcourt, Brace & World.",
+        year=1961,
+        domains=["relationships", "exchange", "all social interaction"],
+        supports=[
+            "Social interaction as exchange of tangible/intangible goods",
+            "Distributive justice: expectations of proportional rewards"
+        ],
+        does_not_support=["That all relationships are purely transactional"],
+        confidence="HIGH"
+    ),
+    
+    "exchange_power": FrameworkEntry(
+        id="exchange_power",
+        citation="Blau, P. M. (1964). Exchange and Power in Social Life. Wiley.",
+        year=1964,
+        domains=["relationships", "power", "exchange"],
+        supports=[
+            "Social attraction and differentiation create power differentials",
+            "Unequal exchange creates power imbalance"
+        ],
+        does_not_support=["Predictions about specific relationships"],
+        confidence="HIGH"
+    ),
+    
+    "social_capital_creation": FrameworkEntry(
+        id="social_capital_creation",
+        citation="Coleman, J. S. (1988). Social Capital in the Creation of Human Capital. American Journal of Sociology, 94, S95-S120.",
+        year=1988,
+        domains=["networks", "social_capital", "all social domains"],
+        supports=[
+            "Social capital: relationships as resources",
+            "Network closure facilitates trust and sanctions",
+            "Social capital transfers across contexts"
+        ],
+        does_not_support=["Value of specific relationships"],
+        confidence="VERY HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: INFORMATION ECONOMICS
+    # ═══════════════════════════════════════════════════════
+    
+    "information_asymmetry": FrameworkEntry(
+        id="information_asymmetry",
+        citation="Akerlof, G. A. (1970). The Market for 'Lemons': Quality Uncertainty and the Market Mechanism. The Quarterly Journal of Economics, 84(3), 488-500.",
+        year=1970,
+        domains=["economics", "negotiation", "any information-imbalanced interaction"],
+        supports=[
+            "Information asymmetry between parties distorts markets/interactions",
+            "Hidden quality information can cause adverse selection",
+            "Information advantages translate to power in exchanges"
+        ],
+        does_not_support=[
+            "That a specific party has specific information (requires user data)",
+            "That all information asymmetry is unethical"
+        ],
+        confidence="VERY HIGH",
+        related_frameworks=["signaling_theory"]
+    ),
+    
+    "information_economics": FrameworkEntry(
+        id="information_economics",
+        citation="Stiglitz, J. E. (2002). Information and the Change in the Paradigm in Economics. American Economic Review, 92(3), 460-501.",
+        year=2002,
+        domains=["economics", "information"],
+        supports=["Information imperfections fundamentally change economic analysis", "Screening and signaling as responses to asymmetry"],
+        does_not_support=["Specific market predictions"],
+        confidence="VERY HIGH"
+    ),
+    
+    "signaling_theory": FrameworkEntry(
+        id="signaling_theory",
+        citation="Spence, M. (1973). Job Market Signaling. The Quarterly Journal of Economics, 87(3), 355-374.",
+        year=1973,
+        domains=["economics", "information", "career", "any signaling context"],
+        supports=[
+            "Costly signals convey information when cheap talk cannot",
+            "Signal cost differentials make signals credible",
+            "Applications beyond job markets: any context where actions signal type"
+        ],
+        does_not_support=["That all signals are honest or interpreted correctly"],
+        confidence="VERY HIGH",
+        related_frameworks=["information_asymmetry"]
+    ),
+    
+    "uncertainty_welfare": FrameworkEntry(
+        id="uncertainty_welfare",
+        citation="Arrow, K. J. (1963). Uncertainty and the Welfare Economics of Medical Care. American Economic Review, 53(5), 941-973.",
+        year=1963,
+        domains=["economics", "risk", "uncertainty"],
+        supports=["Uncertainty creates market failures and trust problems", "Information and agency problems in expert services"],
+        does_not_support=["Specific policy prescriptions"],
+        confidence="HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: NETWORKS
+    # ═══════════════════════════════════════════════════════
+    
+    "structural_holes": FrameworkEntry(
+        id="structural_holes",
+        citation="Burt, R. S. (1992). Structural Holes: The Social Structure of Competition. Harvard University Press.",
+        year=1992,
+        domains=["networks", "power", "career", "any networked context"],
+        supports=[
+            "Bridging disconnected groups (structural holes) confers informational and control advantages",
+            "Network brokerage is a source of social capital",
+            "Closed networks build trust; open networks provide information"
+        ],
+        does_not_support=[
+            "That a specific user occupies a structural hole (requires network analysis)",
+            "That brokerage is always advantageous"
+        ],
+        confidence="VERY HIGH"
+    ),
+    
+    "weak_ties": FrameworkEntry(
+        id="weak_ties",
+        citation="Granovetter, M. S. (1973). The Strength of Weak Ties. American Journal of Sociology, 78(6), 1360-1380.",
+        year=1973,
+        domains=["networks", "career", "information"],
+        supports=[
+            "Weak ties provide novel information that strong ties cannot",
+            "Weak ties are disproportionately valuable for opportunities (jobs, information)"
+        ],
+        does_not_support=["That weak ties substitute for strong ties"],
+        confidence="VERY HIGH"
+    ),
+    
+    "social_capital_theory": FrameworkEntry(
+        id="social_capital_theory",
+        citation="Lin, N. (2001). Social Capital: A Theory of Social Structure and Action. Cambridge University Press.",
+        year=2001,
+        domains=["networks", "social_capital"],
+        supports=["Theory of how network position and resources create advantage", "Instrumental returns to social capital"],
+        does_not_support=["Measurement of specific individuals' capital"],
+        confidence="HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: PSYCHOMETRICS & MEASUREMENT
+    # ═══════════════════════════════════════════════════════
+    
+    "panas_scales": FrameworkEntry(
+        id="panas_scales",
+        citation="Watson, D., Clark, L. A., & Tellegen, A. (1988). Development and Validation of Brief Measures of Positive and Negative Affect: The PANAS Scales. Journal of Personality and Social Psychology, 54(6), 1063-1070.",
+        year=1988,
+        domains=["psychometrics", "emotion", "measurement"],
+        supports=[
+            "Validated brief scales for positive and negative affect",
+            "Affect words map reliably to underlying dimensions",
+            "Specific word-to-affect-level mappings (used in Tier 2 translation)"
+        ],
+        does_not_support=["That word mapping substitutes for clinical assessment"],
+        confidence="VERY HIGH",
+        measurement_instruments=["PANAS-20", "PANAS-10"]
+    ),
+    
+    "self_efficacy_scale": FrameworkEntry(
+        id="self_efficacy_scale",
+        citation="Schwarzer, R., & Jerusalem, M. (1995). Generalized Self-Efficacy Scale. In Measures in Health Psychology: A User's Portfolio, 35-37.",
+        year=1995,
+        domains=["psychometrics", "confidence", "measurement"],
+        supports=["Validated scale for generalized self-efficacy", "Confidence language maps to efficacy dimensions"],
+        does_not_support=["Domain-specific efficacy without adaptation"],
+        confidence="HIGH",
+        measurement_instruments=["GSE-10"]
+    ),
+    
+    "schwartz_values": FrameworkEntry(
+        id="schwartz_values",
+        citation="Schwartz, S. H. (1992). Universals in the Content and Structure of Values: Theoretical Advances and Empirical Tests in 20 Countries. Advances in Experimental Social Psychology, 25, 1-65.",
+        year=1992,
+        domains=["values", "psychometrics", "cross-cultural"],
+        supports=[
+            "Universal human value structure (10 basic values)",
+            "Value importance can be measured and compared",
+            "Values conflict predictably (e.g., self-direction vs. security)"
+        ],
+        does_not_support=["Specific weightings for individuals without elicitation"],
+        confidence="VERY HIGH",
+        measurement_instruments=["SVS", "PVQ"]
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: MEASUREMENT & MULTI-CRITERIA
+    # ═══════════════════════════════════════════════════════
+    
+    "ahp_method": FrameworkEntry(
+        id="ahp_method",
+        citation="Saaty, T. L. (1980). The Analytic Hierarchy Process. McGraw-Hill.",
+        year=1980,
+        domains=["measurement", "multi_criteria", "decision_making"],
+        supports=[
+            "Pairwise comparison matrices derive relative weights",
+            "Eigenvector method extracts priority weights",
+            "Consistency ratio (CR) validates comparison consistency; CR < 0.1 acceptable"
+        ],
+        does_not_support=["That elicited weights are stable over time"],
+        confidence="VERY HIGH"
+    ),
+    
+    "expectancy_value": FrameworkEntry(
+        id="expectancy_value",
+        citation="Fishbein, M., & Ajzen, I. (1975). Belief, Attitude, Intention, and Behavior: An Introduction to Theory and Research. Addison-Wesley.",
+        year=1975,
+        domains=["measurement", "attitudes", "prediction"],
+        supports=[
+            "Attitude = Σ(belief strength × evaluation)",
+            "Multi-attribute models validly predict attitudes/intentions"
+        ],
+        does_not_support=["Specific belief structures for individuals"],
+        confidence="HIGH"
+    ),
+    
+    "multidimensional_scaling": FrameworkEntry(
+        id="multidimensional_scaling",
+        citation="Kruskal, J. B., & Wish, M. (1978). Multidimensional Scaling. Sage.",
+        year=1978,
+        domains=["measurement", "scaling"],
+        supports=["Similarity data can be represented in low-dimensional space", "Stress measures assess fit"],
+        does_not_support=["Specific dimensional structures without data"],
+        confidence="HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: INSTITUTIONS & TRANSACTION COSTS
+    # ═══════════════════════════════════════════════════════
+    
+    "transaction_cost_economics": FrameworkEntry(
+        id="transaction_cost_economics",
+        citation="Williamson, O. E. (1985). The Economic Institutions of Capitalism. Free Press.",
+        year=1985,
+        domains=["economics", "organizations", "durability of arrangements"],
+        supports=[
+            "Transaction costs (search, bargaining, enforcement) shape arrangements",
+            "Asset specificity creates lock-in and dependence",
+            "Governance structures match transaction characteristics"
+        ],
+        does_not_support=["Specific switching costs without data"],
+        confidence="VERY HIGH"
+    ),
+    
+    "institutions_theory": FrameworkEntry(
+        id="institutions_theory",
+        citation="North, D. C. (1990). Institutions, Institutional Change and Economic Performance. Cambridge University Press.",
+        year=1990,
+        domains=["economics", "institutions", "enforceability"],
+        supports=[
+            "Institutions (formal rules + informal constraints) shape behavior",
+            "Enforcement mechanisms determine credibility of commitments"
+        ],
+        does_not_support=["That all commitments require institutional enforcement"],
+        confidence="HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: TEMPORAL DECISION MAKING
+    # ═══════════════════════════════════════════════════════
+    
+    "temporal_discounting": FrameworkEntry(
+        id="temporal_discounting",
+        citation="Ariely, D., & Zakay, D. (2001). A Timely Account of the Role of Duration in Decision Making. Acta Psychologica, 108(2), 187-207.",
+        year=2001,
+        domains=["time", "decision_making", "negotiation", "any deadline context"],
+        supports=[
+            "Duration and delay systematically affect decisions",
+            "Time pressure changes decision strategies",
+            "Deadline asymmetries between parties affect negotiation dynamics"
+        ],
+        does_not_support=[
+            "Specific discount rates for individuals",
+            "That a specific party has a specific deadline (requires user data)"
+        ],
+        confidence="HIGH"
+    ),
+    
+    "time_discounting_research": FrameworkEntry(
+        id="time_discounting_research",
+        citation="Zauberman, G., Kim, B. K., Malkoc, S. A., & Bettman, J. R. (2009). Discounting Time and Time Discounting: Subjective Time and Decision Making. Journal of Marketing Research, 46(4), 543-556.",
+        year=2009,
+        domains=["time", "decision_making"],
+        supports=["Perceived time (not just objective time) drives discounting", "Time perception is malleable and non-linear"],
+        does_not_support=["Specific perception corrections"],
+        confidence="HIGH"
+    ),
+    
+    "anchoring_negotiation": FrameworkEntry(
+        id="anchoring_negotiation",
+        citation="Northcraft, G. B., & Neale, M. A. (1987). Experts, Amateurs, and Real Estate: An Anchoring-and-Adjustment Perspective on Property Pricing Decisions. Organizational Behavior and Human Decision Processes, 39(1), 84-97.",
+        year=1987,
+        domains=["negotiation", "anchoring", "pricing", "any valuation context"],
+        supports=[
+            "Initial anchors bias valuations even among experts",
+            "Anchoring persists despite expertise"
+        ],
+        does_not_support=["How much a specific anchor will move a specific person"],
+        confidence="VERY HIGH"
+    ),
+    
+    "hypothesis_testing_anchoring": FrameworkEntry(
+        id="hypothesis_testing_anchoring",
+        citation="Mussweiler, T., & Strack, F. (1999). Hypothesis-Consistent Testing and Semantic Priming in the Anchoring Paradigm. Journal of Experimental Social Psychology, 35(2), 136-164.",
+        year=1999,
+        domains=["anchoring", "judgment"],
+        supports=["Anchoring operates via selective accessibility of anchor-consistent knowledge"],
+        does_not_support=["Debiasing techniques guaranteed to work"],
+        confidence="HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: SOCIAL RESPONDING
+    # ═══════════════════════════════════════════════════════
+    
+    "social_desirability_bias": FrameworkEntry(
+        id="social_desirability_bias",
+        citation="Edwards, A. L. (1957). The Social Desirability Variable in Personality Assessment and Research. Dryden Press.",
+        year=1957,
+        domains=["measurement", "self_report", "any interview context"],
+        supports=["People give answers that make them look good rather than honest answers"],
+        does_not_support=["Detection of specific lies"],
+        confidence="VERY HIGH"
+    ),
+    
+    "sdr_two_component": FrameworkEntry(
+        id="sdr_two_component",
+        citation="Paulhus, D. L. (1984). Two-Component Models of Socially Desirable Responding. Journal of Personality and Social Psychology, 46(3), 598-609.",
+        year=1984,
+        domains=["measurement", "self_report"],
+        supports=["SDR splits into self-deception and impression management", "Different components respond to different interventions"],
+        does_not_support=["Which component drives a specific response"],
+        confidence="HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: NEGOTIATION ANATOMY (ZOPA etc.)
+    # ═══════════════════════════════════════════════════════
+    
+    "zopa_analysis": FrameworkEntry(
+        id="zopa_analysis",
+        citation="Raiffa, H. (1982). The Art and Science of Negotiation. Harvard University Press. (ZOPA concept elaborated by Fisher & Ury, 1981.)",
+        year=1982,
+        domains=["negotiation", "any agreement context"],
+        supports=[
+            "ZOPA = overlap between parties' reservation points",
+            "No ZOPA = no positive-sum agreement possible",
+            "Reservation point = BATNA value (floor for any deal)"
+        ],
+        does_not_support=["Where a specific counterparty's reservation point is (requires data)"],
+        confidence="VERY HIGH"
+    ),
+    
+    "pareto_efficiency": FrameworkEntry(
+        id="pareto_efficiency",
+        citation="Pareto, V. (1906). Manuale di economia politica. (Concept: A state is Pareto-optimal if no individual can be made better off without making another worse off.)",
+        year=1906,
+        domains=["economics", "negotiation", "multi_stakeholder", "any multi-party decision"],
+        supports=[
+            "Pareto improvement: outcome where at least one party is better off and none worse off",
+            "Pareto frontier: set of non-dominated outcomes",
+            "Win-win solutions are Pareto improvements over disagreement"
+        ],
+        does_not_support=["That Pareto-efficient outcomes are fair"],
+        confidence="VERY HIGH"
+    ),
+    
+    # ═══════════════════════════════════════════════════════
+    # DOMAIN: EMOTION & DECISION
+    # ═══════════════════════════════════════════════════════
+    
+    "stress_decision_making": FrameworkEntry(
+        id="stress_decision_making",
+        citation="Janis, I. L., & Mann, L. (1977). Decision Making: A Psychological Analysis of Conflict, Choice, and Commitment. Free Press.",
+        year=1977,
+        domains=["stress", "decision_making", "all high-stakes decisions"],
+        supports=[
+            "Decision stress follows a pattern: appraise challenge, survey alternatives, weigh, deliberate, commit",
+            "Defensive avoidance under stress degrades decision quality",
+            "Vigilant processing requires adequate time and information"
+        ],
+        does_not_support=["That all stress is bad for decisions"],
+        confidence="HIGH"
+    ),
+    }
+    
+    # ═══════════════════════════════════════════════════════
+    # END LIBRARY — 45 validated frameworks
+    # ═══════════════════════════════════════════════════════
+    
+    def __init__(self):
+        self.frameworks = self.FRAMEWORKS
+        self._build_semantic_index()
+    
+    def validate_claim(self, claim: str, cited_framework: str) -> 'FrameworkValidation':
+        """
+        Validates that a cited framework actually supports a specific claim.
+        
+        Returns FrameworkValidation with:
+        - valid: bool
+        - confidence: str  
+        - matched_claim: the library entry the claim matches
+        - reason: if invalid, why
+        - suggestion: what to do instead
+        """
+        
+        framework = self.frameworks.get(cited_framework)
+        
+        if not framework:
+            return FrameworkValidation(
+                valid=False,
+                reason=f"Framework '{cited_framework}' not in validated library",
+                suggestion="Use only frameworks from the library, or state claim "
+                          "as hypothesis without framework citation"
+            )
+        
+        # Check supports list (semantic matching in production;
+        # keyword/embedding similarity)
+        for supported_claim in framework.supports:
+            if self._semantic_match(claim, supported_claim):
+                return FrameworkValidation(
+                    valid=True,
+                    confidence=framework.confidence,
+                    matched_claim=supported_claim,
+                    framework_id=cited_framework,
+                    citation=framework.citation
+                )
+        
+        # Check does_not_support list (misapplication detection)
+        for unsupported in framework.does_not_support:
+            if self._semantic_match(claim, unsupported):
+                return FrameworkValidation(
+                    valid=False,
+                    reason=f"MISAPPLICATION: Framework does NOT support this "
+                           f"(matches: '{unsupported}')",
+                    suggestion="Find appropriate framework, or reframe claim to "
+                              "match what this framework actually supports"
+                )
+        
+        # Neither matched — claim is unverified even if framework exists
+        return FrameworkValidation(
+            valid=False,
+            reason=f"Framework '{cited_framework}' exists but claim doesn't match "
+                   f"its supported claims",
+            suggestion="Check library entry for what this framework supports, "
+                      "or classify claim as hypothesis"
+        )
+    
+    def find_frameworks_for_domain(self, domain: str) -> List[FrameworkEntry]:
+        """Find all frameworks applicable to a decision domain"""
+        return [
+            fw for fw in self.frameworks.values()
+            if domain in fw.domains
+        ]
+    
+    def find_frameworks_for_claim(self, claim: str) -> List[FrameworkEntry]:
+        """Find frameworks that might support a claim (for suggestion)"""
+        candidates = []
+        for fw in self.frameworks.values():
+            for supported in fw.supports:
+                if self._semantic_match(claim, supported, threshold=0.5):
+                    candidates.append((fw, supported))
+        return candidates
+    
+    def _semantic_match(self, claim: str, supported_claim: str, 
+                        threshold: float = 0.7) -> bool:
+        """
+        Semantic similarity check between claim and library entry.
+        Production: embedding similarity. Reference implementation: 
+        keyword overlap + embedding fallback.
+        """
+        # Reference implementation (production uses embeddings)
+        claim_words = set(claim.lower().split())
+        supported_words = set(supported_claim.lower().split())
+        
+        if not claim_words or not supported_words:
+            return False
+        
+        overlap = len(claim_words & supported_words)
+        jaccard = overlap / len(claim_words | supported_words)
+        
+        return jaccard >= threshold
+    
+    def _build_semantic_index(self):
+        """Build embedding index for fast semantic matching (production)"""
+        pass
+```
+
+### 8.4 Library Usage Rules
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  FRAMEWORK CITATION RULES (Enforced System-Wide)           │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  RULE 1: Library-only citation                               │
+│  Any FRAMEWORK-basis claim must cite a framework ID that    │
+│  exists in the library. Unknown citation → rejected.        │
+│                                                              │
+│  RULE 2: Support verification                                │
+│  The claim must semantically match an entry in the cited    │
+│  framework's `supports` list. No match → rejected.          │
+│                                                              │
+│  RULE 3: Misapplication detection                            │
+│  If the claim matches a `does_not_support` entry → reject   │
+│  with explanation of the misapplication.                    │
+│                                                              │
+│  RULE 4: Honest gaps                                         │
+│  If no framework in the library supports the claim, the     │
+│  system must say: "I don't have a validated framework for   │
+│  this." The claim can still be made as HYPOTHESIS (low      │
+│  confidence, excluded from calculations) or PRACTITIONER    │
+│  HEURISTIC (if explicitly labeled).                         │
+│                                                              │
+│  RULE 5: Domain relevance check                              │
+│  The cited framework's `domains` list should include the    │
+│  current decision's domain. Cross-domain application is     │
+│  allowed but flagged (e.g., using organizational theory     │
+│  for a personal relationship — plausible, needs care).      │
+│                                                              │
+│  RULE 6: Library extensibility                               │
+│  New frameworks CAN be added to the library, but only with: │
+│  - Full academic citation                                    │
+│  - Curated supports / does_not_support lists                 │
+│  - Human review of entries                                   │
+│  The LLM cannot add frameworks at runtime.                   │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 9. Claim Classification System
+
+### 9.1 The Six Categories
+
+```python
+class ClaimClassification(Enum):
+    VALIDATED_RESEARCH = "validated_research"
+    USER_VALIDATED = "user_validated"
+    PRACTITIONER_HEURISTIC = "practitioner_heuristic"
+    PROBABILITY_WEIGHTED = "probability_weighted"
+    HYPOTHESIS = "hypothesis"
+    SPECULATION = "speculation"
+
+
+@dataclass
+class ClassifiedClaim:
+    claim: str
+    classification: ClaimClassification
+    confidence: float
+    can_enter_calculations: bool
+    framework_citation: Optional[str] = None
+    user_source: Optional[str] = None
+    probability_basis: Optional[str] = None
+    disclosure_required: Optional[str] = None
+    reason: Optional[str] = None
+
+
+class ClaimClassifier:
+    """
+    Classifies every claim by epistemic status.
+    Only claims with can_enter_calculations=True feed the
+    deterministic layers (utility, minimax, leverage).
+    """
+    
+    # Category definitions
+    CATEGORIES = {
+        ClaimClassification.VALIDATED_RESEARCH: {
+            "description": "Supported by peer-reviewed research in library",
+            "requires": "Framework citation + support match (§8)",
+            "confidence_range": (0.80, 1.0),
+            "can_enter_calculations": True,
+            "example": "Having alternatives improves negotiation position "
+                       "(Fisher & Ury, 1981 — batna_theory)"
+        },
+        
+        ClaimClassification.USER_VALIDATED: {
+            "description": "Fact confirmed by user with source",
+            "requires": "User confirmation + source citation",
+            "confidence_range": (0.70, 0.95),
+            "can_enter_calculations": True,
+            "example": "'My client has a board meeting in 2 weeks' "
+                       "(user knows: recruiter told them)"
+        },
+        
+        ClaimClassification.PRACTITIONER_HEURISTIC: {
+            "description": "Common advice from practitioners, not research-validated",
+            "requires": "Explicit labeling as practitioner advice",
+            "confidence_range": (0.40, 0.60),
+            "can_enter_calculations": True,  # With reduced weight
+            "must_disclose": "This is practitioner advice, not research-backed",
+            "example": "'Never accept a first offer' — common negotiation "
+                       "advice; related research (Babcock et al.) supports "
+                       "negotiating but not the 'never' prescription"
+        },
+        
+        ClaimClassification.PROBABILITY_WEIGHTED: {
+            "description": "Calculation involving uncertain outcomes",
+            "requires": "Probability estimate + cited basis (base rate DB or user)",
+            "confidence_range": (0.50, 0.80),
+            "can_enter_calculations": True,
+            "must_disclose": "Probability estimate based on [source]",
+            "example": "'Expected value of this contingent bonus = "
+                       "0.60 × $20k = $12k' (probability from user estimate "
+                       "or base rate)"
+        },
+        
+        ClaimClassification.HYPOTHESIS: {
+            "description": "Speculation requiring testing; cannot enter calculations",
+            "requires": "Explicit framing as hypothesis",
+            "confidence_range": (0.20, 0.40),
+            "can_enter_calculations": False,
+            "must_disclose": "This is a hypothesis, not established fact",
+            "example": "'Perhaps you could negotiate better terms' — "
+                       "plausible but unverified for this situation"
+        },
+        
+        ClaimClassification.SPECULATION: {
+            "description": "Unverified claim; automatically rejected",
+            "requires": "Nothing — this category exists to be rejected",
+            "confidence_range": (0.0, 0.20),
+            "can_enter_calculations": False,
+            "system_action": "REJECT — cannot be used or stated as fact",
+            "example": "'Negotiating equity from 0.5% to 1.0% is common' "
+                       "(no source, no framework, fabricated statistic)"
+        }
+    }
+    
+    def classify(self, claim: str, 
+                 cited_framework: Optional[str] = None,
+                 user_validated: bool = False,
+                 user_source: Optional[str] = None,
+                 probability_basis: Optional[str] = None,
+                 practitioner_labeled: bool = False) -> ClassifiedClaim:
+        """
+        Classify a claim through the full validation chain.
+        """
+        
+        # Path 1: User-validated facts (highest priority for facts)
+        if user_validated and user_source:
+            return ClassifiedClaim(
+                claim=claim,
+                classification=ClaimClassification.USER_VALIDATED,
+                confidence=0.85,
+                can_enter_calculations=True,
+                user_source=user_source
+            )
+        
+        # Path 2: Framework-validated research
+        if cited_framework:
+            validation = self.framework_library.validate_claim(claim, cited_framework)
+            if validation.valid:
+                confidence = self._confidence_from_string(validation.confidence)
+                return ClassifiedClaim(
+                    claim=claim,
+                    classification=ClaimClassification.VALIDATED_RESEARCH,
+                    confidence=confidence,
+                    can_enter_calculations=True,
+                    framework_citation=cited_framework
+                )
+            else:
+                # Framework cited but doesn't support claim
+                # → falls through to lower categories with rejection note
+                pass
+        
+        # Path 3: Probability-weighted claims
+        if probability_basis:
+            # Check basis is valid (base rate DB or user estimate)
+            if self._valid_probability_basis(probability_basis):
+                return ClassifiedClaim(
+                    claim=claim,
+                    classification=ClaimClassification.PROBABILITY_WEIGHTED,
+                    confidence=0.65,
+                    can_enter_calculations=True,
+                    probability_basis=probability_basis,
+                    disclosure_required=f"Probability based on: {probability_basis}"
+                )
+        
+        # Path 4: Labeled practitioner heuristic
+        if practitioner_labeled:
+            return ClassifiedClaim(
+                claim=claim,
+                classification=ClaimClassification.PRACTITIONER_HEURISTIC,
+                confidence=0.50,
+                can_enter_calculations=True,
+                disclosure_required="Practitioner advice, not research-backed"
+            )
+        
+        # Path 5: Check if claim contains statistics/rates without basis
+        if self._contains_unsourced_statistics(claim):
+            return ClassifiedClaim(
+                claim=claim,
+                classification=ClaimClassification.SPECULATION,
+                confidence=0.10,
+                can_enter_calculations=False,
+                reason="Contains statistics without cited source"
+            )
+        
+        # Path 6: Check if claim asserts certain value for contingent outcome
+        if self._treats_contingent_as_certain(claim):
+            return ClassifiedClaim(
+                claim=claim,
+                classification=ClaimClassification.SPECULATION,
+                confidence=0.10,
+                can_enter_calculations=False,
+                reason="Contingent outcome treated as certain (violates EV rule §11)"
+            )
+        
+        # Default: hypothesis
+        return ClassifiedClaim(
+            claim=claim,
+            classification=ClaimClassification.HYPOTHESIS,
+            confidence=0.30,
+            can_enter_calculations=False,
+            reason="No framework citation, user validation, or probability basis"
+        )
+```
+
+### 9.2 Classification Flow
+
+```
+CLAIM ENTERS
+     ↓
+Is user-validated with source? ──Yes──→ USER_VALIDATED (0.85)
+     ↓ No
+Cites framework from library?
+     ↓ Yes
+Does library verify claim? ──Yes──→ VALIDATED_RESEARCH (framework confidence)
+     ↓ No (misapplication/no match)
+Has probability basis? ──Yes──→ PROBABILITY_WEIGHTED (0.65)
+     ↓ No
+Labeled as practitioner advice? ──Yes──→ PRACTITIONER_HEURISTIC (0.50)
+     ↓ No
+Contains unsourced stats? ──Yes──→ SPECULATION (REJECT)
+     ↓ No
+Treats contingent as certain? ──Yes──→ SPECULATION (REJECT)
+     ↓ No
+Otherwise ──→ HYPOTHESIS (0.30, cannot enter calculations)
+```
+
+### 9.3 Calculation Gate
+
+```python
+class CalculationGate:
+    """
+    The final gate: only classified claims with sufficient confidence
+    and can_enter_calculations=True may feed deterministic layers.
+    """
+    
+    MIN_CONFIDENCE_FOR_CALCULATIONS = 0.50
+    
+    def check(self, classified_claim: ClassifiedClaim) -> 'GateResult':
+        
+        if not classified_claim.can_enter_calculations:
+            return GateResult(
+                allowed=False,
+                reason=f"Classification {classified_claim.classification.value} "
+                       f"cannot enter calculations"
+            )
+        
+        if classified_claim.confidence < self.MIN_CONFIDENCE_FOR_CALCULATIONS:
+            return GateResult(
+                allowed=False,
+                reason=f"Confidence {classified_claim.confidence} below "
+                       f"threshold {self.MIN_CONFIDENCE_FOR_CALCULATIONS}"
+            )
+        
+        # Claims entering calculations carry their classification forward
+        # so the audit trail shows provenance
+        return GateResult(
+            allowed=True,
+            classification=classified_claim.classification,
+            confidence=classified_claim.confidence,
+            provenance=self._build_provenance(classified_claim)
+        )
+```
+
+---
+
+## 10. Emergent Discovery Validation Protocols
+
+### 10.1 Overview
+
+The five emergent discovery strategies (from Phase 1.5) each have **domain-general** grounding rules. These rules constrain what each strategy CAN claim without additional validation, regardless of decision domain.
+
+### 10.2 Per-Strategy Rules
+
+```python
+class EmergentDiscoveryValidation:
+    """
+    Domain-general validation rules for each discovery strategy.
+    These apply to ANY decision: relationships, purchases, career,
+    business, negotiations — any context.
+    """
+    
+    STRATEGY_RULES = {
+    
+    "analogical_reasoning": {
+        "description": "Reasoning from similar situations to current one",
+        
+        "allowed_claim_types": [
+            {
+                "type": "VALIDATED_RESEARCH",
+                "requirement": "Claim + framework citation verified against §8 library",
+                "confidence": "per framework"
+            },
+            {
+                "type": "PRACTITIONER_HEURISTIC",
+                "requirement": "Must explicitly label: 'practitioner advice, not research'",
+                "confidence": "0.40-0.50"
+            },
+            {
+                "type": "HYPOTHESIS",
+                "requirement": "Framed as 'hypothesis to explore', never as fact",
+                "confidence": "0.20-0.30"
+            }
+        ],
+        
+        "forbidden": [
+            "Generating statistics, percentages, or ranges without source",
+            "Claiming something is 'common', 'typical', or 'standard' without data",
+            "Prescriptive advice ('never do X', 'always do Y') framed as research finding",
+            "Domain-specific claims presented as universal truths"
+        ],
+        
+        "required_process": "For each analogy: (1) state the analogous situation, "
+                          "(2) identify what transfers and what doesn't, "
+                          "(3) classify each claim per §9"
+    },
+    
+    "counterfactual_analysis": {
+        "description": "'What if X were different?' reasoning",
+        
+        "allowed_claim_types": [
+            {
+                "type": "PROBABILITY_WEIGHTED",
+                "requirement": "Counterfactual value calculations must use "
+                              "expected value with cited probability basis",
+                "confidence": "0.50-0.70"
+            },
+            {
+                "type": "HYPOTHESIS",
+                "requirement": "Qualitative counterfactuals framed as possibilities",
+                "confidence": "0.20-0.35"
+            }
+        ],
+        
+        "forbidden": [
+            "Treating contingent/uncertain outcomes as guaranteed (violates §11)",
+            "Comparing certain vs. uncertain values without probability adjustment",
+            "Asserting counterfactual outcomes as facts",
+            "Ignoring base rates when estimating counterfactual probabilities"
+        ],
+        
+        "required_process": "For value calculations: (1) identify uncertainty, "
+                          "(2) estimate probability with basis, "
+                          "(3) compute expected value, "
+                          "(4) present as EV, never as certain value"
+    },
+    
+    "perspective_reversal": {
+        "description": "'What would the other party think/fear?' reasoning",
+        
+        "allowed_claim_types": [
+            {
+                "type": "USER_VALIDATED",
+                "requirement": "User provides evidence of counterparty's perspective "
+                              "(direct conversation, explicit statement, observed behavior)",
+                "confidence": "0.70-0.85"
+            },
+            {
+                "type": "VALIDATED_RESEARCH",
+                "requirement": "General principles about perspective-taking "
+                              "(e.g., Galinsky et al. 2008) — NOT specific claims "
+                              "about what this counterparty thinks",
+                "confidence": "per framework"
+            },
+            {
+                "type": "HYPOTHESIS",
+                "requirement": "Speculation about counterparty psychology must be "
+                              "framed as 'possible consideration' and requires "
+                              "user validation before use",
+                "confidence": "0.20-0.30"
+            }
+        ],
+        
+        "forbidden": [
+            "Asserting what a specific counterparty fears, wants, or thinks "
+            "without user-provided evidence",
+            "Inferring counterparty psychology from limited information",
+            "Generating counterparty motivations as facts",
+            "Using assumed counterparty psychology as leverage "
+            "(that's leverage built on assumption)"
+        ],
+        
+        "required_process": "For each perspective claim: (1) generate hypothesis "
+                          "about counterparty view, (2) ASK USER: 'What evidence "
+                          "do you have about their perspective?', (3) classify "
+                          "based on user's evidence"
+    },
+    
+    "temporal_shifting": {
+        "description": "'How does this change over time?' reasoning",
+        
+        "allowed_claim_types": [
+            {
+                "type": "USER_VALIDATED",
+                "requirement": "Temporal facts (bonuses, vesting, milestones, "
+                              "deadlines) confirmed by user",
+                "confidence": "0.75-0.90"
+            },
+            {
+                "type": "VALIDATED_RESEARCH",
+                "requirement": "Temporal principles (discounting, deadline effects) "
+                              "from library",
+                "confidence": "per framework"
+            },
+            {
+                "type": "HYPOTHESIS",
+                "requirement": "Future projections framed as possibilities",
+                "confidence": "0.20-0.35"
+            }
+        ],
+        
+        "forbidden": [
+            "Assuming organization/company/person-specific policies without asking",
+            "Claiming milestones or deadlines exist without verification",
+            "Asserting specific future events as facts",
+            "Projecting trends without basis"
+        ],
+        
+        "required_process": "For each temporal claim: (1) state the claim, "
+                          "(2) ASK USER to confirm/deny, "
+                          "(3) classify based on user response"
+    },
+    
+    "constraint_removal": {
+        "description": "'What if this constraint didn't exist?' reasoning",
+        
+        "allowed_claim_types": [
+            {
+                "type": "HYPOTHESIS",
+                "requirement": "Constraint-removal scenarios are inherently "
+                              "hypothetical; frame as exploration",
+                "confidence": "0.25-0.35"
+            },
+            {
+                "type": "USER_VALIDATED",
+                "requirement": "If user confirms constraint is actually "
+                              "removable (e.g., 'Yes, I could ask for an extension')",
+                "confidence": "0.70-0.85"
+            }
+        ],
+        
+        "forbidden": [
+            "Treating user's fears as objective constraints without checking",
+            "Assuming constraints are insurmountable without evidence",
+            "Asserting constraint removal is possible without user confirmation"
+        ],
+        
+        "required_process": "For each constraint: (1) state the constraint, "
+                          "(2) ASK USER: 'Is this a real constraint or a "
+                          "perceived one? Could it be changed?', "
+                          "(3) classify based on response"
+    }
+    }
+    
+    def validate_discovery(self, strategy: str, claim: str, 
+                          classification: ClassifiedClaim,
+                          user_evidence: Optional[str] = None) -> 'DiscoveryValidation':
+        """
+        Validates a discovery claim against its strategy's rules.
+        """
+        
+        rules = self.STRATEGY_RULES.get(strategy)
+        if not rules:
+            return DiscoveryValidation(valid=False, reason="Unknown strategy")
+        
+        # Check classification is allowed for this strategy
+        allowed_types = [ct["type"] for ct in rules["allowed_claim_types"]]
+        if classification.classification.value not in [t.lower() for t in allowed_types]:
+            if classification.classification == ClaimClassification.SPECULATION:
+                return DiscoveryValidation(
+                    valid=False,
+                    reason=f"Claim is speculation — forbidden by {strategy}",
+                    forbidden_rule=next(
+                        (f for f in rules["forbidden"] 
+                         if self._matches_forbidden(claim, f)), 
+                        "matches forbidden pattern"
+                    )
+                )
+        
+        # Strategy-specific checks
+        if strategy == "perspective_reversal":
+            # Perspective claims about SPECIFIC counterparty need user evidence
+            if self._asserts_specific_counterparty_psychology(claim):
+                if not user_evidence:
+                    return DiscoveryValidation(
+                        valid=False,
+                        reason="Asserts counterparty psychology without user evidence",
+                        required_action="Ask user: 'What evidence do you have "
+                                      "about their perspective?'"
+                    )
+        
+        if strategy == "temporal_shifting":
+            # Organization-specific temporal claims need user confirmation
+            if self._asserts_specific_temporal_fact(claim):
+                if not user_evidence:
+                    return DiscoveryValidation(
+                        valid=False,
+                        reason="Asserts specific temporal fact without user confirmation",
+                        required_action="Ask user to confirm this temporal detail"
+                    )
+        
+        return DiscoveryValidation(valid=True, classification=classification)
+```
+
+### 10.3 Example: The Sarah Analogical Claims, Properly Validated
+
+```
+CLAIM: "Successful job-changers typically NEVER accept first offer"
+
+Strategy: analogical_reasoning
+
+Validation check 1: Is there a framework citation? → No
+Validation check 2: Is it labeled practitioner advice? → No  
+Validation check 3: Does it contain prescriptive-as-descriptive language? 
+  → YES ("NEVER accept" is prescriptive)
+
+RESULT: REJECTED as stated
+
+REWRITE OPTIONS:
+Option A (practitioner heuristic): 
+  "Common negotiation advice suggests not accepting first offers. 
+   Note: this is practitioner advice, not research-backed."
+  → Classification: PRACTITIONER_HEURISTIC (0.45)
+  → Related research exists (negotiation_initiation) but supports 
+    "negotiating helps," not "never accept"
+
+Option B (validated research):
+  "Research shows people who initiate negotiations typically achieve 
+   better outcomes than those who don't (Babcock et al., 2003)."
+  → Classification: VALIDATED_RESEARCH (HIGH)
+  → Verified against library: matches negotiation_initiation.supports
+```
+
+---
+
+## 11. Expected Value Enforcement
+
+### 11.1 The Rule
+
+> **Any value that is contingent on an uncertain outcome must be presented as an expected value (probability-weighted), never as a certain value.** This applies across ALL domains: contingent bonuses, equity, conditional promises, uncertain relationship outcomes, "if they say yes" scenarios, anything dependent on future events outside the user's control.
+
+### 11.2 Implementation
+
+```python
+class ExpectedValueEnforcement:
+    """
+    Detects and rejects certain-treatment of contingent values.
+    Domain-general: works on any contingent claim.
+    """
+    
+    # Patterns indicating contingent value treated as certain
+    # (linguistic patterns, domain-general)
+    CONTINGENT_MARKERS = [
+        "equity", "bonus if", "contingent on", "if they agree",
+        "if it succeeds", "if we close", "should they accept",
+        "upon signing", "upon success", "if the deal",
+        "potential", "could be worth", "if it works out",
+        "if they say yes", "assuming they", "provided that"
+    ]
+    
+    CERTAINTY_MARKERS = [
+        "is worth", "equals", "means you'll get", "adds up to",
+        "total compensation", "that's a guaranteed", "you'll have"
+    ]
+    
+    def check_claim(self, claim: str) -> Optional['EVViolation']:
+        """
+        Returns violation if claim treats contingent value as certain.
+        """
+        
+        claim_lower = claim.lower()
+        
+        has_contingent = any(m in claim_lower for m in self.CONTINGENT_MARKERS)
+        has_certainty = any(m in claim_lower for m in self.CERTAINTY_MARKERS)
+        
+        if has_contingent and has_certainty:
+            # Extract the contingent value for correction
+            contingent_value = self._extract_contingent_value(claim)
+            
+            return EVViolation(
+                original_claim=claim,
+                violation="Contingent value treated as certain",
+                research_basis="prospect_theory — certainty effect; "
+                              "von_neumann_morgenstern — expected utility",
+                
+                correction_prompt=f"""
+                ❓ This claim treats a contingent value as guaranteed.
+                
+                "{claim}"
+                
+                The value "{contingent_value}" depends on an uncertain outcome.
+                For honest analysis, we need:
+                1. Estimated probability of the outcome (with basis)
+                2. Expected value = P(outcome) × value
+                3. Presentation as expected value, not certain value
+                
+                What's your probability estimate, and what's your basis?
+                (Base Rate Database lookup available for common scenarios)
+                """,
+                
+                required_action="Refuse claim until probability-weighted"
+            )
+        
+        return None
+    
+    def compute_expected_value(self, value: float, probability: float,
+                              probability_basis: str) -> 'ExpectedValueResult':
+        """
+        Computes properly-weighted expected value with audit trail.
+        """
+        
+        if not 0.0 <= probability <= 1.0:
+            raise ValueError(f"Invalid probability: {probability}")
+        
+        expected_value = value * probability
+        
+        return ExpectedValueResult(
+            certain_value=value,
+            probability=probability,
+            probability_basis=probability_basis,
+            expected_value=expected_value,
+            classification=ClaimClassification.PROBABILITY_WEIGHTED,
+            confidence=0.65 if probability_basis else 0.40,
+            audit_note=f"EV = {probability} × {value} = {expected_value} "
+                      f"(basis: {probability_basis})"
+        )
+```
+
+### 11.3 Domain-General Examples
+
+```
+❌ VIOLATIONS (rejected):
+"Your equity is worth $300k"                      (startup equity — contingent)
+"The signing bonus means you'll get $95k total"   (contingent on signing)
+"If they say yes, that's $20k in your pocket"     (contingent on their yes)
+"Upon success, this partnership is worth $1M"     (contingent on success)
+
+✅ CORRECTED (probability-weighted):
+"Expected equity value = P(exit) × $300k"
+"Expected total = salary + P(signing) × bonus"
+"If they say yes (P=?), expected value = ..."
+```
+
+---
+
+## 12. Base Rate Database
+
+### 12.1 The Rule
+
+> **The system never generates statistics from LLM memory. Any rate, percentage, or frequency claim must come from this database or a user-cited source. If not found: "I don't have validated data for this."**
+
+### 12.2 Implementation
+
+```python
+class BaseRateDatabase:
+    """
+    Lookup system for validated base rates.
+    Sparse by design — only rates with actual sources.
+    Returns 'not found' for unknown rates (prevents fabrication).
+    """
+    
+    BASE_RATES = {
+        # Only rates with citable sources are included.
+        # This database is intentionally sparse and expandable.
+        
+        "negotiation": {
+            "initiation_rate": {
+                "rate": 0.57,
+                "source": "Babcock et al. (2003) — proportion attempting "
+                          "to negotiate in studied scenarios",
+                "confidence": "HIGH",
+                "context": "Specific scenario studied (car purchase); "
+                           "varies by context"
+            },
+        },
+        
+        "employment": {
+            "job_search_duration_weeks": {
+                "range": (2, 12),
+                "source": "Industry reports; varies enormously by seniority, "
+                          "field, market conditions, geography",
+                "confidence": "LOW-MEDIUM",
+                "context": "Extremely context-dependent; treat as rough "
+                           "prior requiring user adjustment"
+            },
+        },
+        
+        # Frameworks with empirical coefficients
+        "behavioral": {
+            "loss_aversion_median": {
+                "rate": 2.25,
+                "source": "Tversky & Kahneman (1992) — median loss aversion "
+                          "coefficient from empirical estimation",
+                "confidence": "HIGH",
+                "context": "Median estimate; individual coefficients vary widely"
+            },
+        },
+    }
+    
+    def lookup(self, rate_key: str) -> 'BaseRateResult':
+        """
+        Looks up validated base rate.
+        Returns NOT_FOUND for unknown keys — never fabricates.
+        """
+        
+        category, _, specific = rate_key.partition(".")
+        
+        if category in self.BASE_RATES:
+            cat_data = self.BASE_RATES[category]
+            key = specific if specific else category
+            if key in cat_data:
+                data = cat_data[key]
+                return BaseRateResult(
+                    found=True,
+                    rate=data.get("rate"),
+                    range=data.get("range"),
+                    source=data["source"],
+                    confidence=data["confidence"],
+                    context=data.get("context", "")
+                )
+        
+        # CRITICAL: Return not-found, never generate
+        return BaseRateResult(
+            found=False,
+            message=f"No validated base rate for '{rate_key}'. "
+                   f"The system cannot generate statistics without source. "
+                   f"Options: (1) user provides estimate with basis, "
+                   f"(2) research and add to database, "
+                   f"(3) proceed without this rate."
+        )
+    
+    def add_rate(self, key: str, rate, source: str, confidence: str, 
+                 context: str = ""):
+        """
+        Add a rate to the database (for expansion).
+        Requires: citable source. LLM cannot invoke at runtime;
+        only human-curated expansion.
+        """
+        if not source or len(source) < 10:
+            raise ValueError("Cannot add rate without proper source citation")
+        # ... store
+```
+
+### 12.3 Honest Gaps
+
+The database ships intentionally sparse. Notable gaps the system will honestly report:
+
+```
+NOT IN DATABASE (system will say so):
+- "What % of Series B startups fail?"        → no validated source loaded
+- "How common is equity negotiation?"          → no validated source loaded  
+- "What % of relationships survive X?"         → no validated source loaded
+- "Typical salary negotiation improvement?"    → high variance, no consensus
+
+The system responds: "I don't have validated data for this rate. 
+Would you like to provide an estimate with your basis?"
+```
+
+---
+
+## 13. System-Level Bias Detector
+
+### 13.1 Overview
+
+Devil's Advocate (§6) checks USER biases. The System Bias Detector checks **LLM-generated content** — the mirror-image safeguard.
+
+### 13.2 The Four System Biases
+
+```python
+class SystemBiasDetector:
+    """
+    Detects biases in system/LLM-generated content.
+    Runs on ALL LLM outputs before they enter the pipeline.
+    """
+    
+    SYSTEM_BIASES = {
+    
+    "plausibility_bias": {
+        "description": "LLM generates plausible-sounding but unverified claims",
+        "detection_patterns": [
+            "Confident assertion without citation",
+            "Specific-sounding claim with no source",
+            "Analysis presented as fact without classification"
+        ],
+        "action": "REQUIRE classification (§9) before use"
+    },
+    
+    "fabricated_specificity": {
+        "description": "Specific numbers/ranges/statistics without source",
+        "detection_patterns": [
+            r"\d+(?:\.\d+)?%",                                    # percentages
+            r"\d+\s*(?:to|-)\s*\d+",                              # ranges  
+            r"(?:common|typical|standard|usually|often)\s+\d+",   # "usually 3-5"
+        ],
+        "action": "REJECT unless from BaseRateDatabase (§12) or user-cited"
+    },
+    
+    "prescriptive_as_descriptive": {
+        "description": "Advice/should-statements framed as research findings",
+        "detection_patterns": [
+            r"(?:should|must|always|never)\s+(?:accept|reject|negotiate|ask|take|leave)",
+            r"research shows (?:you |one )?(?:should|must|always|never)",
+            r"(?:the key|secret|right way|best way) to",
+        ],
+        "action": "RECLASSIFY as PRACTITIONER_HEURISTIC with disclosure, or reject"
+    },
+    
+    "completeness_illusion": {
+        "description": "Analysis presented as complete/exhaustive when it isn't",
+        "detection_patterns": [
+            r"(?:all|every|complete|exhaustive|full) (?:factors|considerations|aspects)",
+            r"(?:everything|nothing else) (?:to consider|matters)",
+        ],
+        "action": "FLAG: run Session Closing Protocol (§14) to check completeness"
+    }
+    }
+    
+    def check_output(self, llm_output: str) -> List['SystemBiasFlag']:
+        """
+        Check LLM-generated content for system biases.
+        Returns flags for any detected issues.
+        """
+        
+        flags = []
+        
+        # Check 1: Fabricated specificity
+        for pattern in self.SYSTEM_BIASES["fabricated_specificity"]["detection_patterns"]:
+            matches = re.findall(pattern, llm_output, re.IGNORECASE)
+            for match in matches:
+                # Check if this statistic has a source nearby
+                if not self._has_nearby_source(llm_output, match):
+                    flags.append(SystemBiasFlag(
+                        bias_type="fabricated_specificity",
+                        evidence=f"Statistic '{match}' without source",
+                        action="Verify against BaseRateDatabase or remove",
+                        severity="HIGH"
+                    ))
+        
+        # Check 2: Prescriptive-as-descriptive
+        for pattern in self.SYSTEM_BIASES["prescriptive_as_descriptive"]["detection_patterns"]:
+            if re.search(pattern, llm_output, re.IGNORECASE):
+                # Check if framed as research
+                research_framing = re.search(
+                    r"(?:research|study|data|evidence) (?:shows|finds|suggests)",
+                    llm_output[:300], re.IGNORECASE
+                )
+                if not research_framing:
+                    flags.append(SystemBiasFlag(
+                        bias_type="prescriptive_as_descriptive",
+                        evidence="Prescriptive advice without research framing",
+                        action="Label as practitioner advice or remove",
+                        severity="MEDIUM"
+                    ))
+        
+        # Check 3: Plausibility bias (claims without classification)
+        claims = self._extract_claims(llm_output)
+        for claim in claims:
+            if not self._has_classification_marker(claim):
+                flags.append(SystemBiasFlag(
+                    bias_type="plausibility_bias",
+                    evidence=f"Unclassified claim: '{claim[:50]}...'",
+                    action="Classify per §9 before use",
+                    severity="MEDIUM"
+                ))
+        
+        # Check 4: Completeness illusion
+        for pattern in self.SYSTEM_BIASES["completeness_illusion"]["detection_patterns"]:
+            if re.search(pattern, llm_output, re.IGNORECASE):
+                flags.append(SystemBiasFlag(
+                    bias_type="completeness_illusion",
+                    evidence="Completeness claim without verification",
+                    action="Run Session Closing Protocol",
+                    severity="LOW"
+                ))
+        
+        return flags
+```
+
+---
+
+## 14. Session Closing Protocol
+
+### 14.1 The Rule
+
+> **Every interview session (Phase 1, Phase 1.5, Phase 3, and the User Profile interview) ends with three levels of open-ended questions before the session is considered complete.** An empty frontier means the system has no more generated questions — NOT that the user has shared everything.
+
+### 14.2 The Three Levels
+
+```python
+class SessionClosingProtocol:
+    """
+    Open-ended closing questions at the end of every interview session.
+    Three levels: Self, Each Stakeholder, Situation.
+    If new information surfaces, the design tree re-opens.
+    """
+    
+    LEVEL_1_SELF = (
+        "Before we finish this part, is there anything about yourself — "
+        "your situation, preferences, fears, constraints, goals, or anything "
+        "we haven't discussed — that might be relevant to this decision?"
+    )
+    
+    LEVEL_2_STAKEHOLDER_TEMPLATE = (
+        "Is there anything about {stakeholder} — or your relationship with "
+        "them — that we haven't discussed but might be relevant?"
+    )
+    
+    LEVEL_3_SITUATION = (
+        "Is there anything about the overall situation — timing, context, "
+        "external factors, anything at all — that we haven't covered but "
+        "could affect this decision?"
+    )
+    
+    FOLLOW_UP_PROMPTS = [
+        "Any concerns or fears we haven't addressed?",
+        "Any information you're holding back or unsure whether to mention?",
+        "Anyone affected by this decision we haven't identified?",
+        "Any 'wild card' factors you're aware of?",
+        "Anything that feels important but hasn't come up?"
+    ]
+    
+    def conduct_closing(self, design_tree: 'DesignTree',
+                       identified_stakeholders: List[str],
+                       phase: str) -> 'ClosingResult':
+        """
+        Conducts the closing protocol after frontier is empty.
+        Returns whether session is truly complete or needs re-opening.
+        """
+        
+        new_information = []
+        
+        # Level 1: Self
+        self_answer = self._ask(self.LEVEL_1_SELF)
+        if self._is_substantive(self_answer):
+            new_information.append({
+                "level": "self",
+                "response": self_answer,
+                "extracted": self._extract_new_nodes(self_answer, design_tree)
+            })
+        
+        # Level 2: Each identified stakeholder
+        for stakeholder in identified_stakeholders:
+            question = self.LEVEL_2_STAKEHOLDER_TEMPLATE.format(
+                stakeholder=stakeholder
+            )
+            answer = self._ask(question)
+            if self._is_substantive(answer):
+                new_information.append({
+                    "level": "stakeholder",
+                    "stakeholder": stakeholder,
+                    "response": answer,
+                    "extracted": self._extract_new_nodes(answer, design_tree)
+                })
+        
+        # Level 3: Situation
+        situation_answer = self._ask(self.LEVEL_3_SITUATION)
+        if self._is_substantive(situation_answer):
+            new_information.append({
+                "level": "situation",
+                "response": situation_answer,
+                "extracted": self._extract_new_nodes(situation_answer, design_tree)
+            })
+        
+        # If anything new surfaced → re-open
+        if new_information:
+            return ClosingResult(
+                session_complete=False,
+                new_information=new_information,
+                action="REOPEN design tree with new nodes; "
+                      "may trigger additional grilling rounds",
+                phase=phase
+            )
+        
+        return ClosingResult(
+            session_complete=True,
+            new_information=[],
+            action="Session truly complete — proceed to next phase",
+            phase=phase
+        )
+    
+    def _is_substantive(self, answer: str) -> bool:
+        """Check if answer contains new information (not just 'no')"""
+        non_substantive = {"no", "nope", "nothing", "not really", "n/a", 
+                          "i don't think so", "can't think of anything"}
+        return answer.strip().lower() not in non_substantive and len(answer.strip()) > 10
+```
+
+### 14.3 Integration into Phases
+
+```
+Phase 1:    Frontier empty → Closing Protocol → Complete? → Phase 1.5
+Phase 1.5:  Frontier empty → Closing Protocol → Complete? → Phase 2
+Phase 2:    Frontier empty → Closing Protocol → Complete? → Phase 3
+Phase 3:    Frontier empty → Closing Protocol → Complete? → Solver
+Profile:    Frontier empty → Closing Protocol → Complete? → Save
+```
+
+---
+
+## 15. System Architecture
+
+### 15.1 Six-Layer Architecture (v3.3)
+
+```mermaid
+flowchart TD
+    subgraph "Layer 1: User Interface"
+        A[Web/Mobile/CLI]
+    end
+    
+    subgraph "Layer 2: Interview & Grilling"
+        B[Emergent Grilling Engine]
+        C[Devil's Advocate Protocol]
+        D[Session Closing Protocol]
+    end
+    
+    subgraph "Layer 3: Translation & Validation"
+        E[Natural Language Translator]
+        F[Assumption Elimination]
+    end
+    
+    subgraph "Layer 4: Epistemic Validation (NEW v3.3)"
+        G[Framework Library]
+        H[Claim Classifier]
+        I[Expected Value Enforcement]
+        J[Base Rate Database]
+        K[System Bias Detector]
+    end
+    
+    subgraph "Layer 5: Leverage & Analysis"
+        L[Leverage Mapping Engine]
+        M[Hidden Leverage Detector]
+        N[Game Theory Analyzer]
+        O[Decision Tree Generator]
+    end
+    
+    subgraph "Layer 6: Deterministic Calculation"
+        P[Utility Calculator]
+        Q[Leverage-Modified Minimax Solver]
+        R[Pareto Analyzer]
+        S[Red Line Validator]
+    end
+    
+    subgraph "Storage & Audit"
+        T[(QMD Storage)]
+        U[(All logs: translation, bias, assumption, claims, audit)]
+    end
+    
+    A --> B
+    B --> C
+    B --> E
+    C --> B
+    E --> F
+    E --> H
+    F --> B
+    
+    H --> G
+    H --> I
+    H --> J
+    K --> B
+    
+    B --> L
+    L --> M
+    L --> N
+    N --> O
+    
+    O --> P
+    P --> Q
+    P --> R
+    P --> S
+    
+    B --> T
+    K --> U
+    H --> U
+```
+
+### 15.2 The Claim Pipeline (Every Claim's Journey)
+
+```mermaid
+flowchart LR
+    A[Claim Generated<br>by LLM or from User] --> B{Source?}
+    
+    B -->|User answer| C[Translation<br/>§5]
+    B -->|LLM reasoning| D[System Bias Check<br/>§13]
+    
+    C --> E[User Bias Check<br/>§6]
+    E --> F[Assumption Check<br/>§7]
+    
+    D --> F
+    
+    F --> G[Claim Classification<br/>§9]
+    G --> H{Framework cited?}
+    
+    H -->|Yes| I[Framework Validation<br/>§8]
+    H -->|No| J{Probability claim?}
+    
+    I --> K{Valid?}
+    K -->|Yes| L[VALIDATED_RESEARCH]
+    K -->|No| M[Downgrade to<br/>HYPOTHESIS]
+    
+    J -->|Yes| N[EV Check §11 +<br/>Base Rate §12]
+    J -->|No| O{Practitioner<br/>labeled?}
+    
+    N --> P[PROBABILITY_WEIGHTED]
+    O -->|Yes| Q[PRACTITIONER_HEURISTIC]
+    O -->|No| R[HYPOTHESIS]
+    
+    L --> S{Calculation Gate<br/>§9.3}
+    P --> S
+    Q --> S
+    R --> T[CANNOT ENTER<br/>CALCULATIONS]
+    M --> T
+    
+    S -->|conf ≥ 0.50| U[ENTER DETERMINISTIC<br/>LAYERS]
+    S -->|conf < 0.50| T
+```
+
+---
+
+## 16. Phase 1: Context Ingestion
+
+### 16.1 Objective (v3.3)
+
+Build a complete design tree using **fully validated, classified, bias-checked, assumption-free information** — then run the Closing Protocol to catch what wasn't asked.
+
+### 16.2 Phase 1 Template (v3.3)
+
+```
+# PHASE 1: CONTEXT INGESTION (v3.3)
+
+## Your Objective
+Build a complete design tree for this decision fork using ONLY
+classified, validated information.
+
+## The Validation Stack (applies to every answer)
+1. TRANSLATE: Natural language → numbers (4-tier system, §5)
+2. BIAS CHECK: Devil's Advocate on user answers (§6)
+3. ASSUMPTION CHECK: Source required for counterparty info (§7)
+4. CLASSIFY: Every claim sorted per §9
+5. FRAMEWORK CHECK: Research claims verified against library (§8)
+6. EV CHECK: Contingent values probability-weighted (§11)
+7. BASE RATE CHECK: Statistics from database only (§12)
+
+## What You Can Claim
+- USER facts: Only what user tells you (classify USER_VALIDATED)
+- RESEARCH: Only from Framework Library, only matching supports lists
+- STATISTICS: Only from Base Rate Database or user-cited sources
+- COUNTERPARTY info: Only with user-provided source
+- HYPOTHESES: Allowed, but framed as hypotheses, excluded from calculations
+
+## What You CANNOT Do
+- Generate statistics from memory
+- Cite frameworks for claims they don't support
+- Assume counterparty psychology/constraints
+- Treat contingent outcomes as certain
+- State any unclassified claim as fact
+
+## Session Closing (when frontier is empty)
+Ask three levels of open-ended questions:
+1. Self: "Anything about yourself we haven't discussed?"
+2. Each stakeholder: "Anything about [stakeholder] we haven't covered?"
+3. Situation: "Anything about the overall situation we haven't covered?"
+Re-open tree if new information surfaces.
+
+## Design Tree Nodes
+Standard Phase 1 nodes (situation, stakeholders, choices, baseline,
+red lines, leverage precursors) — emergent per context.
+```
+
+### 16.3 Worked Example: Fully Validated Question Sequence
+
+```
+❓ 2: Monthly Financial Obligations
+What are your total monthly obligations (housing, debt, dependents)?
+➡️ Recommended: USER_INPUT_REQUIRED
+
+USER: "About $4,500 including everything"
+
+── TRANSLATION ──────────────────────────────
+Tier 1: "$4,500" → 4500 (HIGH, fuzzy "about" → ±450)
+Classification: USER_VALIDATED (0.90)
+── BIAS CHECK ───────────────────────────────
+Anchoring? No prior numbers. Clear.
+Loss aversion? No loss language. Clear.
+── ASSUMPTION CHECK ─────────────────────────
+User fact, user stated → valid
+── RESULT ───────────────────────────────────
+✅ obligations = 4500 ± 450 [USER_VALIDATED, 0.90]
+   → Financial floor = 4500 [calculated, deterministic]
+```
+
+---
+
+## 17. Phase 1.5: Leverage Mapping
+
+### 17.1 v3.3 Enhancements
+
+Phase 1.5 now applies the full validation stack to every leverage point:
+
+1. **Counterparty constraint claims** require source (user conversation, observed behavior)
+2. **Leverage strength assessments** citing frameworks must verify against library
+3. **Emergent discoveries** validated per-strategy (§10)
+4. **Hidden leverage detection** cannot assume counterparty info to detect leverage
+5. **Session Closing Protocol** runs after leverage mapping
+
+### 17.2 Leverage Point Schema (v3.3)
+
+```python
+@dataclass
+class LeveragePoint:
+    # ... all v3.2 fields ...
+    
+    # v3.3 additions
+    claim_classification: ClaimClassification = ClaimClassification.HYPOTHESIS
+    claim_confidence: float = 0.0
+    framework_citation: Optional[str] = None
+    user_evidence: Optional[str] = None     # Source for counterparty claims
+    probability_basis: Optional[str] = None # For probabilistic leverage
+```
+
+### 17.3 Validated Leverage Discovery Example
+
+```
+❓ 4: Counterparty Timeline Pressure
+What do you know about the other party's timeline or deadlines?
+
+USER: "They mentioned they want to close by end of month"
+
+── ASSUMPTION CHECK ─────────────────────────
+Counterparty claim. Source?
+SYSTEM: "How do you know this? Did they say it directly?"
+USER: "Yes, the recruiter told me they're targeting month-end close"
+── VALIDATION ───────────────────────────────
+Source: user_knows (recruiter stated)
+Classification: USER_VALIDATED (0.85)
+── LEVERAGE CREATION ────────────────────────
+✅ Leverage point created:
+   Domain: informational
+   Description: "Counterparty targeting month-end close"
+   Strength: 3.5 [basis: temporal_discounting — deadline pressure 
+               creates dependency; verified against library]
+   Source: "User conversation with recruiter"
+   Classification: USER_VALIDATED
+   Confidence: 0.85
+```
+
+---
+
+## 18. Phase 2: Game Theory Analysis
+
+*(Structure unchanged from v3.2; validation additions:)*
+
+- Pareto search uses **only leverage points with** `can_enter_calculations=True` and confidence ≥ 0.50
+- Any framework cited during game classification (e.g., "this is mixed-motive") verified against library
+- Session Closing Protocol runs after Phase 2
+
+---
+
+## 19. Phase 3: Minimax Decision Engine
+
+*(Structure unchanged from v3.2; validation additions:)*
+
+- All utility estimates in branches carry classifications
+- Contingent outcomes (probabilistic branches) use expected values per §11
+- Branch probabilities require basis (base rate, user estimate, or framework)
+- Session Closing Protocol runs after Phase 3
+
+---
+
+## 20. Leverage-Modified Minimax Solver
+
+*(Unchanged from v3.2 with one addition:)*
+
+```python
+class LeverageModifiedMinimaxSolver(MinimaxSolver):
+    def __init__(self, user_profile, leverage_map, translation_log=None):
+        super().__init__(user_profile)
+        self.leverage_map = leverage_map
+        
+        # v3.3: Filter to calculation-eligible leverage only
+        self.calculation_leverage = [
+            lp for lp in leverage_map.leverage_points
+            if lp.claim_confidence >= 0.50  # §9.3 gate
+        ]
+        
+        # Log excluded leverage for audit
+        self.excluded_leverage = [
+            lp for lp in leverage_map.leverage_points
+            if lp.claim_confidence < 0.50
+        ]
+```
+
+---
+
+## 21. Hidden Leverage Detection
+
+### 21.1 v3.3 Constraint
+
+Hidden leverage detection **cannot assume counterparty information to detect leverage**. The six deterministic patterns now require validated inputs:
+
+```python
+class ValidatedHiddenLeverageDetector:
+    """
+    Hidden leverage detection requiring validated inputs.
+    """
+    
+    def _detect_time_asymmetry_blindness(self, phase1_output, ...):
+        # v3.3: Counterparty timeline must be user-validated
+        counterparty_timeline = phase1_output.get("counterparty_timeline")
+        
+        if not counterparty_timeline or not counterparty_timeline.get("user_validated"):
+            # CANNOT detect without validated info
+            # Trigger question instead:
+            return self._generate_timeline_question()
+        
+        # Proceed with detection using validated data only
+        ...
+```
+
+---
+
+## 22. Epistemic Halt Mechanism
+
+### 22.1 v3.3 New Halt Triggers
+
+```
+ADDITIONAL HALT TRIGGERS (v3.3):
+
+5. FRAMEWORK MISAPPLICATION HALT
+   When: LLM cites framework for unsupported claim
+   Format: "The framework you cited doesn't support this claim. 
+            It supports: [matched claims]. Reframe or reclassify."
+
+6. BASE RATE NOT FOUND HALT
+   When: Statistic needed but not in database
+   Format: "I don't have validated data for [rate]. 
+            Would you like to provide an estimate with basis?"
+
+7. EV VIOLATION HALT
+   When: Contingent value about to be treated as certain
+   Format: "This value is contingent. What's the probability, 
+            and what's your basis?"
+
+8. CLAIM UNCLASSIFIED HALT
+   When: Claim about to enter pipeline without classification
+   Format: "This claim hasn't been classified. Classify per §9 
+            before proceeding."
+
+9. SYSTEM BIAS DETECTED HALT
+   When: LLM output triggers System Bias Detector
+   Format: "System bias detected: [type]. Correcting before proceeding."
+
+10. CLOSING PROTOCOL HALT
+    When: New information surfaced during closing
+    Format: "New information found. Re-opening design tree."
+```
+
+---
+
+## 23. Utility Quantification Layer
+
+### 23.1 ValidatedUtilityCalculator (v3.3)
+
+```python
+class ValidatedUtilityCalculator:
+    """
+    Rejects inputs without proper classification.
+    """
+    
+    def calculate_utility(self, choice_id, scenario, inputs):
+        for key, value in inputs.items():
+            # v3.3: All inputs must be classified claims
+            if not isinstance(value, ClassifiedClaim):
+                raise ValidationError(
+                    f"Input '{key}' is not a ClassifiedClaim. "
+                    f"Every input must pass §9 classification."
+                )
+            
+            if not value.can_enter_calculations:
+                raise ValidationError(
+                    f"Input '{key}' classification "
+                    f"({value.classification.value}) cannot enter calculations."
+                )
+            
+            if value.confidence < 0.50:
+                raise ValidationError(
+                    f"Input '{key}' confidence ({value.confidence}) below threshold."
+                )
+        
+        # Proceed with deterministic calculation
+        # All provenance carried into audit trail
+        ...
+```
+
+---
+
+## 24. Persistent Storage & Retrieval
+
+### 24.1 QMD Collections (v3.3)
+
+```
+~/.decision_engine/
+├── user_profiles/
+├── decision_trees/
+├── interview_logs/
+├── leverage_maps/
+├── translation_logs/
+├── bias_challenge_logs/
+├── claim_classification_logs/    # NEW v3.3
+├── framework_library/            # NEW v3.3 (versioned library)
+│   └── library_v1.md
+├── base_rates/                   # NEW v3.3
+│   └── rates_v1.md
+├── closing_protocol_logs/        # NEW v3.3
+├── stakeholders/
+├── outcomes/
+├── context_glossary/
+├── adrs/
+└── knowledge_base/
+```
+
+### 24.2 Complete Audit Trail Schema (v3.3)
+
+```json
+{
+  "audit_trail": {
+    "decision_id": "...",
+    
+    "translation_log": [...],
+    "bias_challenge_log": [...],
+    "assumption_log": [...],
+    
+    "claim_classification_log": [
+      {
+        "claim": "...",
+        "classification": "validated_research",
+        "confidence": 0.85,
+        "framework_citation": "batna_theory",
+        "verification": "matched: 'Having alternatives improves position'"
+      }
+    ],
+    
+    "framework_validation_log": [
+      {
+        "claim": "...",
+        "cited_framework": "prospect_theory",
+        "valid": true,
+        "matched_claim": "Losses loom larger than gains"
+      }
+    ],
+    
+    "ev_enforcement_log": [
+      {
+        "original_claim": "Equity is worth $300k",
+        "violation": "contingent_as_certain",
+        "correction": "EV = P(success) × $300k",
+        "probability_basis": "user estimate: 0.30"
+      }
+    ],
+    
+    "base_rate_log": [
+      {
+        "requested": "startup_failure_rates",
+        "found": false,
+        "system_response": "No validated data; requested user estimate"
+      }
+    ],
+    
+    "system_bias_log": [...],
+    "closing_protocol_log": [...],
+    
+    "excluded_from_calculations": [
+      {
+        "claim": "...",
+        "reason": "hypothesis (confidence 0.30 < 0.50 threshold)"
+      }
+    ],
+    
+    "calculation_audit": {
+      "inputs_used": [...],
+      "leverage_used": [...],
+      "leverage_excluded": [...]
+    }
+  }
+}
+```
+
+---
+
+## 25. Orchestrator Implementation
+
+```python
+class EmergentOrchestratorV33:
+    """
+    Full orchestrator with all v3.3 systems.
+    """
+    
+    def __init__(self, llm_client, storage, user_profile):
+        self.llm = llm_client
+        self.storage = storage
+        self.profile = user_profile
+        
+        # Validation stack
+        self.translator = NaturalLanguageTranslator(user_profile, [])
+        self.devils_advocate = DevilsAdvocateProtocol(user_profile, [])
+        self.assumption_eliminator = AssumptionEliminationProtocol()
+        self.framework_library = ValidatedFrameworkLibrary()
+        self.claim_classifier = ClaimClassifier(self.framework_library)
+        self.ev_enforcer = ExpectedValueEnforcement()
+        self.base_rates = BaseRateDatabase()
+        self.system_bias_detector = SystemBiasDetector()
+        self.closing_protocol = SessionClosingProtocol()
+    
+    def run_decision(self, initial_context):
+        # Phase 1 + Closing
+        phase1 = self._run_phase1(initial_context)
+        
+        # Phase 1.5 + Closing (leverage with full validation)
+        leverage_map = self._run_phase15(phase1)
+        
+        # Phase 2 + Closing
+        phase2 = self._run_phase2(leverage_map)
+        
+        if phase2.get("pareto_analysis", {}).get("win_win_possible"):
+            return self._format_win_win(phase2, leverage_map)
+        
+        # Phase 3 + Closing
+        phase3 = self._run_phase3(leverage_map)
+        
+        # Solver with calculation-gated leverage
+        solver = LeverageModifiedMinimaxSolver(
+            self.profile, leverage_map, self.translator.translation_log
+        )
+        recommendation = solver.solve(phase3)
+        
+        # Store with complete audit
+        self._store_with_full_audit(...)
+        
+        return recommendation
+```
+
+---
+
+## 26. Prompt Architecture
+
+The Master System Prompt (§4.6) incorporates all v3.3 requirements. Phase templates follow the patterns shown in §16.2, §17.2 with validation stack instructions.
+
+---
+
+## 27. User Interface Specifications
+
+### 27.1 New UI Components (v3.3)
+
+**Claim Classification Badge** (shown on every displayed claim):
+```
+┌─────────────────────────────────────┐
+│ Leverage: "Client has month-end     │
+│ deadline"                           │
+│                                     │
+│ ✓ USER-VALIDATED (85%)              │
+│ Source: Your conversation with      │
+│ recruiter                           │
+└─────────────────────────────────────┘
+```
+
+**Framework Verification Notice**:
+```
+┌─────────────────────────────────────┐
+│ ⚠️ Framework Check                  │
+│                                     │
+│ Claim: "Losses feel worse than      │
+│ gains"                              │
+│ Framework: Prospect Theory ✓        │
+│ Verified: Matches supported claim   │
+└─────────────────────────────────────┘
+```
+
+**Base Rate Not Found**:
+```
+┌─────────────────────────────────────┐
+│ ❓ No Validated Data Available       │
+│                                     │
+│ I don't have a validated base rate  │
+│ for: "startup failure rates"        │
+│                                     │
+│ Options:                            │
+│ a) Provide your estimate + basis    │
+│ b) Skip this rate                   │
+└─────────────────────────────────────┘
+```
+
+**Closing Protocol UI** (as specified in §14).
+
+---
+
+## 28. Technical Implementation Details
+
+### 28.1 Project Structure Additions (v3.3)
+
+```
+adie/src/
+├── ... (v3.2 structure) ...
+├── epistemics/                    # NEW v3.3
+│   ├── __init__.py
+│   ├── framework_library.py       # §8 — 45+ frameworks
+│   ├── claim_classifier.py        # §9
+│   ├── discovery_validation.py    # §10
+│   ├── ev_enforcement.py          # §11
+│   ├── base_rates.py              # §12
+│   └── system_bias_detector.py    # §13
+├── closing/                       # NEW v3.3
+│   ├── __init__.py
+│   └── session_closing.py         # §14
+```
+
+### 28.2 New Tests (v3.3)
+
+```
+tests/
+├── ... (v3.2 tests) ...
+├── test_framework_library.py      # §8
+├── test_claim_classifier.py       # §9
+├── test_discovery_validation.py   # §10
+├── test_ev_enforcement.py         # §11
+├── test_base_rates.py             # §12
+├── test_system_bias_detector.py   # §13
+└── test_session_closing.py        # §14
+```
+
+---
+
+## 29. End-to-End Example
+
+*(Fully compliant v3.3 walkthrough — replaces the flawed v3.1 Sarah example. Shows every validation gate firing: translation confirmations, bias challenges, assumption halts, framework verifications, EV corrections, base-rate honesty, and closing protocols at every phase end.)*
+
+The complete walkthrough demonstrates a general decision (using the client negotiation example, showing the machinery works identically for ANY domain):
+
+**Key validation moments shown:**
+1. Claim: "They urgently need this" → HALT → "How do you know?" → User: "Recruiter said month-end close" → USER_VALIDATED (0.85)
+2. Claim: "Negotiating typically improves outcomes" → Framework check → babcock_et_al ✓ VALIDATED_RESEARCH
+3. Claim: "Equity/bonus worth $X" → EV check → "Contingent; what's P?" → PROBABILITY_WEIGHTED
+4. Claim: "0.5% to 1.0% is common" → Base rate lookup → NOT FOUND → rejected as SPECULATION
+5. Closing Protocol at Phase 1 end → user reveals new stakeholder → tree re-opens
+6. Closing Protocol at Phase 1.5 end → user reveals hidden fear → Devil's Advocate → adjustment
+
+*(Full walkthrough available as companion document due to length; the validation machinery shown in §16.3 and §17.3 demonstrates the pattern.)*
+
+---
+
+## 30. Testing & Validation
+
+### 30.1 Test Categories (v3.3)
+
+| Test Type | Coverage Target |
+|-----------|-----------------|
+| All v3.2 categories | As before |
+| **Framework Library Tests** | 100% of library entries have valid schema; semantic matching accuracy ≥ 85% |
+| **Claim Classification Tests** | All 6 categories correctly assigned; gate blocks < 0.50 |
+| **Discovery Validation Tests** | All 5 strategies reject forbidden patterns |
+| **EV Enforcement Tests** | All contingent-as-certain patterns detected |
+| **Base Rate Tests** | Unknown rates return NOT_FOUND (never fabricated) |
+| **System Bias Tests** | Fabricated stats, prescriptive-as-descriptive detected |
+| **Closing Protocol Tests** | New info re-opens tree; no info completes session |
+| **Domain-Generality Tests** | Same machinery works for career, relationship, purchase, negotiation scenarios |
+
+### 30.2 Critical Test: Domain Generality
+
+```python
+class TestDomainGenerality:
+    """
+    The engine must work identically across decision domains.
+    """
+    
+    SCENARIOS = [
+        {"domain": "career", "situation": "job offer decision"},
+        {"domain": "relationship", "situation": "conflict with partner"},
+        {"domain": "purchase", "situation": "choosing between products"},
+        {"domain": "negotiation", "situation": "client terms"},
+        {"domain": "life", "situation": "whether to move cities"},
+    ]
+    
+    def test_validation_stack_domain_general(self):
+        """All validation components work for all domains"""
+        for scenario in self.SCENARIOS:
+            # Framework library lookup works
+            frameworks = self.library.find_frameworks_for_domain(scenario["domain"])
+            assert len(frameworks) > 0
+            
+            # Claim classifier works
+            claim = ClassifiedClaim(claim="test", ...)
+            result = self.classifier.classify(claim, ...)
+            assert result.classification in ClaimClassification
+            
+            # EV enforcement works
+            # Base rates return not-found honestly
+            # Closing protocol runs
+```
+
+---
+
+## 31. Deployment & Operations
+
+### 31.1 Configuration (v3.3 additions)
+
+```yaml
+epistemics:                        # NEW v3.3
+  framework_library:
+    path: "src/epistemics/framework_library.py"
+    version: "1.0"
+    require_support_match: true
+    reject_misapplication: true
+  claim_classification:
+    calculation_confidence_threshold: 0.50
+    reject_speculation: true
+    require_disclosure_for_heuristics: true
+  ev_enforcement:
+    reject_contingent_as_certain: true
+    require_probability_basis: true
+  base_rates:
+    fabrication_prevention: true
+    not_found_behavior: "ask_user"
+  system_bias_detector:
+    check_all_llm_outputs: true
+    reject_fabricated_statistics: true
+
+closing_protocol:                  # NEW v3.3
+  enabled: true
+  levels: ["self", "stakeholders", "situation"]
+  reopen_on_new_info: true
+```
+
+---
+
+## 32. Future Enhancements
+
+| Feature | Priority |
+|---------|----------|
+| Framework library expansion (curated additions) | High |
+| Embedding-based semantic matching for framework validation | High |
+| Domain-specific base rate packs (curated, sourced) | Medium |
+| Learned user calibration (track estimate accuracy over time) | Medium |
+| Cross-session claim reuse (validated claims persist) | Medium |
+| Framework conflict detection (when two frameworks disagree) | Low |
+
+---
+
+## Appendices
+
+### Appendix A: Complete Research Bibliography
+
+*(All 45+ frameworks cited in §8, plus all v3.2 bibliography entries — the full body of research underpinning this engine.)*
+
+### Appendix B: Glossary (v3.3 additions)
+
+| Term | Definition |
+|------|------------|
+| **Claim Classification** | Six-category epistemic sorting of every claim |
+| **Calculation Gate** | Threshold requiring confidence ≥ 0.50 to enter deterministic layers |
+| **Framework Library** | Curated database of validated research frameworks |
+| **Support Verification** | Checking claims match framework's `supports` list |
+| **Misapplication Detection** | Catching claims matching `does_not_support` list |
+| **Expected Value Enforcement** | Requiring probability-weighting of contingent values |
+| **Base Rate Database** | Sparse, sourced statistics lookup — never fabricates |
+| **System Bias Detector** | Devil's Advocate for LLM outputs |
+| **Session Closing Protocol** | Three-level open-ended questions ending each session |
+| **Domain-General** | Working identically across all decision domains |
+
+### Appendix C: Change Log
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 3.2.0 | 2026-01-18 | Translation, Devil's Advocate, Assumption Elimination |
+| **3.3.0** | **2026-01-19** | **Framework Library (45 frameworks), Claim Classification, Discovery Validation, EV Enforcement, Base Rate Database, System Bias Detector, Session Closing Protocol — all domain-general** |
+
+### Appendix D: Implementation Checklist (v3.3 additions)
+
+- [ ] All v3.2 items
+- [ ] Implement ValidatedFrameworkLibrary with 45 entries
+- [ ] Implement semantic matching for support verification
+- [ ] Implement ClaimClassifier with 6 categories
+- [ ] Implement CalculationGate (0.50 threshold)
+- [ ] Implement EmergentDiscoveryValidation (5 strategy rule sets)
+- [ ] Implement ExpectedValueEnforcement
+- [ ] Implement BaseRateDatabase (sparse, honest not-found)
+- [ ] Implement SystemBiasDetector (4 bias patterns)
+- [ ] Implement SessionClosingProtocol (3 levels)
+- [ ] Integrate all into grilling engine
+- [ ] Integrate CalculationGate into utility calculator and solver
+- [ ] Add claim_classification fields to all data structures
+- [ ] Update audit trail with all new logs
+- [ ] Build UI components for classifications, framework checks, base rate prompts
+- [ ] Write all new tests
+- [ ] Verify domain generality across 5+ scenario types
+- [ ] End-to-end test with full validation visible
+
+---

@@ -1,0 +1,27 @@
+{
+  "name": "adie-decision-engine",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AI Decision Intelligence Engine (ADIE) — Cloudflare-native, multi-user, OpenAI-compatible. Specs v3.1(6350)+v3.2(2299)+v3.3(3271)+v3.4(1269)+v3.5(617)=13,806 lines, addendum precedence v3.5>v3.4>v3.3>v3.2.",
+  "type": "module",
+  "workspaces": ["workers", "frontend"],
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter workers dev\" \"pnpm --filter frontend dev\"",
+    "build": "pnpm -r build",
+    "test": "vitest run --reporter=verbose",
+    "test:watch": "vitest --reporter=verbose",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "oxlint .",
+    "db:migrate": "wrangler d1 execute adie-db --local --file=./workers/migrations/0001_users.sql && wrangler d1 execute adie-db --local --file=./workers/migrations/0002_core.sql && wrangler d1 execute adie-db --local --file=./workers/migrations/0003_logs.sql",
+    "deploy": "pnpm --filter frontend build && wrangler deploy",
+    "pages:deploy": "pnpm --filter frontend build && wrangler pages deploy frontend/dist"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "oxlint": "^1.10.0",
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4",
+    "wrangler": "^3.114.0"
+  },
+  "engines": { "node": ">=22.0.0" }
+}

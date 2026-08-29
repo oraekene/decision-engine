@@ -1,0 +1,33 @@
+Unsetting fine-grained PAT to use keyring (repo scope)
+Creating 101 issues in oraekene/decision-engine (addendum precedence respected)...
+could not add label: 'epic:infra' not found
+Γ£ù FAILED [EPIC-0] Scaffold: Cloudflare Workers + Hono + Pages monorepo (wrangler.toml, bindings, dev script): Command failed: gh issue create --repo oraekene/decision-engine --title "[EPIC-0] Scaffold: Cloudflare Workers + Hono + Pages monorepo (wrangler.toml, bindings, dev script)" --body-file "tmp_body_1787989095841_w8ep60v3ru8.md" --label "ready-for-agent" --label "enhancement" --label "epic:infra"
+could not add label: 'epic:infra' not found
+
+could not add label: 'epic:infra' not found
+
+node:internal/errors:983
+  const err = new Error(message);
+              ^
+
+Error: Command failed: gh issue create --repo oraekene/decision-engine --title "[EPIC-0] Scaffold: Cloudflare Workers + Hono + Pages monorepo (wrangler.toml, bindings, dev script)" --body-file "tmp_body_1787989095841_w8ep60v3ru8.md" --label "ready-for-agent" --label "enhancement" --label "epic:infra"
+could not add label: 'epic:infra' not found
+
+    at genericNodeError (node:internal/errors:983:15)
+    at wrappedFn (node:internal/errors:537:14)
+    at checkExecSyncError (node:child_process:916:11)
+    at execSync (node:child_process:988:15)
+    at createOne (file:///C:/Users/rotim/Documents/Decision%20Engine/scripts/create-tickets.mjs:688:17)
+    at file:///C:/Users/rotim/Documents/Decision%20Engine/scripts/create-tickets.mjs:710:19
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5) {
+  status: 1,
+  signal: null,
+  output: [ null, '', "could not add label: 'epic:infra' not found\n" ],
+  pid: 2856,
+  stdout: '',
+  stderr: "could not add label: 'epic:infra' not found\n"
+}
+
+Node.js v22.23.2

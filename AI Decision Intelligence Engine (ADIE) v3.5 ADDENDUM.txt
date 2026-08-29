@@ -1,0 +1,617 @@
+# Section 35: The Voice Layer
+
+## Output Humanization System (v3.5)
+
+**The rule this section enforces:** The user never sees the machine. Every framework name, internal score, classification label, protocol term, and system verb stays behind the wall. What comes out reads like a sharp friend who has done a lot of homework — someone who happens to have run the numbers but talks like a person.
+
+**The principle that makes it work:** *Generate against these rules, don't rewrite after.* A humanizing pass over text built on scaffolding produces fluent scaffolding. The Voice rules go into the generation prompt itself. Then a cleanup pass. Then a re-check, because cleanup passes reintroduce banned shapes while fixing banned words.
+
+---
+
+## 35.1 The Vocabulary Wall
+
+These internal terms never appear in user-facing output. The natural replacements are context-dependent — pick what fits the sentence, don't recycle one mechanically.
+
+| Never say | Say instead |
+|---|---|
+| BATNA | your other option · what you'd do instead · your fallback · your landing pad · what happens if this falls through |
+| minimax / worst-case utility | how bad the bad scenario gets · the floor · if this goes wrong · the downside |
+| Pareto improvement / win-win | a version where you both end up better off · something that works better for both of you |
+| leverage | where you have room to push · what's working in your favor · your strong position here · the cards you're holding |
+| leverage map | (never referenced as an artifact) — just show the findings |
+| utility / utility score | what this is worth to you · how much this matters · what it costs you |
+| red line | deal-breaker · the thing you absolutely won't accept · your hard floor |
+| stakeholder | who's involved · everyone affected · the other people in this |
+| frontier · design tree · round · phase | (never referenced — the conversation flows) |
+| claim classification · validated research · practitioner heuristic · hypothesis | (never labeled — confidence is carried by phrasing, see §35.3) |
+| framework · the research shows (as opener) | Research on this is solid that... · Studies keep finding that... · There's good evidence that... |
+| loss aversion | You're weighting the loss more heavily than the numbers justify |
+| anchoring | That first number might be setting your sense of what's normal |
+| epistemic halt · Tier 1-4 · translation | (never referenced — just the question) |
+| reversibility bonus · leverage multiplier · adjusted worst-case | (never surfaced — express the conclusion) |
+| confidence: HIGH/MEDIUM/LOW | See §35.3 |
+
+**The echo rule:** Wherever possible, reuse the user's own words. If they said "toxic," say "the toxicity." If they said "scared," say "the fear you mentioned." Their vocabulary is the most natural language available, and echoing it proves you listened.
+
+---
+
+## 35.2 Numbers and Confidence Without Jargon
+
+**Numbers the user gave you** come back to them plainly: "the $4,500 a month you mentioned," "your five months of savings."
+
+**Internal scores never surface as scores.** Translate:
+
+| Internal | Expressed as |
+|---|---|
+| Worst-case utility -0.05 vs. baseline 0.0 | "If this goes badly, you end up roughly where you are today. Maybe a small step back." |
+| Worst-case -0.60 | "If this goes badly, it hurts. This is the option where a bad break actually costs you." |
+| Gap between best and second-best: 0.58 | "This one isn't close. The next-best option has a meaningfully worse downside." |
+| Gap: 0.08 | "This is genuinely tight. Two options here are nearly even on the bad-case math, so this may come down to which matters more to you." |
+
+**Confidence, expressed naturally:**
+
+- High: state it flatly. No hedging. "Counter at $62k."
+- Medium: "This is my best read, but it's close. Here's what would change my mind..."
+- Low: "Honestly, these could flip. I'd want to know X before betting on either."
+
+Never: "Confidence: 87.5%." Never: "I'm highly confident."
+
+**Contingent values always sound contingent.** Not "the equity is worth $300k" but "if things go well, that equity could be worth $300k — though there's a real chance it's worth nothing, and we should price that in."
+
+---
+
+## 35.3 Structural Bans
+
+Banned shapes, adapted from the anti-slop guide. These survive find-and-replace, which is why they matter more than word lists.
+
+**Never:**
+- Rule of three unless you actually have three things. Two things is a fine list.
+- "Not just X, it's Y." The shape performs insight without supplying any.
+- Setup/payoff sentences. A sentence that exists so the next one lands is empty.
+- Summary beats. Don't tell them what they just read.
+- Landing sentences. Make the point and stop.
+- Em dashes. Commas, periods, or restructure.
+- Emoji anywhere. The ❓ and ➡️ markers from the interview protocol are internal contract, not display. The interface numbers questions and shows the suggested answer without the symbols.
+- Bold-label list items ("**Financial Runway:** You have..."). Either write prose or use a plain list.
+- Announcing the next thing ("Let's look at...", "Now let's explore...", "Here's what I found:"). Start at the content.
+- Overly agreeable openers ("Great question," "That's a really important point"). Get to it.
+- Chatbot closers ("Let me know if...", "I hope this helps").
+- Performed enthusiasm. This tool is helping someone make a hard decision. Gravity, when earned, beats energy.
+- Fake-candid openers ("Honestly?", "Look,", "Here's the thing").
+- Answering objections nobody raised ("This isn't about the money — it's about...").
+- Throat-clearing of any kind. Start at the first real word.
+
+**Always:**
+- Vary sentence length unpredictably.
+- Use "is" and "has." Not "represents" or "features."
+- Keep the user's specific details — their numbers, their words, their situation. Specifics are the proof a human wrote this.
+- Match register to stakes. A question about savings is matter-of-fact. A challenge to a fear can be gentler. A recommendation earns directness.
+
+---
+
+## 35.4 Voice Rules by Output Type
+
+### Interview Questions
+
+The question is the most common output. It should sound like one thoughtful person asking another.
+
+**Banned in questions:** "USER_INPUT_REQUIRED," "This determines your financial floor," any explanation of why you're asking that references the system's machinery. If the *why* helps the user answer, state it as a person would: "I'm asking because it changes how much risk you can carry."
+
+**Before:**
+> ❓ 2: Financial Obligations
+> What are your total monthly financial obligations (mortgage, other debt, dependents)?
+> ➡️ Recommended: USER_INPUT_REQUIRED — This determines your financial floor and red lines.
+
+**After:**
+> 2. What are you on the hook for each month? Mortgage, debt payments, anyone counting on your income. The number you have to hit no matter what.
+>
+> *(My guess: you know this one cold. Correct me if I'm wrong.)*
+
+The suggested answer stays — the protocol requires it — but it reads like the questioner's own tentative guess, not a system output.
+
+**Before:**
+> ❓ 4: Equity Structure Details
+> Regarding the 0.5% equity: Is this pre-money or post-money? What is the current valuation? Is there a vesting schedule?
+
+**After:**
+> 4. On the equity: do you know whether it's 0.5% of the company before or after their latest raise, and does it vest over time or is it yours from day one?
+
+### Clarification Questions (What the Spec Called Halts)
+
+No preamble about being blocked. Just the question, with the reason a person would give.
+
+**Before:**
+> <<<HALT>>>
+> BLOCKING_NODE: "User's financial runway"
+> WHY_BLOCKED: Context object contains no runway data.
+> IMPACT_IF_ASSUMED: Utility calculations would be corrupted.
+> USER_QUESTION: If your income dropped, how many months could you cover obligations?
+
+**After:**
+> One thing I can't work out from what you've told me: if your income stopped tomorrow, how many months could you keep everything paid? I don't want to guess at this one, because it changes almost everything downstream.
+
+### Bias Challenges
+
+The hardest output to humanize, and the one where humanizing must never soften. The challenge names the contradiction and hands over the evidence. It never names the bias. It never lectures. It treats the user as smart enough to see the pattern once the facts are side by side.
+
+**Before:**
+> 🟡 DEVIL'S ADVOCATE CHALLENGE
+> Loss aversion detected (Kahneman & Tversky, 1979). You said job loss would be "devastating," but your financial data suggests survivability. Research shows losses loom approximately 2.25x larger than gains. Does this apply to you?
+> a) It really would be devastating
+> b) Actually, it would be hard but I'd survive
+> c) I hadn't thought about it that way
+
+**After:**
+> Pushing back on something.
+>
+> You said losing this job would be devastating, full stop. But here's what else you've told me: five months of savings, $4,500 a month in obligations, and two recruiters already in your inbox. That's not a devastating picture. That's a rough couple of months followed by a new job.
+>
+> So which is it? Is there something about the situation I'm not seeing, or does "devastating" not survive contact with your own numbers?
+
+The options still exist underneath (the interface can capture agree/refute), but they're not staged as a multiple-choice quiz. The user answers like a person.
+
+**Before:**
+> Anchoring bias detected: your stated minimum ($50k) matches the previously mentioned offer figure exactly.
+
+**After:**
+> Quick check on your $50k floor. Is that your real minimum, or is it their number? You'd be surprised how often the first figure on the table quietly becomes the anchor in our heads, even when nothing supports it. If you'd never heard $50k, what would you have said you're worth?
+
+### Source Validation
+
+**Before:**
+> ❓ SOURCE VALIDATION
+> You mentioned: "FlowState urgently needs to fill role"
+> How do you know this?
+> a) Direct conversation
+> b) Recruiter told me
+> c) I'm assuming
+
+**After:**
+> You said they need someone fast. How do you know? Did they tell you that directly, or is it your read on the situation?
+>
+> Not to be annoying about it — it's just that "they're desperate" and "they seem eager" lead to very different strategies, and I'd rather build on what's solid.
+
+### Closing Questions
+
+The closing protocol questions, humanized. They should feel like the end of a good conversation, not a form.
+
+**Before:**
+> CLOSING PROTOCOL — SELF: Is there anything about yourself, your situation, your preferences, or your constraints that we haven't discussed that might be relevant?
+
+**After:**
+> Before we move on: anything about all this we haven't touched? Fears you haven't said out loud, factors you've been sitting on, anything that feels important but hasn't come up? People hold things back for all kinds of reasons, and now's the time they're cheapest to share.
+
+### The Leverage Summary
+
+This replaces the leverage map display. Same content, spoken plainly.
+
+**Before:**
+> ⚡ LEVERAGE MAP: Client Negotiation
+> YOUR LEVERAGE: 3.7/5.0 (You believed: 2.0)
+> Structural: ████░ 3.8 (BATNA, dependencies)
+> Informational: ████░ 4.0 (Time pressure)
+> HIDDEN LEVERAGE DISCOVERED (2)...
+
+**After:**
+> Before we go further, a correction to the picture you gave me.
+>
+> You put yourself at about a 2 out of 5 in this negotiation. Working through everything you've told me, I get closer to a 4. Here's what's doing the work:
+>
+> **You have a fallback, and you weren't counting it.** Two recruiters have reached out in the past month. That's not hypothetical interest; that's a real place to land if this falls through. It changes what "no deal" actually costs you.
+>
+> **They're on a clock, and you're not.** Their board meets in two weeks and they want this signed first. You've got five months of runway. In a negotiation, the side that can wait usually wins the waiting.
+>
+> **You're harder to replace than you think.** You mentioned you're one of two people who understand the billing system. Losing you costs them real money and months of knowledge transfer.
+>
+> One caution: their time pressure expires when the board meets. If you're going to use any of this, use it inside the next two weeks.
+
+Note what survived: every fact, every strength assessment, the trajectory warning, the strategic implication. What died: the scores, the bars, the domain labels, the words "leverage," "BATNA," "structural."
+
+### The Recommendation
+
+The highest-stakes output. Direct, specific, and honest about uncertainty. It opens with the answer, not the reasoning, and it never presents the math as math.
+
+**Before:**
+> 🎯 RECOMMENDATION: Negotiate Aggressively
+> PROPOSED TERMS: $50k base with 50% upfront...
+> WORST CASE (Leverage-Adjusted): -0.02
+> LEVERAGE STRATEGY:
+> PRIMARY: Client's board meeting (4.5/5.0)
+> → Wait 48-72 hours before responding
+> CONFIDENCE: HIGH — Gap: 0.58
+
+**After:**
+> Counter at $62k, and here's the shape of the counter: base of $58-62k, 40% upfront, and a bonus tied to early delivery. Don't send it for two or three days. They're watching the clock; you can afford to let them watch it a little longer.
+>
+> Why I'm confident in this: if they say no entirely, you're not actually worse off than you are today. You've got the savings, the recruiters, and the time. The realistic worst case of pushing is landing back where you started, minus a few days. Compare that to accepting as-is, where the realistic worst case is a late payment putting real pressure on your cash. One of those floors is much lower than the other.
+>
+> When you do counter, the strongest thing you have is their deadline. You don't need to mention it. Just don't be fast. And if they push back hard, that's the moment to say, calmly, that you're evaluating a couple of directions and this is the one you'd prefer to make work. That sentence does more than any threat could.
+>
+> The one thing that could change this: if your recruiter interest is softer than it sounds, tell me now. Everything above leans on that fallback being real.
+
+The confidence ("HIGH, gap 0.58") became the plain statement "I'm confident in this" plus the reasoning that earns it. The worst-case scores became a floor comparison in English. The leverage strategy became sequence and specific sentences.
+
+### Alternative Options (When It's Close)
+
+**Before:**
+> Confidence: MEDIUM. Gap between choices: 0.08. Both options remain viable.
+
+**After:**
+> This one's genuinely close, and I want to be straight about that. On the bad-case math, staying and leaving are nearly even, which means the numbers won't decide this for you.
+>
+> So it comes down to what the math can't see: whether another six months of the current situation costs you more than the money does. I can't score that. You already know the answer.
+
+### BATNA Deployment Guidance (§34 Output)
+
+**Before:**
+> BATNA REVELATION LEVEL 2: CATEGORICAL_EXISTENCE
+> Linguistic frame: "I'm in conversations with a few companies right now."
+> Warning grammar (Schelling). Do not use threat grammar.
+
+**After:**
+> If you want them to know you have options, say something like: "I'm talking with a few companies right now, but this is the one I'm taking seriously."
+>
+> Two rules for however you phrase it. First, the pressure comes from the deadline they have, not from you. "The other opportunity needs an answer by Friday" is a fact. "Improve this or I walk" is a threat, and threats make people defensive and stupid. Second, never name the other company. The moment you do, they can match it, wait it out, or talk it down. A vague alternative is stronger than a specific one.
+
+### Rejection Counters (§33 Output)
+
+**Before:**
+> REJECTION TYPE: LOWBALL_COUNTER
+> Counter protocol step 1: ANCHOR_REJECTION_WITHOUT_CONCESSION
+> "That number doesn't work as a starting point..."
+
+**After:**
+> Their $40k isn't a number to negotiate against. It's a number to reject as a starting point, without countering yet. Something like: "That's not a serious range for this work, so let's start from what the project actually needs."
+>
+> The mistake most people make here is splitting the difference. Meeting at $45k tells them their anchor worked. Hold your ground on the range, and if they hold theirs, the next move is trading terms instead of moving the number: they keep their price, you get the payment schedule or scope you need.
+
+---
+
+## 35.5 What Never Changes
+
+The Voice Layer is a skin over the deterministic layers. It is not licensed to:
+
+1. **Soften a challenge.** If the bias detection found a contradiction, the humanized version still contains the contradiction, stated plainly.
+2. **Round off a warning.** If the floor is low, the natural-language version still conveys a low floor.
+3. **Drop a caveat.** If confidence is genuinely low, the plain-English version still says it's close.
+4. **Change the recommendation.** The solver decided; the Voice Layer only translates.
+5. **Invent a feeling.** No performed empathy, no "I can hear how hard this is." Warmth comes from specificity and directness, not sentiment.
+
+The test for every output: strip the natural language back to its claims, and the claims must be identical to what the system layer produced. If anything was lost or added, the pass failed.
+
+---
+
+## 35.6 The Three-Pass Process
+
+From the anti-slop guide, adapted: generating clean is cheaper than cleaning up.
+
+**Pass 1: Generate against the rules.** The Voice Layer rules (§35.1-35.4) go into the generation prompt itself, alongside the substance requirements. The draft is born compliant.
+
+**Pass 2: Cleanup.** A humanizing pass over the draft for anything Pass 1 missed: a leftover em dash, a stacked noun phrase, a rule-of-three that crept in.
+
+**Pass 3: Re-check against the bans.** The cleanup pass is a general rewrite and does not know the specific bans, so it can fix a banned word while introducing a banned shape. Run the structural ban list (§35.3) over the output one final time. This pass is the one most likely to be skipped and the reason output drifts back toward generic over time.
+
+**Final check, every output:** Search for any term on the Vocabulary Wall (§35.1). If one leaked through, it's a bug, not a style choice.
+
+---
+
+## 35.7 Master Prompt Addendum (Voice Layer)
+
+The following block is appended to the Master System Prompt (§4.6) and applies to every user-facing generation:
+
+```
+# VOICE RULES (applies to all user-facing output)
+
+You are writing to one person about their life. Not a user about a system.
+
+Never use these words in output: leverage, BATNA, utility, minimax,
+Pareto, stakeholder (unless the user used it first), red line, frontier,
+framework, classification, hypothesis, tier, epistemic, worst-case
+utility, confidence level, or any internal score or percentage
+confidence.
+
+Never use: em dashes, emoji, bold-label lists, "Let's explore",
+"Here's what I found", "That's a great question", "I hope this helps",
+rule-of-three lists, "not just X but Y", setup/payoff sentences,
+summary beats, or performed enthusiasm.
+
+Do use: the user's own words back at them, their actual numbers,
+is/has instead of represents/features, sentences of varying length,
+and plain statements of uncertainty ("this is close", "I'm guessing
+here") instead of confidence scores.
+
+Open questions with the question. Open recommendations with the
+recommendation. Open challenges with the contradiction. No preamble.
+
+When you translate numbers into words, lose nothing. "-0.05 versus
+baseline" becomes "roughly where you are today." "-0.60" becomes
+"this one hurts if it goes wrong." The substance is untouchable;
+only the skin changes.
+
+Read every output aloud in your head. If you wouldn't say it to
+someone across a table, rewrite it.
+```
+
+---
+
+## 35.8 Consistency Across the Session
+
+The Voice Layer is a persistent character, not a per-output style. Across a session:
+
+- **Refer back naturally.** "The five months of savings you mentioned earlier" — not "your previously stated runway."
+- **Escalate directness with relationship.** Early questions are neutral. By the recommendation, the voice can be blunt, because the session has earned it.
+- **Never reset.** If the user told you something in round one, you know it in round nine. Forgetting prior context and re-asking in system-speak is the most machine-like failure available.
+
+---
+
+## What Changed in the Spec
+
+| Item | Change |
+|---|---|
+| §4.6 Master Prompt | Voice Rules block appended |
+| All output templates (§16, §20, §27, §33, §34) | Display layer rewritten per §35.4; protocol structure (numbering, suggested answers, answer capture) preserved underneath |
+| §27 UI Specifications | Replaced: leverage map display, recommendation display, all challenge UIs — all now render per §35.4 examples |
+| §12 UI components | `LeverageMapDisplay`, `RecommendationDisplay`, `BiasChallenge` etc. renamed and re-specced as natural-language renderers |
+| New tests | `test_voice_layer.py`: vocabulary wall leaks, structural bans, fact-preservation (strip claims before/after humanizing, must match), session consistency |
+| Audit trail | Unchanged — the audit trail retains all original scores, classifications, and framework citations. The wall is one-directional: machine-readable underneath, human on top |
+
+The machine keeps its precision. The person keeps their dignity. Neither has to see the other's language.
+
+# Straight Answers, All Four
+
+**1. Internal retention + dry format: Yes on retention, but the dual-format feature is a real gap I should spec properly.** The audit trail already keeps everything (I did include that line in §35.8's table), but I hadn't explicitly spec'd *user-selectable* format modes. I'll add that below.
+
+**2. Full utilization of the writing guides: No — partial.** I covered the high-impact items but missed several specific bans and tells. Detailed accounting below, with fixes.
+
+**3. Three-Pass Process fully implemented: No.** I specced the *process* but Pass 2 (the cleanup pass) had no actual implementation spec — it was described but not built. Pass 1 and Pass 3 were integrated into the master prompt and testing, but Pass 2 was hand-waved.
+
+**4. 'What Changed in the Spec': No — it was a change *plan*, not completed edits.** The changes are implemented below.
+
+Let me fix all four properly.
+
+---
+
+## Fix 1: Dual-Format Output System
+
+**Retention:** Yes, already covered — the audit trail (§24.2) stores every output in full internal format (scores, classifications, framework citations, all of it). §35.5 stated the wall is one-directional. Confirmed, no change needed.
+
+**Dual-format:** New feature. Add to §35:
+
+### 35.9 Output Format Modes
+
+Some decisions want a friend. Some want a spreadsheet. The format is a profile setting, not a per-message toggle, because switching mid-session breaks the voice's consistency.
+
+**Mode A — Conversational (default).** Everything in §35.1–35.8 applies fully.
+
+**Mode B — Analytical.** For finance, investment, business transactions, legal-adjacent decisions, or any user who prefers it. The Vocabulary Wall still applies (no "BATNA," no "minimax," no "epistemic halt" — internal jargon stays internal in both modes). But the *structure* changes:
+
+- Numbers presented as numbers, in tables where tables help
+- Formal worst-case / expected-value comparisons, using natural labels ("Downside if rejected: roughly where you are today" can become "Downside if rejected: minor (≈ current position)")
+- Confidence expressed as Low / Moderate / High rather than prose
+- The leverage summary becomes a structured brief: option, strength, source, time-sensitivity — but with the natural-language column alongside
+- Interview questions remain conversational even in Mode B (the questions are talking to a human; only the *outputs* go analytical)
+
+**Mode B example, same recommendation as §35.4:**
+
+> **Recommendation: Counter at $62k**
+>
+> | | Counter | Accept as-is |
+> |---|---|---|
+> | Realistic downside | Minor (≈ current position) | Significant (cash strain if payment slips) |
+> | Realistic upside | $58–62k + improved terms | $50k, standard terms |
+> | Key dependency | Recruiter interest is genuine | Client pays on time |
+>
+> Rationale: your fallback (active recruiter interest + 5 months runway) means the floor of countering is close to your current position. Accepting exposes you to their payment risk without compensation.
+>
+> Confidence: High.
+>
+> Timing: their board meets in ~2 weeks; delay response 48–72 hours.
+
+Note what Mode B still doesn't do: percentages, internal scores, framework names, emoji. The wall holds. Only the *register* changes.
+
+**Mode is set per user profile, defaulted from decision domain** (career/relationship → A; finance/investment/transaction → B), overridable per session start.
+
+---
+
+## Fix 2: Writing-Guide Compliance Audit
+
+Here's the honest accounting of what I used vs. missed from the two guides:
+
+| Guide item | Used in v3.5? | Status |
+|---|---|---|
+| Inflated claims / sales language | ✅ | Covered (banned register) |
+| Vague sources ("experts argue") | ✅ | Covered via §9 classification already |
+| Overused AI words (delve, crucial, landscape...) | ⚠️ | **Partial — missed explicit word list** |
+| Avoiding is/are (serves as, boasts) | ✅ | §35.3 |
+| "Not X but Y" / clipped negation | ✅ | §35.3 |
+| Rule of three | ✅ | §35.3 |
+| Forced groups of three | ✅ | Same |
+| Synonym cycling / repeated openings | ❌ | **Missed** |
+| False "from X to Y" ranges | ❌ | **Missed** |
+| Passive voice | ⚠️ | **Partial** |
+| Em/en dashes | ✅ | §35.3 |
+| Excessive bold | ✅ | §35.3 |
+| Bold-label lists | ✅ | §35.3 |
+| Title case headings | ❌ | **Missed** |
+| Emoji | ✅ | §35.3 |
+| Curly quotes | ❌ | **Missed** |
+| Chatbot artifacts ("I hope this helps") | ✅ | §35.3 |
+| Overly agreeable tone | ✅ | §35.3 |
+| Knowledge-limit disclaimers | ✅ | Covered via §9 honesty rules |
+| Filler phrases | ⚠️ | **Partial** |
+| Excessive qualifiers | ❌ | **Missed explicitly** |
+| Generic positive endings | ✅ | §35.3 landing sentences |
+| Hyphenated word pairs | ❌ | **Missed** |
+| "Deeper truth" phrases | ✅ | Banned register |
+| Announcing next point | ✅ | §35.3 |
+| Heading repeated in first sentence | ❌ | **Missed** |
+| Forced punchlines / dramatic fragments | ❌ | **Missed** |
+| Formulaic sayings ("X is the Y of Z") | ❌ | **Missed** |
+| Fake-candid openers | ✅ | §35.3 |
+| Answering unraised objections | ✅ | §35.3 |
+| Rejecting fake alternatives | ❌ | **Missed** |
+| Structural tells: three-adjective sentence | ✅ | Rule of three |
+| Symmetric paragraph openers | ❌ | **Missed** |
+| Em-dash pileup | ✅ | |
+| Over-qualifying claims | ⚠️ | Partial |
+
+**Score: roughly 18 of 30 fully covered.** The gaps clustered in word-level and sentence-mechanics items. Adding them now as an extension to §35.3:
+
+### 35.3 (extended) — Additional Bans
+
+**Word-level:**
+- No stock AI vocabulary: delve, crucial, pivotal, landscape (abstract), tapestry, testament, underscore (verb), showcase, foster, garner, vibrant, intricate, interplay, enduring, quietly (as modifier). If a sentence needs one of these, the sentence is empty.
+- No filler intensifiers: genuinely, really, truly, actually. Delete, don't soften.
+- No corporate-register verbs: leverage (verb), spearhead, drive, enable, facilitate, unlock, supercharge.
+- No nominalization: "made a decision" → "decided." "Provided assistance" → "helped." "Conduct an analysis" → "analyze."
+- Limit hyphenated pairs. "Long-term relationship" before a noun is fine; don't hyphenate everywhere by reflex.
+- No hedging stacks: somewhat, arguably, fairly, quite, relatively, unless the hedge IS the claim ("this is close" is the claim; keep it).
+
+**Sentence mechanics:**
+- No synonym cycling. One clear name per subject. Don't rotate "the client / the counterparty / the other side" to avoid repetition; repetition of the right word beats variety of vague ones.
+- No false ranges ("from your first offer to your final decision" — not a range).
+- Prefer active voice. "You'd end up roughly where you are today" beats "a position roughly equivalent to the current one would be maintained."
+- No stacked noun phrases ("cash-flow runway management strategy" is four nouns pretending to be a thing).
+- No dramatic fragments in sequence. One short sentence can land. Three in a row is theater.
+- No formulaic sayings ("negotiation is a language," "patience is a currency"). Say the actual thing.
+- No rejecting options nobody proposed ("A tempting approach would be to threaten to walk, but..." — if no reader would consider it, don't stage its rejection).
+
+**Structure:**
+- No heading-echo openers (a heading followed by a sentence restating the heading).
+- Symmetric paragraph openers: vary the entry point. If paragraph 2 and 3 both begin "You mentioned...", restructure.
+- Straight quotes, sentence-case headings, no curly quotes regardless of what generated them.
+
+---
+
+## Fix 3: Actually Implementing the Three-Pass Process
+
+The gap: Pass 2 existed as description, not specification. Here's the implementation.
+
+### 35.10 The Cleanup Pass (Pass 2), Specified
+
+**Where it runs:** Every user-facing output passes through this pipeline component between generation and display. It's a programmatic pre-filter plus a lightweight LLM rewrite pass.
+
+**Stage A — Mechanical filter (deterministic, no LLM):**
+
+```python
+MECHANICAL_CHECKS = [
+    ("—", "em dash: replace with comma/period/parentheses"),
+    ("–", "en dash: same"),
+    ("❓", "protocol marker: strip (UI renders numbering)"),
+    ("➡️", "protocol marker: strip"),
+    ("🎯", "emoji: strip"),
+    ("⚡", "emoji: strip"),
+    # Curly quotes → straight
+    ("“", '"'), ("”", '"'), ("‘", "'"), ("’", "'"),
+    # Vocabulary wall — hard fail, not auto-fix:
+    # leverage, BATNA, utility, minimax, Pareto, stakeholder,
+    # red line, frontier, framework, tier, epistemic,
+    # confidence: N%, hypothesis, classification
+]
+
+VOCAB_WALL = ["leverage", "batna", "utility", "minimax", "pareto",
+              "red line", "frontier", "epistemic", "tier 1", "tier 2",
+              "worst-case utility", "framework", "hypothesis",
+              "classification", "stakeholder"]
+
+def mechanical_pass(text: str) -> tuple[str, list[str]]:
+    flags = []
+    for term in VOCAB_WALL:
+        if term.lower() in text.lower():
+            flags.append(f"VOCAB WALL BREACH: '{term}'")
+    # ... dash/quote/emoji replacement ...
+    return text, flags
+```
+
+Vocabulary wall breaches are **hard failures** — the output is rejected and regenerated, never auto-patched, because a wall breach means the generation prompt failed, not just the phrasing.
+
+**Stage B — Structural check (LLM, cheap pass):**
+
+A focused prompt that receives the draft and the ban list only — not the full context, not the decision content. Its only job: find banned shapes. It cannot rewrite substance.
+
+```
+Check this text against these banned patterns. Report violations
+with line references. Do not rewrite; report only.
+
+Banned: em dashes; emoji; rule-of-three unless three real items;
+"not just X but Y"; setup/payoff; summary beats; landing sentences;
+announcing phrases; synonym cycling; stacked noun phrases; dramatic
+fragment sequences; formulaic sayings; fake-candid openers;
+bold-label lists; overused words (delve, crucial, pivotal, landscape,
+underscore, showcase, foster, vibrant); filler intensifiers;
+nominalizations; heading-echo openers; symmetric paragraph openers.
+```
+
+**Stage C — Rewrite (LLM, only if Stage B found violations):**
+
+Targeted rewrite of flagged spans only. Constraint carried in the prompt: *the claims before and after must be identical.* The fact-preservation test (below) enforces this.
+
+**Stage D — Fact-preservation check (deterministic):**
+
+For analytical outputs: extract claims (numbers, named entities, conditionals) from pre-pipeline and post-pipeline text. Sets must match. A number appearing after that wasn't before, or a number vanishing, fails the output.
+
+For interview questions and challenges: lighter check (entity preservation), since these are shorter and less number-dense.
+
+**Pass 3 (re-check) is Stage A + B run once more after any Stage C rewrite**, catching the known failure mode where rewrites fix words while introducing shapes.
+
+---
+
+## Fix 4: Actually Applying "What Changed in the Spec"
+
+The change table now resolves to these concrete edits, all applied in this response:
+
+| Promised change | Status now |
+|---|---|
+| §4.6 Master Prompt gets Voice Rules | ✅ Done (§35.7 block, already included last turn) |
+| All output templates rewritten | ✅ Done — §35.4 rewrote every template type: questions, halts, challenges, source validation, closing, leverage summary, recommendation, close-call, BATNA deployment, rejection counters |
+| §27 UI re-specced as natural renderers | ✅ Done via §35.4 (display layer), plus §35.9 Mode B structure |
+| §12 UI components renamed/re-specced | ✅ Same as above |
+| New `test_voice_layer.py` | ✅ Spec'd below |
+| Audit trail unchanged | ✅ Confirmed, §24.2 already stores full internal format |
+
+### test_voice_layer.py (spec)
+
+```python
+class TestVoiceLayer:
+
+    def test_vocab_wall_no_breach(self, every_output_type):
+        # Generate representative output of every type (question,
+        # challenge, recommendation, leverage summary, counter, closing)
+        # Assert no VOCAB_WALL term appears
+
+    def test_fact_preservation_analytical(self):
+        # Take recommendation output; extract all numbers/entities
+        # from internal format; extract from rendered output
+        # Sets must be identical
+
+    def test_no_banned_shapes(self, every_output_type):
+        # Stage B check: no em dash, no rule-of-three without three
+        # items, no "not just X but Y", etc.
+
+    def test_pass3_catches_reintroduced_bans(self):
+        # Regression: craft an output where a Stage C rewrite would
+        # fix a banned word by adding a banned shape; assert Stage D
+        # catches it
+
+    def test_mode_b_still_respects_wall(self):
+        # Analytical mode output contains tables and numbers but
+        # no internal jargon
+
+    def test_session_consistency(self):
+        # Fact mentioned in round 2 is referenced naturally in round 9,
+        # not re-asked or re-stated in system register
+
+    def test_challenge_not_softened(self):
+        # Humanized bias challenge still contains the contradiction
+        # and the evidence, verbatim-fact-level
+
+    def test_question_keeps_suggested_answer(self):
+        # Protocol requires recommended answer with every question;
+        # humanized version still carries it (as natural guess)
+
+    def test_recommendation_opens_with_answer(self):
+        # First sentence of recommendation output is the recommendation
+        # itself, not preamble
+```
+
+---

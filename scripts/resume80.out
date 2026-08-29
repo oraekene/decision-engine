@@ -1,0 +1,44 @@
+Creating 21 issues in oraekene/decision-engine (addendum precedence respected, resume 80)...
+Γ£ô #81 [25-03] CounterProtocol integration: decision tree new branch, leverage map read, claim classification per counter, base rate not used, EV before deploy
+Γ£ô #82 [25-04] RejectionCounter frontend: live classification + per-type counter suggestion (voice humanized ┬º35.4 #10)
+Γ£ô #83 [26-01] BATNA Revelation Ladder 0-7 (silenceΓåÆgeneralΓåÆcategoricalΓåÆspecificΓåÆverifiableΓåÆactivation_signal(warning boundary)ΓåÆfinal_clarificationΓåÆactivation) + gates (strengthΓëÑ3.0/4.0 + reservation gap + verified)
+Γ£ô #84 [26-02] Warning-vs-Threat grammar (Schelling) + linguistic frames: external clock + preference preserved vs threat contingent on YOUR choice; system defaults to WARNING
+Γ£ô #85 [26-03] BATNAResponseHandler 5 responses (probeΓåÆdeflection, matchΓåÆintangibles, outwaitΓåÆdeadline, disparageΓåÆnon-defensive, bluffΓåÆlevel check real vs bluff retreat + ledger)
+Γ£ô #86 [26-04] BATNA DomainCalibration (career full ladder, relationship caps 0-3 safety override for boundaries) + CredibilityLedger (user_id+relationship_id, bluff destroyed, activated gains)
+Γ£ô #87 [27-01] Vocabulary Wall: 15 banned terms hard-fail mechanical_pass + echo rule (reuse user's words)
+Γ£ô #88 [27-02] Numbers & confidence humanization ┬º35.2: echo $4,500/five months, worst-case -0.05ΓåÆroughly where you are... -0.60ΓåÆthis hurts..., -0.05 gap 0.58ΓåÆnot close, 0.08ΓåÆtight, HIGH flat MEDIUM hedged LOW honest, contingentΓåÆcould be
+Γ£ô #89 [27-03] Structural Bans ┬º35.3 + Extended ┬º35.6: no rule-of-three, not just X but Y, setup/payoff, summary beats, landing sentences, em dashes, emoji, bold-label lists, announcing, agreeable openers, closers, etc + Always vary length, is/has
+Γ£ô #90 [27-04] Three-pass pipeline ┬º35.6+35.10: A mechanicalΓåÆB structural LLM report-onlyΓåÆC targeted rewrite flagged spansΓåÆD fact-preservation (numbers/entities) ΓåÆ A+B re-check; leak = bug
+Γ£ô #91 [27-05] 10 output-type voice rules ┬º35.4 (interview, haltsΓåÆclarification, bias challenges without naming bias, source validation, closing, leverage summary, recommendation opens with answer, close choice, BATNA deployment, rejection counters)
+Γ£ô #92 [28-01] InterviewRound.tsx: batch numbered questions UI, batch answer box n:..., Frontier progress, halt modals stacked
+Γ£ô #93 [28-02] LeverageMapDisplay ΓåÆ Voice natural renderer (┬º35.4 #6) + trajectory warning countdown
+Γ£ô #94 [28-03] RecommendationDisplay ΓåÆ Voice natural renderer (┬º35.4 #7) + leverage strategy timeline + confidence natural + audit expand
+Γ£ô #95 [28-04] TranslationConfirmation / SourceValidation / ClosingQuestions UI (┬º20.1-20.3, ┬º35.4) voice humanized
+Γ£ô #96 [28-05] Decision dashboard + past decisions searchable (hybrid search) + design-tree visualization (to_visualization graph) + CONTEXT/ADR viewers
+Γ£ô #97 [29-01] Unit tests: translation 90% (3+4+5 triggers + fuzzy + extreme) + bias 85% (9 detectors + severity + max5) + assumption 100% (9 cases) + validation 100% (┬º23.2 fixtures)
+Γ£ô #98 [29-02] Integration tests: phase transitions with all systems + hidden leverage 85% + Pareto/e2e Sarah walkthrough v3.2->v3.3->v3.5
+Γ£ô #99 [29-03] E2E fixtures: job toxicΓåÆstartup full walkthrough (leverage-aware transcript) + client negotiation $50kΓåÆ62k + relationship boundaries cap test
+Γ£ô #100 [29-04] Voice layer tests: test_voice_layer.py port (vocab wall hard-fail, 5 invariants, fact-preservation numbers, structural bans)
+Γ£ô #101 [29-05] Deployment & ops: wrangler deploy, D1 migrations, Vectorize/R2/KV provisioning script, docs/env.md, smoke seed of 58 frameworks+3 base rates
+Done. Created 21 issues.
+#81 [25-03] CounterProtocol integration: decision tree new branch, leverage map read, claim classification per counter, base rate not used, EV before deploy
+#82 [25-04] RejectionCounter frontend: live classification + per-type counter suggestion (voice humanized ┬º35.4 #10)
+#83 [26-01] BATNA Revelation Ladder 0-7 (silenceΓåÆgeneralΓåÆcategoricalΓåÆspecificΓåÆverifiableΓåÆactivation_signal(warning boundary)ΓåÆfinal_clarificationΓåÆactivation) + gates (strengthΓëÑ3.0/4.0 + reservation gap + verified)
+#84 [26-02] Warning-vs-Threat grammar (Schelling) + linguistic frames: external clock + preference preserved vs threat contingent on YOUR choice; system defaults to WARNING
+#85 [26-03] BATNAResponseHandler 5 responses (probeΓåÆdeflection, matchΓåÆintangibles, outwaitΓåÆdeadline, disparageΓåÆnon-defensive, bluffΓåÆlevel check real vs bluff retreat + ledger)
+#86 [26-04] BATNA DomainCalibration (career full ladder, relationship caps 0-3 safety override for boundaries) + CredibilityLedger (user_id+relationship_id, bluff destroyed, activated gains)
+#87 [27-01] Vocabulary Wall: 15 banned terms hard-fail mechanical_pass + echo rule (reuse user's words)
+#88 [27-02] Numbers & confidence humanization ┬º35.2: echo $4,500/five months, worst-case -0.05ΓåÆroughly where you are... -0.60ΓåÆthis hurts..., -0.05 gap 0.58ΓåÆnot close, 0.08ΓåÆtight, HIGH flat MEDIUM hedged LOW honest, contingentΓåÆcould be
+#89 [27-03] Structural Bans ┬º35.3 + Extended ┬º35.6: no rule-of-three, not just X but Y, setup/payoff, summary beats, landing sentences, em dashes, emoji, bold-label lists, announcing, agreeable openers, closers, etc + Always vary length, is/has
+#90 [27-04] Three-pass pipeline ┬º35.6+35.10: A mechanicalΓåÆB structural LLM report-onlyΓåÆC targeted rewrite flagged spansΓåÆD fact-preservation (numbers/entities) ΓåÆ A+B re-check; leak = bug
+#91 [27-05] 10 output-type voice rules ┬º35.4 (interview, haltsΓåÆclarification, bias challenges without naming bias, source validation, closing, leverage summary, recommendation opens with answer, close choice, BATNA deployment, rejection counters)
+#92 [28-01] InterviewRound.tsx: batch numbered questions UI, batch answer box n:..., Frontier progress, halt modals stacked
+#93 [28-02] LeverageMapDisplay ΓåÆ Voice natural renderer (┬º35.4 #6) + trajectory warning countdown
+#94 [28-03] RecommendationDisplay ΓåÆ Voice natural renderer (┬º35.4 #7) + leverage strategy timeline + confidence natural + audit expand
+#95 [28-04] TranslationConfirmation / SourceValidation / ClosingQuestions UI (┬º20.1-20.3, ┬º35.4) voice humanized
+#96 [28-05] Decision dashboard + past decisions searchable (hybrid search) + design-tree visualization (to_visualization graph) + CONTEXT/ADR viewers
+#97 [29-01] Unit tests: translation 90% (3+4+5 triggers + fuzzy + extreme) + bias 85% (9 detectors + severity + max5) + assumption 100% (9 cases) + validation 100% (┬º23.2 fixtures)
+#98 [29-02] Integration tests: phase transitions with all systems + hidden leverage 85% + Pareto/e2e Sarah walkthrough v3.2->v3.3->v3.5
+#99 [29-03] E2E fixtures: job toxicΓåÆstartup full walkthrough (leverage-aware transcript) + client negotiation $50kΓåÆ62k + relationship boundaries cap test
+#100 [29-04] Voice layer tests: test_voice_layer.py port (vocab wall hard-fail, 5 invariants, fact-preservation numbers, structural bans)
+#101 [29-05] Deployment & ops: wrangler deploy, D1 migrations, Vectorize/R2/KV provisioning script, docs/env.md, smoke seed of 58 frameworks+3 base rates

@@ -1,0 +1,79 @@
+name = "adie-decision-engine"
+main = "workers/src/index.ts"
+compatibility_date = "2024-12-01"
+compatibility_flags = ["nodejs_compat"]
+
+# ---- D1 (SQLite + FTS5) ----
+[[d1_databases]]
+binding = "DB"
+database_name = "adie-db"
+database_id = "local-adie-db-placeholder" # replace with `wrangler d1 create adie-db` id for prod
+
+# ---- Vectorize (replaces sqlite-vec + Jina) ----
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "adie-knowledge"
+
+[[vectorize]]
+binding = "VECTORIZE_PROFILES"
+index_name = "adie-profiles"
+
+[[vectorize]]
+binding = "VECTORIZE_DECISIONS"
+index_name = "adie-decisions"
+
+[[vectorize]]
+binding = "VECTORIZE_LEVERAGE"
+index_name = "adie-leverage"
+
+# ---- R2 (replaces filesystem ~/.decision_engine/) ----
+[[r2_buckets]]
+binding = "BLOBS"
+bucket_name = "adie-blobs"
+
+# ---- KV (session / translation cache / prompt cache) ----
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "local-sessions-placeholder"
+preview_id = "local-sessions-preview"
+
+[[kv_namespaces]]
+binding = "TRANSLATION_CACHE"
+id = "local-translation-placeholder"
+preview_id = "local-translation-preview"
+
+[[kv_namespaces]]
+binding = "PROMPT_CACHE"
+id = "local-prompt-placeholder"
+preview_id = "local-prompt-preview"
+
+# ---- Queues (async embed/index/rerank) ----
+[[queues.producers]]
+binding = "INDEXING"
+queue = "indexing"
+
+[[queues.consumers]]
+queue = "indexing"
+max_batch_size = 10
+max_batch_timeout = 5
+
+# ---- Vars (ADR 0002, spec §24) ----
+[vars]
+AI_GATEWAY_URL = "https://api.openai.com"
+AI_GATEWAY_MODEL = "gpt-4o-mini"
+TRANSLATION_TIER1_CONF = "0.90"
+TRANSLATION_TIER2_CONF = "0.70"
+TRANSLATION_TIER3_CONF = "0.50"
+DEVILS_ADVOCATE_MAX = "5"
+DEVILS_ADVOCATE_ENABLED = "true"
+ASSUMPTION_REQUIRE_SOURCE = "true"
+BASE_RATE_DB_ENABLED = "true"
+VOICE_ENABLED = "true"
+
+# ---- Assets for Pages (fallback when not using separate Pages project) ----
+# [assets]
+# directory = "./frontend/dist"
+# not_found_handling = "single-page-application"
+
+[observability]
+enabled = true

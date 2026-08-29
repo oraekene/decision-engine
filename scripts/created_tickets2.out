@@ -1,0 +1,40 @@
+Creating 101 issues in oraekene/decision-engine (addendum precedence respected)...
+Γ£ô #1 [EPIC-0] Scaffold: Cloudflare Workers + Hono + Pages monorepo (wrangler.toml, bindings, dev script)
+Γ£ô #2 [0-01] Hono API skeleton + auth middleware + CORS + /api/health + error envelope
+Γ£ô #3 [0-02] Frontend Pages scaffold (Vite React TS Tailwind Zustand) + API client
+Γ£ô #4 [0-03] Environment + secrets: wrangler vars, .dev.vars, AI_GATEWAY_URL/KEY/MODEL, per-env config
+Γ£ô #5 [0-04] CI: GitHub Actions (typecheck + vitest + wrangler deploy dry-run) + oxlint/biome
+Γ£ô #6 [1-01] D1 users/sessions/profiles schema + auth Hono routes (register/login/logout/me, password hashing)
+Γ£ô #7 [1-02] Frontend auth pages (Login/Register + session persistence + ProtectedRoute)
+Γ£ô #8 [1-03] Profile interview persistence + D1 profiles CRUD + retrieve_relevant_context scoping
+Γ£ô #9 [2-01] D1 schema v1: core tables (decisions, leverage_maps, leverage_points, nodes, interview_logs) + FTS5
+Γ£ô #10 [2-02] D1 schema v2: translation_logs, bias_challenge_logs, claim_classification_logs, base_rates, ev_logs, system_bias_logs + audit trail JSON
+Γ£ô #11 [2-03] Vectorize indexes + R2 buckets + KV namespaces provisioning + bindings verified
+Γ£ô #12 [2-04] Hybrid search adapter: D1 FTS5 BM25 + Vectorize query + RRF fusion (k=60) + gateway rerank
+Γ£ô #13 [3-01] QMD collections abstraction: 8 collections ΓåÆ D1+Vectorize+R2 adapter (store_*, retrieval)
+Γ£ô #14 [3-02] Queues: async embed/index worker (consume: embed ΓåÆ Vectorize upsert + FTS sync)
+Γ£ô #15 [3-03] Context Glossary + ADRs retrieval (CONTEXT.md + docs/adr) per-user
+Γ£ô #16 [4-01] LlmGateway abstraction (OpenAI-compat chat/embed/rerank via fetch env.AI_GATEWAY_*)
+Γ£ô #17 [4-02] Prompt registry + versioned master prompt (v3.2 ┬º4.6 650 tokens + v3.5 ┬º35.7 voice block) in KV+R2
+Γ£ô #18 [4-03] Structured output parsers (JSON repair + Zod validation for Phase1/2/3 schemas) + halt parse
+Γ£ô #19 [5-01] Tier1 DirectNumericExtractor: regex patterns + FUZZY_MODIFIERS (┬▒10-20%) ΓåÆ ExtractedValue
+Γ£ô #20 [5-02] Tier2 QualitativeMapper: PANAS/GSE/Schwartz dictionaries (words 1-10, 0.1-1.0) ΓåÆ MappedValue
+Γ£ô #21 [5-03] Tier3 ContextualInference: deterministic runway/income_floor (no LLM) ΓåÆ InferredValue
+Γ£ô #22 [5-04] Tier4 UserConfirmationProtocol: triggers (conf<0.50, discrepancy, extreme Γëñ2/ΓëÑ9, prior contradiction) ΓåÆ halt/confirm 0.95
+Γ£ô #23 [5-05] NaturalLanguageTranslator orchestrator + translation_log + example flow 3ΓåÆ4ΓåÆconfirm 0.95
+Γ£ô #24 [6-01] DevilsAdvocateProtocol base: 9-detector registry + evaluate_answer + max5/session + severity
+Γ£ô #25 [6-02] Implement 9 detectors: anchoring, loss_aversion, social_desirability, overconfidence, status_quo, sunk_cost, confirmation, framing, catastrophizing
+Γ£ô #26 [6-03] IntegratedGrillingEngine wrapper: _conduct_round super ΓåÆ devils_advocate.evaluate ΓåÆ _present_challenge ΓåÆ process_response ΓåÆ bias_challenge_log
+Γ£ô #27 [6-04] Bias challenge severity UI contracts + frontend BiasChallenge.tsx (≡ƒƒó≡ƒƒí≡ƒö┤)
+Γ£ô #28 [7-01] AssumptionEliminationProtocol.validate_information (3 categories, 9 cases) ΓåÆ ValidationResult
+Γ£ô #29 [7-02] SourceValidator + assumption triggers (NEVER allow Probably/I assume) + halt types 2/4
+Γ£ô #30 [7-03] Leverage/Counterparty gate: no LeveragePoint or CounterProtocol without valid source
+Γ£ô #31 [8-01] Framework Library D1 schema + 58 FrameworkEntry seed (Fisher&Tversky...Gouldner+Pruitt)
+Γ£ô #32 [8-02] ValidatedFrameworkLibrary.validate_claim + find_for_domain/claim + semantic index (Vectorize/Jaccard fallback)
+Γ£ô #33 [8-03] Library usage rules enforcement (6 rules) + human-curated extensibility (no LLM runtime add)
+Γ£ô #34 [9-01] ClaimClassifier 6 categories + confidence mapping (0.95/0.85/0.50/0.65/0.30/0.10) + flow ┬º9.2
+Γ£ô #35 [9-02] CalculationGate MIN_CONFIDENCE 0.50 (PRACTITIONER passes, HYPOTHESIS/SPECULATION blocked) + provenance
+Γ£ô #36 [9-03] Audit trail integration: every calc input must be ClassifiedClaim with provenance
+Γ£ô #37 [10-01] EmergentDiscoveryValidation: 5 strategy rules (analogical counterfactual perspective temporal constraint) + forbidden lists
+Γ£ô #38 [10-02] Perspective/temporal discovery gates: assert specific counterparty psychology or temporal fact without user_evidence ΓåÆ ask
+Γ£ô #39 [10-03] Discovery example ┬º10.3 triage + D1 discovery_logs

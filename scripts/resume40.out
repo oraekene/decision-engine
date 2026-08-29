@@ -1,0 +1,41 @@
+Creating 61 issues in oraekene/decision-engine (addendum precedence respected, resume 40)...
+Γ£ô #41 [11-02] Domain-general EV examples (equity, bonus, conditional promises) + audit
+Γ£ô #42 [12-01] BaseRateDatabase D1 schema + sparse seed (negotiation 0.57, employment 2-12, loss_aversion 2.25) + lookup/add
+Γ£ô #43 [12-02] Base Rate gate in classification (unsourced % ΓåÆ SPECULATION) + EV basis integration
+Γ£ô #44 [13-01] SystemBiasDetector: 4 system biases (plausibility, fabricated_specificity, prescriptive_as_descriptive, completeness) via regex
+Γ£ô #45 [13-02] Bias middleware on every gateway chat response ΓåÆ system_bias_log + rerouting
+Γ£ô #46 [14-01] SessionClosingProtocol 3 levels (SELF, STAKEHOLDER template, SITUATION) + _is_substantive (>10 chars) ΓåÆ re-open
+Γ£ô #47 [14-02] Closing integration per phase (Phase1ΓåÆ1.5ΓåÆ2ΓåÆ3ΓåÆProfile) + KV state
+Γ£ô #48 [15-01] DesignTree + DecisionNode dataclass (10 NodeTypes + v3.2 fields) + get_frontier + to_visualization
+Γ£ô #49 [15-02] EmergentGrillingEngine core loop (run_session, _generate_frontier_questions via gateway, _conduct_round facts vs USER_INPUT, batch parse)
+Γ£ô #50 [15-03] Master system prompt v3.3 ┬º4.6 267-387 (role, frontier, facts vs decisions, classification, framework, EV, base rate, DA, leverage, closing, forbidden 8)
+Γ£ô #51 [15-04] Taxonomy-Guided Grilling (6 domains) as strategic guide not script + leverage precursor nodes
+Γ£ô #52 [16-01] Phase1 Context Ingestion emergent interview (objective 6 items + 12 nodes) + translation/bias/assumption per answer
+Γ£ô #53 [16-02] Phase1 output schema validation (design_tree + stakeholders + choices + baseline + leverage_precursors + session_metadata)
+Γ£ô #54 [17-01] Six-domain taxonomy (Structural Negotiation Psychological Resource Informational Positional ├ù5-6) + LeverageIntegrationManager
+Γ£ô #55 [17-02] LeverageMappingEngine (conduct session ΓåÆ deterministic ΓåÆ emergent ΓåÆ hybrid ΓåÆ confirm ΓåÆ compile) + TaxonomyGuidedGrillingEngine
+Γ£ô #56 [17-03] LeverageMap dataclass 7 dataclasses (LeveragePoint 1-5, HiddenLeverage, DomainSummary, StakeholderLeverage, Trajectory, EnforcementLeverage, ValidationMetadata)
+Γ£ô #57 [17-04] Leverage Map display data ΓåÆ Voice humanized (before/after ┬º35.4 #6)
+Γ£ô #58 [18-01] Phase2 Game Theory emergent interview + grill-with-docs (CONTEXT+ADRs writes) + stakeholder utilities + ZOPA
+Γ£ô #59 [18-02] ValidatedParetoAnalyzer: validated-only leverage (source_validation) + is_pareto_improvement LP ΓåÆ output schema ┬º8.6
+Γ£ô #60 [19-01] Phase3 Minimax decision tree gen (ChoiceΓåÆbest/likely/worst + causal_chain with CONTEXT/FRAMEWORK/USER_INPUT + utility mapping 4 dims)
+Γ£ô #61 [19-02] Phase3 output schema ┬º9.4 JSON validation
+Γ£ô #62 [20-01] Utility functions: financial/emotional/temporal/reputational + AHP derive_weights (eigenvector + CR<0.1) + thresholds nonlinear
+Γ£ô #63 [20-02] Standard MinimaxSolver.solve (minimax select, red_line -1.0, reversibility +0.1, confidence, baseline compare) ┬º10.2-10.3
+Γ£ô #64 [20-03] Leverage maths: calculate_leverage_strength (1-5├ùdurability├ùtransferability├ùenforceability) + multiplier + adjusted_utility (loss aversion 2.25) + BATNA floor ┬º3.2
+Γ£ô #65 [20-04] LeverageModifiedMinimaxSolver: filtered validated leverage, branch multiplier (worst 0.10 likely 0.08 best 0.05 cap 0.5-2.0), BATNA floor, red_line enforceability, confidence, leverage_strategy ┬º10.2
+Γ£ô #66 [21-01] DeterministicHiddenLeverageDetector 6 patterns: BATNA underestimation, scarcity blindness, time asymmetry, dependency misreading, info asymmetry, network holes
+Γ£ô #67 [21-02] EmergentDiscoveryEngine 5 strategies (counterfactual, perspective_reversal, temporal_shifting, constraint_removal, analogical) promptsΓåÆ_parse_findings ΓåÆ dedupe
+Γ£ô #68 [21-03] HybridValidationEngine: research/context/practicality scoring (0.4/0.4/0.2) + cross_validate + dedup + threshold (deterministic>0.7, emergent>0.5)
+Γ£ô #69 [21-04] ValidatedHiddenLeverageDetector guard: no validation ΓåÆ None + question (time_asymmetry example)
+Γ£ô #70 [22-01] HaltManager: 6 original triggers + 4 v3.2 (translation, assumption, bias, validation) ΓåÆ <<<HALT>>> format ┬º12.2 + format_for_ui
+Γ£ô #71 [22-02] Halt processing flow (Evaluate frontier ΓåÆ CONTEXT/FRAMEWORK? ΓåÆ LLM internal vs halt ΓåÆ user ΓåÆ update ΓåÆ resume) mermaid ┬º12.3
+Γ£ô #72 [22-03] Halt UI: HaltModal per-type copy + translation/bias/assumption variant phrasing (voice humanized downstream)
+Γ£ô #73 [23-01] User Profile interview emergent (objective 5 items, 7 nodes) + example Q1-5
+Γ£ô #74 [23-02] User Profile JSON schema ┬º13.3 (user_id, baselines, red_lines, weights sum 1, thresholds, risk params) + Zod
+Γ£ô #75 [23-03] LeverageAwareUtilityCalculator + ValidatedUtilityCalculator gate (requires TranslatedValue confidenceΓëÑ0.5 else ValidationError)
+Γ£ô #76 [24-01] EmergentOrchestrator.run_decision: Phase1 ΓåÆ 1.5 ΓåÆ 2 (grill-with-docs) win_win? ΓåÆ Phase3 ΓåÆ LeverageModifiedMinimax ΓåÆ store (v3.1 + v3.2 V32)
+Γ£ô #77 [24-02] Orchestrator V33 with 6-gate Validation Stack (translationΓåÆbiasΓåÆassumptionΓåÆclaimΓåÆframeworkΓåÆsystemBias + EV + BaseRate) before calc
+Γ£ô #78 [24-03] Queues orchestration: Workers Queues for phase transitions (phase1ΓåÆ1.5ΓåÆ2ΓåÆ3) + KV session snapshot + R2 audit
+Γ£ô #79 [25-01] RejectionClassifier: 8 types enum (hard_no, soft_no, lowball, conditional_no, stalling, authority, ultimatum, relational) + LINGUISTIC_MARKERS + lowball ratio <0.70
+Γ£ô #80 [25-02] CounterProtocolLibrary 8 protocols: 3-4 steps each (Ury balcony, Fisher probe, anchoring rejection, ZOPA, temporal inquiry, signaling test, Schelling credibility, Cialdini reciprocity) + escalation + forbidden

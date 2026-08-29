@@ -1,0 +1,1269 @@
+# Gap Assessment First: Not Covered
+
+**Honest answer: Neither system exists in the current spec.**
+
+```
+WHAT v3.3 HAS                          WHAT'S MISSING
+─────────────────────────────          ─────────────────────────────
+BATNA *detection*                      BATNA *deployment*
+BATNA *scoring* (strength 1-5)         HOW to present it to counterpart
+BATNA *floor* in minimax calc          WHEN to reveal vs. conceal
+"Negotiation fails" as tree branch     Response WHEN rejection happens
+Leverage strategy says                 Rejection counter protocols
+"mention your alternatives"            (the "if they balk" layer)
+
+ANALYTICAL layer: ✅ complete          EXECUTIONAL layer: ❌ absent
+(what's your position,                 (what do you actually SAY,
+ what should you choose)                how do you respond in the moment)
+```
+
+The spec is strong on *analysis* but silent on *execution*. This is the missing layer. Below are both systems, specified as **v3.4 additions**, research-grounded and domain-general.
+
+---
+
+# ADDENDUM TO v3.3: THE EXECUTION LAYER (v3.4)
+
+## Section 33: Rejection Counter Framework ("If They Balk" Protocol)
+
+### 33.1 Overview
+
+The decision trees treat "negotiation fails" as a terminal branch outcome. But real negotiations rarely fail at a single stroke — they fail through a *sequence of unhandled rejections*. This section specifies the system for responding to rejection *within* the live interaction, before the branch resolves.
+
+**Research foundation:** Ury's five-step breakthrough strategy (Getting Past No, 1991) is the canonical framework; supplemented by Schelling's commitment/threat analysis (1960), Cialdini's influence principles (2009), and Rapoport's conflict de-escalation research.
+
+### 33.2 The Rejection Taxonomy
+
+Every rejection encountered during execution is classified into one of eight types. Each type has a distinct underlying meaning, and **applying the wrong counter to the wrong rejection type escalates failure**:
+
+```python
+class RejectionType(Enum):
+    HARD_NO = "hard_no"                    # "That's not possible. Final answer."
+    SOFT_NO = "soft_no"                    # "Hmm, I don't think that works for us..."
+    LOWBALL_COUNTER = "lowball_counter"    # Counter far below your ask
+    CONDITIONAL_NO = "conditional_no"      # "Not unless you X" (= opening, not rejection)
+    STALLING = "stalling"                  # Silence, delay, non-response
+    AUTHORITY_DEFLECTION = "authority"     # "I'd have to check with my boss/committee"
+    TAKE_IT_OR_LEAVE_IT = "ultimatum"      # "This is the offer. Yes or no."
+    RELATIONAL_PRESSURE = "relational"     # "After everything we've done for you..."
+
+
+class RejectionClassifier:
+    """
+    Classifies live rejection into taxonomy, because the
+    correct counter depends on rejection TYPE, not just content.
+    
+    Research: rejection type predicts which response de-escalates
+    vs. escalates (Pruitt & Carnevale, 1993 — Negotiation in
+    Social Conflict).
+    """
+    
+    LINGUISTIC_MARKERS = {
+        RejectionType.HARD_NO: [
+            "not possible", "final answer", "absolutely not",
+            "out of the question", "we can't do that", "that's firm"
+        ],
+        RejectionType.SOFT_NO: [
+            "i don't think", "that might be difficult", "hmm",
+            "not sure that would work", "that could be tricky",
+            "we'd have to see"
+        ],
+        RejectionType.LOWBALL_COUNTER: [
+            # Detected by counter-value ratio, not language
+            # See _is_lowball below
+        ],
+        RejectionType.CONDITIONAL_NO: [
+            "unless", "if you can", "provided that", "on the condition",
+            "only if", "what if you"
+        ],
+        RejectionType.STALLING: [
+            "let me think about it", "i'll get back to you",
+            "need to consider", "give me some time",
+            # Or: detected via non-response over threshold time
+        ],
+        RejectionType.AUTHORITY_DEFLECTION: [
+            "my boss", "the committee", "above my pay grade",
+            "i'd have to ask", "the team decides", "procurement"
+        ],
+        RejectionType.TAKE_IT_OR_LEAVE_IT: [
+            "take it or leave it", "this is the offer", "yes or no",
+            "non-negotiable", "that's our position"
+        ],
+        RejectionType.RELATIONAL_PRESSURE: [
+            "after all we've", "we've been so good", "i thought we",
+            "loyalty", "we've invested", "you owe"
+        ],
+    }
+    
+    def classify(self, rejection_text: str, context: dict) -> 'ClassifiedRejection':
+        """Classify rejection; detect lowball via counter/ask ratio."""
+        
+        # Linguistic classification first
+        for rtype, markers in self.LINGUISTIC_MARKERS.items():
+            for marker in markers:
+                if marker in rejection_text.lower():
+                    return ClassifiedRejection(
+                        type=rtype,
+                        text=rejection_text,
+                        confidence=0.85,
+                        linguistic_trigger=marker
+                    )
+        
+        # Lowball detection: counter-value analysis
+        if "counter_value" in context and "ask_value" in context:
+            ratio = context["counter_value"] / context["ask_value"]
+            if ratio < 0.70:  # Counter below 70% of ask
+                return ClassifiedRejection(
+                    type=RejectionType.LOWBALL_COUNTER,
+                    text=rejection_text,
+                    confidence=0.80,
+                    ratio=ratio,
+                    note=f"Counter is {ratio:.0%} of ask"
+                )
+        
+        # Default: soft no (most ambiguous category)
+        return ClassifiedRejection(
+            type=RejectionType.SOFT_NO,
+            text=rejection_text,
+            confidence=0.40,
+            note="No clear marker; classified as ambiguous soft no"
+        )
+```
+
+### 33.3 The Counter Protocol Library
+
+Each rejection type maps to a research-grounded counter protocol. **These are not scripts** — they are validated tactical *principles* from which the system generates context-specific language (same emergent approach as grilling questions).
+
+```python
+class CounterProtocolLibrary:
+    """
+    Research-grounded response protocols per rejection type.
+    Each protocol: (1) cites its framework, (2) defines the tactical
+    sequence, (3) specifies escalation if first counter fails.
+    
+    All protocols are DOMAIN-GENERAL: they apply to salary negotiation,
+    client terms, relationship boundaries, purchase haggling, any
+    dyadic ask-reject exchange.
+    """
+    
+    PROTOCOLS = {
+    
+    RejectionType.HARD_NO: {
+        "framework": "ury_breakthrough_step1",
+        "citation": "Ury, W. (1991). Getting Past No. Bantam. Step 1: 'Go to the Balcony.'",
+        "diagnosis": "A hard no is usually a POSITION, not an INTEREST "
+                     "(Fisher & Ury, 1981 — principled negotiation). "
+                     "Positions are firm; interests are flexible.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "GO_TO_BALCONY",
+                "description": "Do not respond immediately. Neither accept nor "
+                              "counter. Acknowledge without conceding.",
+                "linguistic_frame": "I hear that {topic} is firm. "
+                                   "Help me understand what's behind that.",
+                "principle": "Reacting to a hard no reinforces it; "
+                            "curiosity behind it destabilizes it "
+                            "(Ury, 1991).",
+                "moves_to_interests": True
+            },
+            {
+                "step": 2,
+                "tactic": "INTEREST_INQUIRY",
+                "description": "Move from position ('no') to interests "
+                              "('why not?'). Hard nos conceal flexible constraints.",
+                "linguistic_frame": "What would need to be true for {topic} "
+                                   "to work? / What's the constraint we're "
+                                   "working around?",
+                "principle": "Behind opposed positions lie shared or "
+                            "compatible interests (Fisher & Ury, 1981 — "
+                            "validate against library: batna_theory supports).",
+                "generates": "constraint_information"
+            },
+            {
+                "step": 3,
+                "tactic": "CONSTRAINT_ACKNOWLEDGMENT",
+                "description": "When they reveal the constraint, acknowledge it "
+                              "before problem-solving. Acknowledgment ≠ agreement.",
+                "linguistic_frame": "That makes sense — {constraint} is real. "
+                                   "Given that, what if we...?",
+                "principle": "Step to their side before redirecting "
+                            "(Ury, 1991 — Step 2).",
+                "enables": "reframe"
+            },
+            {
+                "step": 4,
+                "tactic": "REFRAME",
+                "description": "Propose a different framing that satisfies their "
+                              "constraint while advancing your interest.",
+                "principle": "Change the game, not the terms "
+                            "(Ury, 1991 — Step 3: 'Reframe').",
+                "requires": "constraint_information from step 2"
+            }
+        ],
+        "escalation_if_fails": "MOVE_TO_BATNA_LADDER (§34) — level appropriate to context",
+        "forbidden_responses": [
+            "Immediately countering the hard no (entrenches position)",
+            "Accepting the no at face value (hard nos often aren't final)",
+            "Escalating to threat immediately (destroys step 2-4 options)"
+        ]
+    },
+    
+    RejectionType.SOFT_NO: {
+        "framework": "aryes_inquiry",
+        "citation": "Fisher & Ury (1981) — 'inventing options for mutual gain'; "
+                    "soft nos indicate flexibility-seeking, not firm opposition.",
+        "diagnosis": "A soft no is an invitation to make it easier for them "
+                     "to say yes. It signals constraint discomfort, not firm refusal.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "SPECIFICITY_PROBE",
+                "description": "Ask which part doesn't work. Soft nos are "
+                              "globally vague; forcing specificity reveals "
+                              "the actual objection.",
+                "linguistic_frame": "I want to make sure I understand — is it "
+                                   "the {term_1}, the {term_2}, or the overall "
+                                   "structure that's the concern?",
+                "principle": "Decomposing global rejection into component "
+                            "objections (Lewicki et al., 2015 — Negotiation, "
+                            "7th ed., ch. on integrative tactics)."
+            },
+            {
+                "step": 2,
+                "tactic": "ISOLATED_ADJUSTMENT",
+                "description": "Once the specific objection is isolated, adjust "
+                              "ONLY that component. Never renegotiate everything.",
+                "linguistic_frame": "If we adjusted just {specific_component}, "
+                                   "would the rest work?",
+                "principle": "Concession isolation preserves overall position "
+                            "while enabling agreement (Raiffa, 1982)."
+            },
+            {
+                "step": 3,
+                "tactic": "GOLDEN_BRIDGE",
+                "description": "Make it easy for them to reverse the soft no "
+                              "without losing face. Offer a path, not a demand.",
+                "linguistic_frame": "What if we structured it as {face_saving_option} "
+                                   "— would that address the concern?",
+                "principle": "Build them a golden bridge (Ury, 1991 — Step 4). "
+                            "People reject reversals that cost face."
+            }
+        ],
+        "escalation_if_fails": "If soft no hardens across 2+ specificity probes "
+                              "→ reclassify as HARD_NO, apply that protocol"
+    },
+    
+    RejectionType.LOWBALL_COUNTER: {
+        "framework": "anchoring_counter_research",
+        "citation": "Northcraft & Neale (1987) — anchoring persists despite expertise; "
+                    "Galinsky & Mussweiler (2001) — counter-anchoring strategies.",
+        "diagnosis": "A lowball counter is itself an ANCHOR. The critical error "
+                     "is negotiating against their anchor instead of "
+                     "re-establishing yours.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "ANCHOR_REJECTION_WITHOUT_CONCESSION",
+                "description": "Explicitly decline their anchor without making "
+                              "a counter-anchor yet. Do NOT split the difference.",
+                "linguistic_frame": "That number doesn't work as a starting point "
+                                   "for what we've discussed. The range we've been "
+                                   "discussing reflects {value_basis}.",
+                "principle": "Counter-anchoring immediately (rejecting the anchor "
+                            "as an anchor, not debating its value) prevents "
+                            "adjustment toward it (Galinsky & Mussweiler, 2001 — "
+                            "'First offers as anchors: the role of "
+                            "perspective-taking and negotiator focus', "
+                            "Academy of Management Journal).",
+                "forbidden": "Countering at midpoint (legitimizes their anchor)"
+            },
+            {
+                "step": 2,
+                "tactic": "VALUE_RE-ANCHORING",
+                "description": "Restate your original anchor attached to an "
+                              "objective basis (market data, precedent, "
+                              "value delivered — user must supply basis).",
+                "linguistic_frame": "The range I proposed reflects {objective_basis}. "
+                                   "Where does that basis not hold?",
+                "principle": "Anchors with justification resist adjustment "
+                            "better than bare anchors (Whyte & Sebenius, 1997).",
+                "requires": "objective_basis — if user has none, this step "
+                           "cannot run; system must ask for one"
+            },
+            {
+                "step": 3,
+                "tactic": "MAGNITUDE_SPLIT_VS_COMPONENT_SPLIT",
+                "description": "If re-anchoring fails, split by COMPONENTS, "
+                              "not magnitude. 'You keep the price, I get the "
+                              "terms' beats 'meet in the middle.'",
+                "linguistic_frame": "What if we held {their_priority_term} at "
+                                   "{their_number} and adjusted {your_priority_term} "
+                                   "to {your_number}?",
+                "principle": "Log-rolling: trading on differently-valued issues "
+                            "creates joint gains vs. splitting differences "
+                            "(Pruitt, 1983 — 'Integrative agreements').",
+                "enables": "pareto_improvement — feed back into Phase 2 analyzer"
+            }
+        ],
+        "escalation_if_fails": "If two component-splits rejected → "
+                              "BATNA_LADDER (§34) at level 3+"
+    },
+    
+    RejectionType.CONDITIONAL_NO: {
+        "framework": "zopa_analysis",
+        "citation": "Raiffa (1982) — 'not unless X' is a conditional agreement, "
+                    "i.e., an opening disguised as a rejection.",
+        "diagnosis": "A conditional no ('not unless you X') is NOT a rejection. "
+                     "It is a PRICE QUOTE. They just told you the cost of yes. "
+                     "Misreading it as rejection wastes the opening.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "CONDITION_EXPLORATION",
+                "description": "Treat the condition as an offer. Explore it "
+                              "literally, not as an insult.",
+                "linguistic_frame": "So if {condition} were true, the rest "
+                                   "works for you?",
+                "principle": "Conditional statements define the actual "
+                            "bargaining set (Raiffa, 1982 — zopa_analysis "
+                            "in library)."
+            },
+            {
+                "step": 2,
+                "tactic": "CONDITION_COST_ASSESSMENT",
+                "description": "System runs the condition through the existing "
+                              "utility calculator: what does meeting their "
+                              "condition cost you across dimensions?",
+                "integration": "Uses ValidatedUtilityCalculator (§23) — "
+                              "the condition becomes a new branch in the "
+                              "existing decision tree",
+                "requires": "condition must pass Claim Classification (§9) "
+                           "— is the condition reliable? Who can authorize it?"
+            },
+            {
+                "step": 3,
+                "tactic": "CONDITION_COUNTER_OR_ACCEPT",
+                "description": "Either (a) accept if condition passes red-line "
+                              "and utility checks, (b) counter the condition "
+                              "itself ('What if partial X?'), or (c) "
+                              "counter elsewhere ('X is hard, but what "
+                              "if we did Y instead?').",
+                "principle": "Negotiating the condition is negotiating "
+                            "the deal (standard multi-issue bargaining — "
+                            "Lewicki et al., 2015)."
+            }
+        ]
+    },
+    
+    RejectionType.STALLING: {
+        "framework": "temporal_discounting",
+        "citation": "Ariely & Zakay (2001) — delay as tactical device; "
+                    "Moore (2004) — deadline effects in negotiation.",
+        "diagnosis": "Stalling is either (a) genuine internal process, "
+                     "(b) a test of your urgency, or (c) slow-walking toward "
+                     "your capitulation. The counter differs by type.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "PROCESS_INQUIRY",
+                "description": "Ask what their process is. Forces them to "
+                              "articulate whether delay is structural or tactical.",
+                "linguistic_frame": "Totally understand. What does your "
+                                   "decision process look like from here — "
+                                   "who else needs to weigh in, and what's "
+                                   "the usual timeline?",
+                "principle": "Surface the process to distinguish structural "
+                            "delay from tactical delay (negotiation practice "
+                            "literature — classify as PRACTITIONER_HEURISTIC "
+                            "per §9 if no framework match)."
+            },
+            {
+                "step": 2,
+                "tactic": "RECIPROCAL_SCHEDULE",
+                "description": "Impose symmetrical time structure: 'I'm "
+                              "holding this window until [date] as well.' "
+                              "Your deadline must be real or this backfires.",
+                "linguistic_frame": "That works. On my side, I'm holding "
+                                   "[option/terms] open until {date} — after "
+                                   "that I'll need to move forward with "
+                                   "other plans.",
+                "principle": "Symmetric deadlines prevent one-sided time "
+                            "pressure (Ariely & Zakay, 2001 — temporal "
+                            "discounting asymmetry, in library).",
+                "integration": "The stated date must correspond to a REAL "
+                              "user deadline or BATNA expiry — system "
+                              "validates against leverage map's "
+                              'use_it_or_lose_it items (§17)'
+            },
+            {
+                "step": 3,
+                "tactic": "SILENCE_MIRROR",
+                "description": "If stalling continues after reciprocal schedule: "
+                              "match their silence. Do not chase. The next "
+                              " substantive contact comes from them.",
+                "principle": "Pursuing a stalling party signals desperation, "
+                            "inverting the power dynamic "
+                            "(practitioner heuristic — label as such)."
+            }
+        ],
+        "escalation_if_fails": "If stall exceeds your real deadline → "
+                              "BATNA activation path (§34, Level 6-7)"
+    },
+    
+    RejectionType.AUTHORITY_DEFLECTION: {
+        "framework": "signaling_theory",
+        "citation": "Spence (1973) — costly signals convey information; "
+                    "authority deflection is often cheap talk unless "
+                    "structurally verified.",
+        "diagnosis": "'I have to check with my boss' is (a) true structural "
+                     "constraint, (b) a delay tactic, or (c) a negotiating "
+                     "fiction. Cannot be distinguished by language alone — "
+                     "must be tested.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "SPECIFICITY_TEST",
+                "description": "Ask specifics about the authority chain. "
+                              "Real processes have details; fictions "
+                              "stay vague.",
+                "linguistic_frame": "Of course. What specifically will you "
+                                   "need to bring to them — the full proposal, "
+                                   "or just the open terms? And what's their "
+                                   "usual turnaround?",
+                "principle": "Vagueness under specificity probes signals "
+                            "fabrication (information asymmetry — Akerlof, "
+                            "1970, in library; screening response)."
+            },
+            {
+                "step": 2,
+                "tactic": "JOINT_PRESENTATION_OFFER",
+                "description": "Offer to join the conversation with the "
+                              "higher authority. Real processes can "
+                              "accommodate; fictions cannot.",
+                "linguistic_frame": "Happy to hop on a quick call with "
+                                   "whoever needs to weigh in — often faster "
+                                   "for everyone. Could that work?",
+                "principle": "Screening mechanism: separating real authority "
+                            "constraints from tactical deflection "
+                            "(screening/signaling — Spence, 1973, "
+                            "information_asymmetry, in library)."
+            },
+            {
+                "step": 3,
+                "tactic": "DECISION_DEADLINE_ATTACHMENT",
+                "description": "Attach a specific decision date to the "
+                              "authority check. Prevents infinite deferral.",
+                "integration": "Same as STALLING step 2 — reciprocal schedule"
+            }
+        ]
+    },
+    
+    RejectionType.TAKE_IT_OR_LEAVE_IT: {
+        "framework": "schelling_commitment",
+        "citation": "Schelling, T. C. (1960). The Strategy of Conflict. "
+                    "Harvard University Press. — commitment credibility analysis.",
+        "diagnosis": "An ultimatum is a COMMITMENT CLAIM. Its power depends "
+                     "entirely on whether it's credible. Most aren't — "
+                     "but calling the bluff is costly if it is.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "CREDIBILITY_ASSESSMENT",
+                "description": "System assesses: is this ultimatum credible? "
+                              "Signals of credibility: written terms, "
+                              "deadline attached, prior consistent behavior, "
+                              "structural reason (budget cycle, policy). "
+                              "Signals of bluff: verbal only, flexible "
+                              "history, no deadline.",
+                "integration": "Uses leverage map: if counterparty has "
+                              "strong alternatives (their BATNA), ultimatum "
+                              "more credible; if they need this deal "
+                              "(their dependency on user), less credible.",
+                "principle": "Commitment is credible to the degree the "
+                            "committing party benefits from following "
+                            "through (Schelling, 1960).",
+                "output": "CredibilityScore(0-1) → determines next tactic"
+            },
+            {
+                "step": 2,
+                "tactic": "TRIAGE_BY_CREDIBILITY",
+                "description": "IF credibility HIGH: engage the terms as real "
+                              "final offer — run through existing decision "
+                              "tree as resolved branch. "
+                              "IF credibility MEDIUM: test softly. "
+                              "IF credibility LOW: ignore the frame, "
+                              "continue negotiating.",
+                "principle": "Response to commitments should match "
+                            "commitment credibility, not commitment "
+                            "theatrics (Schelling, 1960).",
+                "linguistic_frame_medium": "I want to respect that this is "
+                                          "your position. If I could show "
+                                          "that {minor_adjustment} made this "
+                                          "work better for you too, would "
+                                          "there be room?",
+                "linguistic_frame_low": "(Continue as if ultimatum not "
+                                       "stated; re-engage on substance.)"
+            },
+            {
+                "step": 3,
+                "tactic": "CONTINGENT_ACCEPTANCE",
+                "description": "For high-credibility ultimatums that fail "
+                              "red-lines: accept the frame but attach a "
+                              "condition that preserves the relationship "
+                              "and your exit.",
+                "linguistic_frame": "I can work within that if {small_condition}. "
+                                   "Otherwise, I completely understand — "
+                                   "no hard feelings either way.",
+                "principle": "Face-saving exit-preservation (Ury, 1991 — "
+                            "Step 4, golden bridge; works in reverse too: "
+                            "build YOURSELF a bridge)."
+            }
+        ]
+    },
+    
+    RejectionType.RELATIONAL_PRESSURE: {
+        "framework": "reciprocity_pressure",
+        "citation": "Cialdini (2009) — reciprocity principle; "
+                    "Gouldner (1960) — 'The Norm of Reciprocity', "
+                    "American Sociological Review, 25(2), 161-178.",
+        "diagnosis": "'After all we've done for you' invokes the reciprocity "
+                     "norm. It is a legitimate norm — but often misapplied "
+                     "to extract concessions beyond what reciprocity "
+                     "actually requires.",
+        "counter_sequence": [
+            {
+                "step": 1,
+                "tactic": "ACKNOWLEDGE_WITHOUT_CONCEDE",
+                "description": "Validate the relationship and the history "
+                              "explicitly. Do NOT link acknowledgment to "
+                              "concession.",
+                "linguistic_frame": "I genuinely value what we've built, and "
+                                   "that history is exactly why I'm being "
+                                   "straight with you about this.",
+                "principle": "Acknowledging the reciprocity claim defuses "
+                            "it; conceding to it confirms it "
+                            "(Cialdini, 2009 — influence_principles, in library)."
+            },
+            {
+                "step": 2,
+                "tactic": "RECIPROCITY_RECALIBRATION",
+                "description": "If pressed: reframe what reciprocity actually "
+                              "entails. Reciprocity supports loyalty in kind, "
+                              "not unlimited concession.",
+                "linguistic_frame": "And I want to keep honoring that — which "
+                                   "for me means being honest about what I "
+                                   "need, not just agreeing to whatever's "
+                                   "easiest for the relationship.",
+                "principle": "The reciprocity norm has limits; unlimited "
+                            "generalized reciprocity is not what the norm "
+                            "prescribes (Gouldner, 1960)."
+            },
+            {
+                "step": 3,
+                "tactic": "RELATIONSHIP_SEPARATION",
+                "description": "Final move: explicitly separate the "
+                              "relationship from this specific term.",
+                "linguistic_frame": "This one decision and our relationship "
+                                   "are separate things for me. I hope they "
+                                   "can be for you too.",
+                "principle": "Distinguishing the relationship from the "
+                            "substance prevents relational hostage-taking "
+                            "(Fisher & Ury, 1981 — separate people from "
+                            "the problem)."
+            }
+        ]
+    }
+    }
+```
+
+### 33.4 Integration with Existing Systems
+
+```
+INTEGRATION POINTS:
+
+1. DECISION TREE: Each counter tactic that creates new terms
+   (component splits, conditional acceptances) generates a new
+   branch in the existing Phase 3 tree → runs through existing
+   minimax solver → user knows the EV of each counter before
+   deploying it.
+
+2. LEVERAGE MAP: Credibility assessments (ultimatum protocol)
+   read from and update the counterparty's leverage assessment.
+
+3. CLAIM CLASSIFICATION (§9): Every counter recommendation is
+   itself classified. E.g., "silence mirroring" = PRACTITIONER_
+   HEURISTIC (0.45), "interest inquiry" = VALIDATED_RESEARCH
+   (Ury framework, 0.80).
+
+4. BASE RATES (§12): No base rates for rejection outcomes —
+   counters are tactical choices, not statistical predictions.
+   System does NOT claim "this counter works X% of the time."
+
+5. EV ENFORCEMENT (§11): Conditional acceptances and component
+   splits are run through EV calculation before recommendation —
+   contingent counter-gains are probability-weighted.
+```
+
+### 33.5 Framework Library Additions
+
+```python
+# Add to §8 library:
+
+"ury_breakthrough": FrameworkEntry(
+    id="ury_breakthrough",
+    citation="Ury, W. (1991). Getting Past No: Negotiating Your Way from "
+             "Confrontation to Cooperation. Bantam Books.",
+    year=1991,
+    domains=["negotiation", "conflict", "relationships", "any rejection context"],
+    supports=[
+        "Go to the balcony: strategic non-reaction prevents reactive escalation",
+        "Step to their side: acknowledgment before redirection",
+        "Reframe: change the game rather than debate positions",
+        "Golden bridge: make agreement easy and face-preserving",
+        "Use power to educate, not escalate",
+        "Behind hard positions often lie addressable interests"
+    ],
+    does_not_support=[
+        "That all counterparties respond to these steps",
+        "Specific linguistic scripts (principles, not scripts)"
+    ],
+    confidence="HIGH"
+),
+
+"schelling_commitment": FrameworkEntry(
+    id="schelling_commitment",
+    citation="Schelling, T. C. (1960). The Strategy of Conflict. "
+             "Harvard University Press.",
+    year=1960,
+    domains=["negotiation", "game_theory", "conflict", "commitment"],
+    supports=[
+        "Commitment credibility determines bargaining power",
+        "Threats differ from warnings: threats are chosen contingencies, "
+        "warnings are external consequences",
+        "Distinguishing credible commitments from commitment theater "
+        "is central to response strategy",
+        "Burning bridges (removing own options) can strengthen position "
+        "if genuinely done"
+    ],
+    does_not_support=[
+        "That specific ultimatums in specific situations are credible "
+        "(requires situational assessment)"
+    ],
+    confidence="VERY HIGH"
+),
+
+"gouldner_reciprocity": FrameworkEntry(
+    id="gouldner_reciprocity",
+    citation="Gouldner, A. W. (1960). The Norm of Reciprocity: A Preliminary "
+             "Statement. American Sociological Review, 25(2), 161-178.",
+    year=1960,
+    domains=["relationships", "social", "negotiation", "all relational contexts"],
+    supports=[
+        "Reciprocity is a universal social norm",
+        "The norm prescribes like-for-like response, not unlimited obligation",
+        "Unfulfilled obligations create pressure exploitable in negotiation"
+    ],
+    does_not_support=["That all reciprocity claims are legitimate"],
+    confidence="VERY HIGH"
+),
+
+"pruitt_log_rolling": FrameworkEntry(
+    id="pruitt_log_rolling",
+    citation="Pruitt, D. G. (1983). Integrative Agreement: Nature and Antecedents. "
+             "In Negotiating Behavior. Sage.",
+    year=1983,
+    domains=["negotiation", "multi_issue"],
+    supports=[
+        "Trading concessions on differently-valued issues creates joint gains",
+        "Component-based agreements dominate magnitude-splitting agreements"
+    ],
+    does_not_support=["That counterparties always accurately value components"],
+    confidence="HIGH"
+)
+```
+
+---
+
+## Section 34: BATNA Deployment System
+
+### 34.1 The Gap This Closes
+
+The leverage strategy says *"Mention your alternatives."* But **mentioning is not deploying**. The system currently tells the user WHAT they have (BATNA strength 4.2) without telling them HOW to use it. Deploying a BATNA badly is worse than not deploying it:
+
+```
+❌ BAD DEPLOYMENT: "I have another offer, so you'd better improve this one."
+   → Reads as threat, triggers defensive escalation, burns goodwill
+
+❌ BAD DEPLOYMENT: Revealing BATNA too early, before it's fully developed
+   → Counterparty calls the bluff or waits for it to expire
+
+❌ BAD DEPLOYMENT: Revealing specifics that can be matched or sabotaged
+   → "Oh, that company? We know their budget is capped at..."
+```
+
+### 34.2 The BATNA Revelation Ladder
+
+The core structure: BATNA deployment is a **seven-level escalation ladder**. Each level reveals more, risks more, and commits more. The system recommends a level based on context; the user controls actual deployment.
+
+**Research foundation:** Schelling (1960) on threat vs. warning distinction; Spence (1973) on costly signaling; Akerlof (1970) on information revelation under asymmetry; Cialdini (2009) on scarcity.
+
+```python
+class BATNARevelationLadder:
+    """
+    Seven levels of BATNA deployment, from strategic silence
+    to full activation.
+    
+    Core principle (Schelling, 1960): there is a critical difference
+    between a THREAT ("I will do X unless you Y") and a WARNING
+    ("X may happen regardless of what you do"). BATNA deployed as
+    WARNING preserves relationship and credibility. BATNA deployed
+    as THREAT creates confrontation and must be backed by commitment.
+    
+    The ladder's levels increasingly shift from warning toward
+    threat — and each shift carries costs.
+    """
+    
+    LEVELS = {
+    
+    0: {
+        "name": "STRATEGIC_SILENCE",
+        "description": "Do not reveal BATNA. But do not signal desperation "
+                      "either. Behavior communicates: unhurried, evaluating, "
+                      "not grasping.",
+        "behavioral_signals": [
+            "Not rushing to respond (comfortable timelines)",
+            "Asking thorough questions (implies genuine evaluation)",
+            "Calm affect (not anxious, not overly eager)",
+            "Willing to pause discussions (comfort with time passing)"
+        ],
+        "principle": "Unrevealed BATNA still shapes behavior. Counterparties "
+                    "read behavioral cues of optionality "
+                    "(practitioner heuristic + signaling theory — "
+                    "behavior as costly signal of type).",
+        "risk": "None from revelation. Risk only if behavior accidentally "
+               "signals desperation (undermines level).",
+        "classification": "VALIDATED_RESEARCH (signaling_theory, partial) "
+                         "+ PRACTITIONER_HEURISTIC",
+        "when_to_use": "Default starting level. Also whenever BATNA is "
+                      "undeveloped (revealing weak BATNA is worse than silence)."
+    },
+    
+    1: {
+        "name": "GENERAL_EXISTENCE",
+        "description": "Mention that other possibilities exist. No specifics, "
+                      "no category, no timeline.",
+        "linguistic_frame": "I'm considering a few directions right now — "
+                           "this is one I'm taking seriously.",
+        "domain_general_examples": {
+            "career": "I'm in conversations with a few companies right now.",
+            "client": "I'm evaluating a couple of engagements for this quarter.",
+            "purchase": "I'm looking at a couple of options.",
+            "relationship": "(Level 1 usually inapplicable — see §34.5)"
+        },
+        "principle": "Existence alone invokes scarcity perception "
+                    "(Cialdini, 2009 — influence_principles: scarcity; "
+                    "commodity_theory in library) without creating "
+                    "confrontation.",
+        "risk": "Low. Cannot be called a bluff (nothing specific to call). "
+               "But also low impact.",
+        "classification": "VALIDATED_RESEARCH (scarcity via influence_principles)",
+        "when_to_use": "Early negotiation, when establishing that you're "
+                      "a party with options without escalating."
+    },
+    
+    2: {
+        "name": "CATEGORICAL_EXISTENCE",
+        "description": "Reveal the CATEGORY of alternative, not the specific "
+                      "counterparty. Establishes that the alternative is "
+                      "real and comparable.",
+        "linguistic_frame": "I do have another {opportunity_type} in a "
+                           "similar {range/scope} — I'm weighing them "
+                           "against each other.",
+        "domain_general_examples": {
+            "career": "I have another offer in a comparable range.",
+            "client": "There's another engagement of similar scope I'm "
+                     "considering.",
+            "purchase": "There's a comparable option at a similar price point.",
+            "relationship": "(Level 2: 'I've been thinking about what I "
+                           "need, whether here or not' — see §34.5)"
+        },
+        "principle": "Categorical specificity increases credibility without "
+                    "enabling counter-sabotage or matching "
+                    "(information revelation under asymmetry — "
+                    "Akerlof, 1970: reveal quality signal, not identity).",
+        "risk": "Medium-low. Counterparty may probe for specifics — "
+               "prepared response needed: 'I'd rather not get into "
+               "specifics while I'm deciding.'",
+        "classification": "VALIDATED_RESEARCH (signaling_theory — "
+                         "costly categorical signal)",
+        "when_to_use": "When general existence isn't moving terms and "
+                      "more pressure is needed."
+    },
+    
+    3: {
+        "name": "SPECIFIC_REFERENCE",
+        "description": "Reveal that a SPECIFIC alternative exists — named "
+                      "category, timeline, or verifiable detail — without "
+                      "full disclosure.",
+        "linguistic_frame": "I have a specific {opportunity_type} that's "
+                           "active — it's real and it has a timeline "
+                           "attached to it.",
+        "domain_general_examples": {
+            "career": "I have a specific offer in hand with a response "
+                     "deadline.",
+            "client": "I'm holding a slot for another project that starts "
+                     "committing budget in {timeframe}.",
+            "purchase": "The other option is available at {terms} but "
+                       "won't hold indefinitely.",
+            "relationship": "(Level 3: 'I've gotten clear about what I "
+                           "need, and I'm at the point where I need to "
+                           "see whether that's possible here')"
+        },
+        "principle": "Specificity converts the alternative from abstraction "
+                    "to operational fact. Per signaling theory: the more "
+                    "costly the signal to fake, the more credible. "
+                    "Specific timelines are costly to fabricate.",
+        "risk": "Medium. Counterparty may: (a) ask to see it, (b) attempt "
+               "to match specific terms, (c) attempt to out-wait the "
+               "deadline, (d) disparage the alternative. Each response "
+               "has a counter (see §34.4).",
+        "classification": "VALIDATED_RESEARCH (signaling_theory)",
+        "when_to_use": "When categorical existence fails to move terms "
+                      "and the BATNA is strong (≥3.5) and real."
+    },
+    
+    4: {
+        "name": "VERIFIABLE_EVIDENCE",
+        "description": "Offer verification. The BATNA becomes checkable — "
+                      "which itself signals supreme confidence.",
+        "linguistic_frame": "I'm happy for that to be verified — I'd rather "
+                           "you treat it as real and factor it in than "
+                           " discount it.",
+        "domain_general_examples": {
+            "career": "I can share the offer's existence and timeline "
+                     "(not necessarily full terms).",
+            "client": "I can share the LOI/scope of the competing engagement.",
+            "purchase": "(Often N/A — offers to show competing quotes)"
+        },
+        "principle": "Offering verification is a costlier signal than the "
+                    "claim itself — only a real BATNA holder can cheaply "
+                    "offer this (Spence, 1973 — signal cost differential "
+                    "creates separating equilibrium).",
+        "risk": "Medium-high. Verification typically escalates the "
+               "interaction toward decision-forcing. Partial disclosure "
+               "limits exposure.",
+        "classification": "VALIDATED_RESEARCH (signaling_theory — "
+                         "separating equilibrium)",
+        "when_to_use": "When counterparty expresses skepticism at level 3 "
+                      "AND your BATNA survives verification."
+    },
+    
+    5: {
+        "name": "ACTIVATION_SIGNAL",
+        "description": "State — as a warning, not a threat — that you are "
+                      "close to exercising the BATNA. This is the critical "
+                      "WARNING/THREAT boundary.",
+        "linguistic_frame": "I want to be transparent: the other option "
+                           "has its own clock, and I'm reaching the point "
+                           "where I'll need to move on it. I'd prefer this "
+                           "work — that's why I'm telling you.",
+        "warning_not_threat": "Note the structure: external clock (their "
+                             "deadline, not your choice) + stated preference "
+                             "for the current deal. This is Schelling's "
+                             "WARNING: 'events may take their course' — "
+                             "distinct from a THREAT: 'I will punish you "
+                             "unless.'",
+        "principle": "Warnings preserve agency and relationship; threats "
+                    "create confrontation requiring commitment-backing "
+                    "(Schelling, 1960 — schelling_commitment in library). "
+                    "The linguistic difference: warnings attribute the "
+                    "contingency to circumstances; threats attribute it "
+                    "to your choice.",
+        "risk": "High. This is decision-forcing. Counterparty must "
+               "respond: improve terms, accept your departure, or call "
+               "the signal. If they call it and you don't activate, "
+               "future BATNA credibility is destroyed.",
+        "classification": "VALIDATED_RESEARCH (schelling_commitment)",
+        "when_to_use": "ONLY when: (a) BATNA is fully developed and "
+                      "verified, (b) you are genuinely willing to activate, "
+                      "(c) current terms fail your reservation point. "
+                      "System gates this level on BATNA strength ≥ 4.0 "
+                      "AND red-line check.",
+        "gate": "This level requires explicit system check: is the user's "
+               "BATNA real, verified, and genuinely exercisable? "
+               "Bluffing at level 5 destroys all future leverage."
+    },
+    
+    6: {
+        "name": "FINAL_CLARIFICATION",
+        "description": "Last communication before activation. Gives the "
+                      "counterparty a final, face-preserving opportunity. "
+                      "This is building THEM a golden bridge even as you leave.",
+        "linguistic_frame": "I want to give you a clean final window: "
+                           "if {minimum_terms} were possible, I'm here and "
+                           "ready to close. Otherwise, completely understood, "
+                           "and I appreciate you working through this with me.",
+        "principle": "Face-saving final offers preserve the relationship "
+                    "for future interactions — critical because BATNA "
+                    "exercise is rarely permanent departure from the "
+                    "relationship-space (Ury, 1991 — Step 4).",
+        "risk": "Complete. Terms are now: meet minimum or conclude.",
+        "classification": "VALIDATED_RESEARCH (ury_breakthrough)",
+        "when_to_use": "Immediately before activation, only when you "
+                      "mean it."
+    },
+    
+    7: {
+        "name": "ACTIVATION",
+        "description": "Exercise the BATNA. This is no longer communication "
+                      "— it's action. The decision engine's role ends; "
+                      "the Phase 3 tree's 'exercise BATNA' branch resolves.",
+        "note": "Activation returns to the existing system: the minimax "
+               "solver already scored this branch. The user is executing "
+               "a branch that was calculated, not improvising.",
+        "post_activation": "Log outcome. Update user profile's BATNA "
+                          "track record (§34.6). Return to counterparty "
+                          "only if their subsequent offer beats the "
+                          "activated alternative's utility."
+    }
+    }
+    
+    def recommend_level(self, context: dict, leverage_map, user_profile) -> dict:
+        """
+        Recommends current ladder level based on:
+        - BATNA strength (from leverage map)
+        - BATNA development status (is it real? verified?)
+        - Negotiation stage (early/middle/late)
+        - Current terms vs. reservation point (are we above floor?)
+        - Relationship value (high-value relationships bias toward lower levels)
+        - Counterparty response pattern so far
+        """
+        
+        batna = leverage_map.get_leverage_by_type("BATNA")
+        if not batna or batna.strength < 3.0:
+            return {
+                "level": 0,
+                "reason": "BATNA weak or undeveloped. Revealing weakness "
+                         "is worse than silence. Recommendation: develop "
+                         "BATNA before deployment.",
+                "development_advice": "Level 0 while building alternatives "
+                                     "(follow up with recruiters/other "
+                                     "options first — per batna_theory: "
+                                     "improve BATNA before negotiating)"
+            }
+        
+        # Strong BATNA exists — calibrate by stage and gap
+        current_terms = context.get("current_terms_utility")
+        reservation = context.get("reservation_point_utility")
+        gap = current_terms - reservation
+        
+        if gap > 0.2:
+            # Current terms well above floor — BATNA as gentle pressure
+            return {"level": 1, "reason": "Terms above reservation; "
+                    "BATNA as ambient pressure, not weapon"}
+        elif gap > 0:
+            # Terms near floor — increasing pressure warranted
+            return {"level": 2, "reason": "Terms approaching reservation; "
+                    "categorical existence signals seriousness"}
+        elif gap <= 0:
+            # Terms at/below floor — decision territory
+            if batna.strength >= 4.0 and batna.user_aware:
+                return {"level": 5, "reason": "Terms below reservation "
+                        "with strong BATNA — activation signal warranted "
+                        "(warning-framed)", "gate_check": True}
+            else:
+                return {"level": 3, "reason": "Terms below reservation "
+                        "but BATNA not fully verified — specific reference "
+                        "to pressure-test before activation"}
+        
+        return {"level": 1}
+```
+
+### 34.3 The Warning-vs-Threat Grammar
+
+This is the core linguistic distinction that prevents BATNA deployment from backfiring:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  SCHELLING'S DISTINCTION, OPERATIONALIZED                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                              │
+│  WARNING (preserve relationship + credibility):              │
+│  ├── Contingency attributed to EXTERNAL circumstances        │
+│  ├── "The other option has a deadline attached..."           │
+│  ├── "I'll need to respond to them by [date]..."             │
+│  ├── Stated preference for current deal preserved            │
+│  │   ("I'd prefer this one — that's why I'm here")          │
+│  └── Counterparty retains agency (they choose)               │
+│                                                              │
+│  THREAT (create confrontation, require commitment):          │
+│  ├── Contingency attributed to YOUR choice                   │
+│  ├── "If you don't improve this, I'll take the other one"   │
+│  ├── "You need to do better or I walk"                       │
+│  ├── Preference structure erased (deal = hostage)           │
+│  └── Counterparty's face is at stake → defensive escalation  │
+│                                                              │
+│  THE SAME BATNA, TWO GRAMMARS:                               │
+│                                                              │
+│  ❌ Threat: "I have another offer, so if you can't get to    │
+│     $95k, I'll have to take it."                            │
+│     → Confrontational, commitment-forcing, relationship cost │
+│                                                              │
+│  ✅ Warning: "I want to flag that the other option needs a   │
+│     decision by Friday — I'm telling you because I'd        │
+│     rather make this work. What's possible on your end?"    │
+│     → Informational, agency-preserving, face-preserving,    │
+│       preference-affirming                                  │
+│                                                              │
+│  SYSTEM RULE: All generated BATNA language uses WARNING      │
+│  grammar. THREAT grammar only if user explicitly chooses     │
+│  confrontation (and system logs the choice + risks).         │
+│                                                              │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### 34.4 Counterparty Response Handling
+
+Each revelation level has anticipated counterparty responses with counters (integrating with §33's rejection framework):
+
+```python
+class BATNAResponseHandler:
+    """
+    Anticipated counterparty responses to BATNA revelation,
+    with counters — integrating with §33 rejection framework.
+    """
+    
+    RESPONSES = {
+    
+    "probe_for_specifics": {
+        "triggered_by": "Levels 1-3",
+        "they_say": "Oh? Who's the other company/client/option?",
+        "counter": {
+            "tactic": "GRACEFUL_DEFLECTION",
+            "linguistic_frame": "I'd rather not name names while "
+                               "everything's in motion — I'm sure you'd "
+                               "do the same. What I can tell you is "
+                               "{already_revealed_level_detail}.",
+            "principle": "Information control under asymmetry "
+                        "(Akerlof, 1970). You've revealed enough to "
+                        "create pressure; naming enables sabotage, "
+                        "matching, or disparagement.",
+            "classification": "PRACTITIONER_HEURISTIC (0.50) — "
+                             "standard practice, no direct framework"
+        }
+    },
+    
+    "attempt_to_match": {
+        "triggered_by": "Levels 2-4",
+        "they_say": "We can match whatever they're offering.",
+        "counter": {
+            "tactic": "MATCH_ACKNOWLEDGMENT_PLUS_INTANGIBLES",
+            "description": "Matching is often genuine — but terms beyond "
+                          "price matter. Pivot to what the current "
+                          "option uniquely offers or lacks.",
+            "linguistic_frame": "I appreciate that. It's not purely about "
+                               "matching the number — {intangible_factors} "
+                               "matter too. If we could get to {terms} "
+                               "here, this becomes my clear first choice.",
+            "principle": "Multi-issue negotiation: matching on one "
+                        "dimension doesn't match on all "
+                        "(Keeney & Raiffa, 1976 — multi_attribute_utility "
+                        "in library).",
+            "classification": "VALIDATED_RESEARCH"
+        }
+    },
+    
+    "attempt_to_outwait": {
+        "triggered_by": "Levels 3-4",
+        "they_say": "(Silence, or 'Take your time — we'll be here.')",
+        "counter": {
+            "tactic": "DEADLINE_SPECIFICITY",
+            "description": "Out-waiting works only if BATNA deadline is "
+                          "vague. Make the clock concrete — externally "
+                          "attributed (warning grammar).",
+            "linguistic_frame": "One thing to know: they've asked for a "
+                               "decision by {date}. I don't control that "
+                               "timeline — just flagging it so we can "
+                               "both plan.",
+            "integration": "Validated against leverage map's "
+                          "use_it_or_lose_it trajectory (§17) — the "
+                          "deadline must be REAL. If no real deadline "
+                          "exists, this tactic is unavailable "
+                          "(fabricating deadlines = SPECULATION, §9).",
+            "classification": "VALIDATED_RESEARCH (temporal_discounting)"
+        }
+    },
+    
+    "disparage_alternative": {
+        "triggered_by": "Levels 3-4",
+        "they_say": "That company/client is a mess — you'd hate it there.",
+        "counter": {
+            "tactic": "NON_DEFENSIVE_ACKNOWLEDGMENT",
+            "description": "Defending the alternative proves it needs "
+                          "defending. Acknowledge, don't argue.",
+            "linguistic_frame": "(smile) Maybe so. It's still real, and "
+                               "I still have to decide by {date}. "
+                               "What I'm hoping is that this doesn't "
+                               "come down to that.",
+            "principle": "Defensiveness signals doubt; calm signals "
+                        "optionality (practitioner heuristic + "
+                        "composure-as-signal).",
+            "classification": "PRACTITIONER_HEURISTIC (0.45)"
+        }
+    },
+    
+    "call_the_bluff": {
+        "triggered_by": "Levels 4-5",
+        "they_say": "Okay. Go take it then.",
+        "counter": {
+            "tactic": "LEVEL_CHECK",
+            "description": "CRITICAL MOMENT. If BATNA is real: activate "
+                          "(level 6→7). If BATNA was inflated: you have "
+                          "destroyed credibility — salvage what's possible.",
+            "if_real": {
+                "action": "Activate. 'I appreciate you being direct. "
+                         "If anything changes on your end, you know "
+                         "where to find me.' Exit gracefully.",
+                "note": "The minimax solver already scored this branch. "
+                       "You are executing a calculated outcome."
+            },
+            "if_bluff": {
+                "action": "Immediate honest retreat — the only credibility-"
+                         "preserving move. 'That's fair — I got ahead "
+                         "of myself. What I should have said is...'",
+                "note": "System logs: BATNA credibility destroyed. "
+                       "Future leverage calculations for this relationship "
+                       "discount BATNA claims (§34.6)."
+            },
+            "gate": "This is why level 5+ requires the activation-"
+                   "readiness gate. Never reach this moment unprepared."
+        }
+    }
+    }
+```
+
+### 34.5 Domain-General Application
+
+The ladder applies across domains with calibrated translation:
+
+```python
+DOMAIN_CALIBRATION = {
+    "career": {
+        "full_ladder": True,
+        "notes": "All 7 levels apply. Offers have deadlines and "
+                "verification is standard."
+    },
+    "client_negotiation": {
+        "full_ladder": True,
+        "notes": "Competing engagements, LOIs, capacity constraints all "
+                "function as BATNA. Level 4 verification = showing scope "
+                "of competing work."
+    },
+    "purchase": {
+        "full_ladder": True,
+        "notes": "Competing products/sellers = BATNA. Lower stakes usually "
+                "cap useful levels at 3-4."
+    },
+    "relationship_boundaries": {
+        "full_ladder": False,
+        "applicable_levels": [0, 1, 2, 3],
+        "translation": {
+            "batna_meaning": "The alternative isn't another person — "
+                            "it's the credible willingness to be without "
+                            "this arrangement. In boundary-setting, "
+                            "BATNA = self-sufficiency at the boundary "
+                            "being set.",
+            "level_2_example": "'I've been thinking about what I need, "
+                              "whether here or not.'",
+            "level_3_example": "'I've gotten clear on what I need, and "
+                              "I'm at the point where I need to see "
+                              "whether that's possible here.'",
+            "warning": "Levels 4-7 (verification, activation) map to "
+                      "ultimatum-giving in relationships, which "
+                      "relationship research consistently associates "
+                      "with degraded outcomes. The system recommends "
+                      "capping at level 3 for relationship contexts "
+                      "unless safety concerns override."
+        },
+        "research_note": "Gottman's research on ultimata and stonewalling "
+                        "in relationships supports the level cap; "
+                        "boundary-setting literature (e.g., Cloud & "
+                        "Townsend practitioner tradition) supports "
+                        "levels 0-3 as 'consequences, not threats' — "
+                        "classify practitioner where no peer-review "
+                        "framework applies."
+    },
+    "internal_negotiation": {
+        "full_ladder": True,
+        "notes": "Negotiating with your own organization (transfer, raise, "
+                "resources): BATNA = external offer or internal alternative "
+                "role. Level 5-7 activation = actually leaving, which "
+                "minimax has scored."
+    }
+}
+```
+
+### 34.6 BATNA Track Record & Credibility Ledger
+
+Every deployment and outcome is logged. Over time, the system learns the user's BATNA credibility in each relationship:
+
+```python
+class BATNACredibilityLedger:
+    """
+    Persists BATNA deployment history per relationship.
+    A user who revealed a BATNA and activated it gains credibility;
+    a user who bluffed and was called loses it — permanently, 
+    for that relationship.
+    
+    This is Schelling's commitment analysis, longitudinal.
+    """
+    
+    def record_deployment(self, relationship_id: str, level: int, 
+                          outcome: str, activated: bool):
+        """Log a deployment event"""
+        ...
+    
+    def get_credibility(self, relationship_id: str) -> float:
+        """
+        Returns 0-1 credibility score for this user's BATNA claims
+        in this relationship. Feeds back into leverage map: future
+        BATNA leverage strength is multiplied by credibility.
+        """
+        ...
+    
+    def get_deployment_history(self, relationship_id: str) -> List:
+        """For the audit trail and user review"""
+        ...
+```
+
+### 34.7 Integration Summary
+
+```
+BATNA DEPLOYMENT INTEGRATION:
+
+├── Leverage Map (§17): BATNA strength gates available ladder levels
+├── Minimax Solver (§20): Activation branches pre-scored; user 
+│   executes calculated outcomes, not improvisations
+├── Rejection Framework (§33): Counterparty responses to BATNA
+│   revelation route into rejection counters
+├── Claim Classification (§9): Every generated BATNA statement
+│   is classified (warning grammar = framework-backed; 
+│   threat grammar = flagged with relationship-risk disclosure)
+├── EV Enforcement (§11): Counterparty "matching" offers are 
+│   run through multi-attribute comparison, not face-value accepted
+├── Credibility Ledger (§34.6): Outcomes persist; future leverage
+│   calibrated by track record
+└── Domain Calibration (§34.5): Relationship contexts cap ladder
+    levels per relationship research
+```
+
+---
+
+## v3.4 Change Summary
+
+| Component | What It Adds |
+|-----------|--------------|
+| **§33 Rejection Counter Framework** | 8-type rejection taxonomy; per-type counter protocols grounded in Ury, Schelling, Pruitt, Cialdini, Gouldner; escalation ladders; integration with decision trees and leverage map |
+| **§34 BATNA Deployment System** | 7-level revelation ladder; warning-vs-threat grammar (Schelling); counterparty response handling; domain calibration (incl. relationship-specific caps); credibility ledger |
+| **§8 Library additions** | ury_breakthrough, schelling_commitment, gouldner_reciprocity, pruitt_log_rolling |
+
