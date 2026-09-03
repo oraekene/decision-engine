@@ -16,39 +16,16 @@ export async function authMiddleware(c: Context, next: Next) {
   if (!token) {
     return c.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, 401);
   }
-  // Lookup in D1 + KV (KV cache) — KV now stores JSON with expiry to avoid stale auth
+  // Storage-authoritative lookup (locked 2026-09-03): persistent storage decides
+  // every request and the cache is never consulted for verdicts, so revoked or
+  // deleted sessions fail closed immediately with no grace window.
   const env = c.env as Record<string, unknown> & { DB: D1Database; SESSIONS?: KVNamespace };
   const tokenHash = await sha256(token);
-  // KV fast-path with expiry check (60s TTL to bound revocation window)
-  if (env.SESSIONS) {
-    const cached = await (env.SESSIONS as KVNamespace).get(`session:${tokenHash}`);
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached) as { user_id: string; expires_at: string };
-        if (parsed?.user_id && parsed?.expires_at) {
-          if (new Date(parsed.expires_at) < new Date()) {
-            await (env.SESSIONS as KVNamespace).delete(`session:${tokenHash}`);
-          } else {
-            c.set("user_id", parsed.user_id);
-            await next();
-            return;
-          }
-        }
-      } catch {
-        // Corrupt cache — fall through to D1
-      }
-    }
-  }
   // D1 fallback (authoritative)
   const row = await (env.DB as D1Database).prepare("SELECT user_id, expires_at FROM sessions WHERE token_hash=?").bind(tokenHash).first<{ user_id: string; expires_at: string }>();
   if (!row || new Date(row.expires_at) < new Date()) {
     if (env.SESSIONS) await (env.SESSIONS as KVNamespace).delete(`session:${tokenHash}`);
     return c.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, 401);
-  }
-  if (env.SESSIONS) {
-    const payload = JSON.stringify({ user_id: row.user_id, expires_at: row.expires_at });
-    const ttl = Math.max(1, Math.floor((new Date(row.expires_at).getTime() - Date.now()) / 1000));
-    await (env.SESSIONS as KVNamespace).put(`session:${tokenHash}`, payload, { expirationTtl: Math.min(ttl, 60) });
   }
   c.set("user_id", row.user_id);
   await next();
