@@ -3,6 +3,9 @@ import { store, rrf, retrieve, type RetrieveDeps } from "../storage/recallStore.
 
 // Recall behavior is pinned through the module's public interface:
 // store (blob + queue), rrf (pure fusion math), retrieve (fused, user-scoped).
+// History: written RED against the missing module (3 failures), went GREEN
+// with commit 021ceec; the explicit RetrieveDeps seam replaced an early
+// env-punning draft during implementation.
 
 describe("recallStore — seam", () => {
   it("store writes blob at /{user_id}/{collection}/{id}.md and queues one message", async () => {
