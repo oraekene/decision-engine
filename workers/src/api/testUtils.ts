@@ -115,10 +115,29 @@ export function mockEnv() {
   return {
     DB: createMockDB() as unknown as D1Database,
     SESSIONS: createMockKV() as unknown as KVNamespace,
+    BLOBS: createMockBlobs(),
+    INDEXING: createMockQueue(),
     AI: undefined,
     AI_PROVIDER: "cloudflare",
     AI_GATEWAY_URL: "https://api.openai.com",
     AI_GATEWAY_MODEL: "gpt-4o-mini",
+  };
+}
+
+export function createMockBlobs() {
+  const blobs = new Map<string, string>();
+  return {
+    _blobs: blobs,
+    async put(key: string, value: string) { blobs.set(key, value); },
+    async get(key: string) { return blobs.get(key) ?? null; },
+  };
+}
+
+export function createMockQueue() {
+  const messages: unknown[] = [];
+  return {
+    _messages: messages,
+    async send(msg: unknown) { messages.push(msg); },
   };
 }
 

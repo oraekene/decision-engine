@@ -45,7 +45,7 @@ app.post("/api/decisions", authMiddleware, async (c) => {
   const env = c.env as Env & { DB: D1Database };
   const user_id = c.get("user_id" as never) as string;
   const body = await c.req.json().catch(() => ({})) as { description?: string };
-  const { id } = await createDecision(env.DB as D1Database, user_id, body.description ?? "");
+  const { id } = await createDecision(env, user_id, body.description ?? "");
   return c.json({ id, user_id, ...body }, 201);
 });
 

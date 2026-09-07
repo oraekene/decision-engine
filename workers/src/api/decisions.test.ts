@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import app from "../index.js";
-import { mockEnv, registerLogin } from "./testUtils.js";
+import { mockEnv, registerLogin, createMockBlobs, createMockQueue } from "./testUtils.js";
 
 describe("Decisions seam — Hono HTTP seam", () => {
   let env: ReturnType<typeof mockEnv>;
@@ -83,8 +83,7 @@ describe("Decisions seam — Hono HTTP seam", () => {
     expect(res.status).toBe(401);
   });
 
-  it("users never see each other's decisions", async () => {
-    const tokenA = await registerLogin(env, "isolation-a@example.com");
+  it("users never see each other's decisions", async () => {    const tokenA = await registerLogin(env, "isolation-a@example.com");
     const tokenB = await registerLogin(env, "isolation-b@example.com");
     for (const description of ["a-one", "a-two"]) {
       await app.request("/api/decisions", {
@@ -108,5 +107,29 @@ describe("Decisions seam — Hono HTTP seam", () => {
     }, env as never);
     const bodyB = await resB.json() as { decisions: { description: string }[] };
     expect(bodyB.decisions.map((d) => d.description)).toEqual(["b-one"]);
+  });
+
+  it("creation recalls blob and queue, namespaced per user", async () => {
+    const tokenA = await registerLogin(env, "recall-a@example.com");
+    const tokenB = await registerLogin(env, "recall-b@example.com");
+    const blobs = env.BLOBS as unknown as ReturnType<typeof createMockBlobs>;
+    const queue = env.INDEXING as unknown as ReturnType<typeof createMockQueue>;
+    const resA = await app.request("/api/decisions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${tokenA}` },
+      body: JSON.stringify({ description: "recall me" }),
+    }, env as never);
+    expect(resA.status).toBe(201);
+    const { id } = await resA.json() as { id: string };
+    const meA = await (await app.request("/api/users/me", {
+      headers: { Authorization: `Bearer ${tokenA}` },
+    }, env as never)).json() as { id: string };
+    const meB = await (await app.request("/api/users/me", {
+      headers: { Authorization: `Bearer ${tokenB}` },
+    }, env as never)).json() as { id: string };
+    expect(blobs._blobs.get(`/${meA.id}/decisions/${id}.md`)).toBe("recall me");
+    expect(queue._messages).toHaveLength(1);
+    expect(queue._messages[0]).toMatchObject({ user_id: meA.id, collection: "decisions", r2_key: `/${meA.id}/decisions/${id}.md` });
+    expect([...blobs._blobs.keys()].some((k) => k.startsWith(`/${meB.id}/`))).toBe(false);
   });
 });

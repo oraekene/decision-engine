@@ -1,5 +1,6 @@
 // workers/src/queues/indexConsumer.ts — Queues async embed/index (ticket [3-02])
 import { LlmGateway } from "../lib/llmGateway.js";
+import { COLLECTION_INDEX } from "../storage/recallStore.js";
 
 export async function handleIndexingBatch(batch: MessageBatch, env: Record<string, unknown>) {
   for (const msg of batch.messages) {
@@ -7,8 +8,9 @@ export async function handleIndexingBatch(batch: MessageBatch, env: Record<strin
     try {
       const gw = LlmGateway.fromEnv(env as Record<string, unknown>);
       const [embedding] = await gw.embed([payload.content.slice(0, 8000)]);
-      // Vectorize upsert — binding name varies by collection
-      const idx = (env.VECTORIZE as VectorizeIndex | undefined) ?? (env.VECTORIZE as unknown as VectorizeIndex);
+      // Vectorize upsert — binding routed by collection, generic fallback
+      const binding = COLLECTION_INDEX[payload.collection] ?? "VECTORIZE";
+      const idx = env[binding] as VectorizeIndex | undefined;
       if (idx && embedding) {
         await idx.upsert([
           {
