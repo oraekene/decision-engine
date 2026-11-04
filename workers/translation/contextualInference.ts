@@ -27,3 +27,24 @@ export function inferIncomeFloor(total_obligations: number): InferredValue {
     method: "contextual_inference",
   };
 }
+
+const SAVINGS_CUES = ["sav", "bank", "set aside", "emergency fund", "in reserve", "nest egg"];
+const EXPENSE_CUES = ["spend", "expenses", "monthly", "burn", "costs", "bills", "outgoing", "overhead"];
+const AMOUNT = /\$?(\d+(?:,\d{3})*(?:\.\d+)?)/g;
+
+// Text-level Tier3 entry: fires only when the text carries both an explicit
+// savings cue and an explicit monthly-expense cue alongside at least two
+// amounts (first = savings, last = monthly burn). Anything else returns null
+// so the translator falls through to null exactly as before.
+export function inferFromText(text: string): InferredValue | null {
+  const lower = text.toLowerCase();
+  if (!SAVINGS_CUES.some((c) => lower.includes(c))) return null;
+  if (!EXPENSE_CUES.some((c) => lower.includes(c))) return null;
+  const amounts = [...text.matchAll(AMOUNT)]
+    .map((m) => parseFloat(m[1].replace(/,/g, "")))
+    .filter((n) => !isNaN(n));
+  if (amounts.length < 2) return null;
+  const monthly = amounts[amounts.length - 1];
+  if (monthly <= 0) return null;
+  return inferFinancialRunway(amounts[0], monthly);
+}

@@ -27,6 +27,19 @@ describe("Stub seams — Hono HTTP seam", () => {
     expect(body.log).toBeTruthy();
   });
 
+  it("translate reaches Tier3 for savings-plus-monthly prose", async () => {
+    const res = await app.request("/api/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ text: "My savings are 18000 and I spend 3000 a month", dimension: "financial" }),
+    }, env as never);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { value: { method: string; value: number } | null; needsConfirmation: boolean };
+    expect(body.value?.method).toBe("contextual_inference");
+    expect(body.value?.value).toBe(6);
+    expect(body.needsConfirmation).toBe(true);
+  });
+
   it("voice check reports wall verdict and cleaned text", async () => {
     const res = await app.request("/api/voice/check", {
       method: "POST",
@@ -56,6 +69,18 @@ describe("Stub seams — Hono HTTP seam", () => {
     expect(res.status).toBe(200);
     const clear = await res.json() as { flags: unknown[] };
     expect(clear.flags).toEqual([]);
+  });
+
+  it("bias check adds a protocol challenge for loaded answers", async () => {
+    const res = await app.request("/api/bias/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ answer: "it would be a total disaster" }),
+    }, env as never);
+    expect(res.status).toBe(200);
+    const body = await res.json() as { flags: unknown[]; challenge: { type: string } | null };
+    expect(body.flags).toEqual([]);
+    expect(body.challenge?.type).toBe("catastrophizing");
   });
 
   it("stub routes reject unauthenticated calls", async () => {

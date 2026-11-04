@@ -1,6 +1,7 @@
 // workers/translation/translator.ts — NaturalLanguageTranslator orchestrator (v3.2 §5.7, ticket [5-05])
 import { extract, confidenceToNumber } from "./directExtractor.js";
 import { map as qualitativeMap } from "./qualitativeMapper.js";
+import { inferFromText, type InferredValue } from "./contextualInference.js";
 import { shouldConfirm } from "./confirmationProtocol.js";
 
 export type TranslatedValue = {
@@ -17,6 +18,7 @@ export type TranslationLogEntry = {
   dimension: string;
   tier1: ReturnType<typeof extract>;
   tier2: ReturnType<typeof qualitativeMap>;
+  tier3?: InferredValue | null;
   final: TranslatedValue | null;
   needsConfirmation: boolean;
   confirmed?: boolean;
@@ -33,6 +35,7 @@ export class NaturalLanguageTranslator {
     let confidence = 0;
     let method: TranslatedValue["method"] = "direct_extraction";
     let basis = "";
+    let tier3: InferredValue | null = null;
 
     if (tier1) {
       confidence = confidenceToNumber(tier1.confidence);
@@ -56,6 +59,22 @@ export class NaturalLanguageTranslator {
       };
       method = "qualitative_mapping";
       basis = tier2.basis;
+    } else {
+      // Tier3 fires only on explicit savings-plus-monthly operands;
+      // otherwise the result stays null exactly as before.
+      tier3 = inferFromText(text);
+      if (tier3) {
+        confidence = tier3.confidence;
+        final = {
+          value: tier3.value,
+          confidence,
+          method: "contextual_inference",
+          basis: tier3.basis,
+          original_text: text,
+        };
+        method = "contextual_inference";
+        basis = tier3.basis;
+      }
     }
 
     const discrepancy = tier1 && tier2 ? { tier1Value: tier1.value, tier2Value: tier2.score } : {};
@@ -75,6 +94,7 @@ export class NaturalLanguageTranslator {
       dimension,
       tier1,
       tier2,
+      tier3,
       final,
       needsConfirmation,
     };

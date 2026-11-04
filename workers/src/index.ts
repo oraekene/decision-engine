@@ -6,6 +6,8 @@ import { registerAuthRoutes } from "./api/authRoutes.js";
 import { listDecisions, createDecision } from "./api/decisions.js";
 import { NaturalLanguageTranslator } from "../translation/translator.js";
 import { mechanicalPass } from "../voice/wall.js";
+import { DevilsAdvocateProtocol } from "../bias/devilsAdvocate.js";
+import { validate_information } from "../validation/assumptionElimination.js";
 import { handleIndexingBatch } from "./queues/indexConsumer.js";
 
 type Bindings = Env;
@@ -72,13 +74,26 @@ app.post("/api/voice/check", authMiddleware, async (c) => {
   return c.json(mechanicalPass(text ?? ""));
 });
 
-// Bias check — ticket [13-01]
+// Bias check — ticket [13-01]: fabrication flags plus protocol challenge.
+// The fabrication check and the protocol are separate concerns sharing one
+// route; the challenge field is additive and existing callers are unaffected.
 app.post("/api/bias/check", authMiddleware, async (c) => {
-  const { llm_output } = await c.req.json();
+  const { llm_output, answer, context } = await c.req.json() as { llm_output?: string; answer?: string; context?: Record<string, unknown> };
+  const text = answer ?? llm_output ?? "";
   // fabricator detection stub (full impl in workers/bias/systemBias.ts ticket [13-01])
-  const hasPercent = /\d+(?:\.\d+)?%/.test(llm_output ?? "");
+  const hasPercent = /\d+(?:\.\d+)?%/.test(llm_output ?? answer ?? "");
   const flags = hasPercent ? [{ bias_type: "fabricated_specificity", severity: "HIGH", evidence: "contains % without source" }] : [];
-  return c.json({ flags });
+  const challenge = text
+    ? new DevilsAdvocateProtocol().evaluate_answer({ text, context })
+    : null;
+  return c.json({ flags, challenge });
+});
+
+// Assumption check — assumption gate, previously routeless.
+// The gate logic is frozen; this endpoint only makes it reachable.
+app.post("/api/validation/check", authMiddleware, async (c) => {
+  const { type, value, source } = await c.req.json() as { type: "user_fact" | "counterparty_constraint" | "situational_detail"; value: string; source: "user_confirmed" | "user_stated" | "inferred" | "user_knows" | "research_framework" | "assumed" | "user_observed" | "stated_by_counterparty" };
+  return c.json(validate_information(type, value ?? "", source));
 });
 
 // 404

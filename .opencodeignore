@@ -1,0 +1,9 @@
+# OpenCode Ignore
+node_modules/
+dist/
+.wrangler/
+.cloudflare/
+*.sqlite*
+.qmd/
+.cache/
+.scratch/
